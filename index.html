@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#1f2937">
     <title>Creature Bank Editor for Heroes 3: ERA</title>
     <link rel="manifest" href="#" id="manifestPlaceholder">
-    <link rel="icon" href="/api/placeholder/64/64" type="image/png">
+    <link rel="icon" href="./icon-64.png" type="image/png">
     <style>
         :root {
             --primary-bg: #1f2937;
@@ -138,6 +138,7 @@
         }
 
         .field-group {
+            width: 100%;
             margin-bottom: 15px;
             padding: 10px;
             border-radius: 6px;
@@ -218,11 +219,6 @@
             margin-bottom: 8px;
         }
 
-        .array-item input {
-            flex: 1;
-            margin-right: 10px;
-        }
-
         .add-item {
             margin-top: 10px;
         }
@@ -239,7 +235,7 @@
 
         .save-button:disabled {
             background-color: var(--disabled-bg);
-            color: var(--disabled-text);
+            color: var (--disabled-text);
             cursor: not-allowed;
         }
 
@@ -313,6 +309,22 @@
     </header>
 
     <div class="editor-container">
+        <!-- Object Subtype -->
+        <div class="field-group">
+            <h3 id="object-subtype-title">Object subtype</h3>
+            
+            <div class="field-row">
+                <div class="field-label">
+                    subtype <span class="help-icon">?
+                        <div class="tooltip" id="help-subtype">The numeric subtype key for the object.</div>
+                    </span>
+                </div>
+                <div class="field-input">
+                    <input type="number" id="object-subtype" min="0" value="13">
+                </div>
+            </div>
+        </div>
+
         <!-- Required Fields -->
         <div class="field-group">
             <h3 id="required-fields-title">Required Fields</h3>
@@ -414,32 +426,171 @@
                 </div>
                 <div class="field-input disabled" id="states-container">
                     <div id="states-items">
-                        <div class="array-item">
-                            <input type="number" class="state-item" min="0">
-                            <button class="remove-item">-</button>
+                        <!-- State item template -->
+                        <div class="state-item">
+                            <div class="field-group">
+                                <h4>State #1</h4>
+                                
+                                <!-- Optional fields within state -->
+                                <div class="field-row">
+                                    <div class="field-label">
+                                        <input type="checkbox" id="state-morale-checkbox-0">
+                                        morale
+                                    </div>
+                                    <div class="field-input disabled" id="state-morale-container-0">
+                                        <input type="number" id="state-morale-0">
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <div class="field-label">
+                                        <input type="checkbox" id="state-luck-checkbox-0">
+                                        luck
+                                    </div>
+                                    <div class="field-input disabled" id="state-luck-container-0">
+                                        <input type="number" id="state-luck-0">
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <div class="field-label">
+                                        <input type="checkbox" id="state-spells-checkbox-0">
+                                        spells
+                                    </div>
+                                    <div class="field-input disabled" id="state-spells-container-0">
+                                        <div id="state-spells-items-0">
+                                            <div class="array-item">
+                                                <div class="field-group">
+                                                    <div class="field-row">
+                                                        <div class="field-label">
+                                                            <input type="checkbox" id="state-spell-id-checkbox-0-0">
+                                                            id
+                                                        </div>
+                                                        <div class="field-input disabled" id="state-spell-id-container-0-0">
+                                                            <input type="number" id="state-spell-id-0-0" min="0">
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="field-row">
+                                                        <div class="field-label">
+                                                            <input type="checkbox" id="state-spell-bits-checkbox-0-0">
+                                                            bits
+                                                        </div>
+                                                        <div class="field-input disabled" id="state-spell-bits-container-0-0">
+                                                            <div class="field-group">
+                                                                <div class="field-row">
+                                                                    <div class="field-label">flags</div>
+                                                                    <div class="field-input">
+                                                                        <input type="number" id="state-spell-bits-flags-0-0" min="0">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="field-row">
+                                                                    <div class="field-label">levels</div>
+                                                                    <div class="field-input">
+                                                                        <input type="number" id="state-spell-bits-levels-0-0" min="0">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="field-row">
+                                                                    <div class="field-label">schools</div>
+                                                                    <div class="field-input">
+                                                                        <input type="number" id="state-spell-bits-schools-0-0" min="0">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button class="remove-spell">-</button>
+                                            </div>
+                                        </div>
+                                        <button class="add-spell" data-state-index="0">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <div class="field-label">
+                                        <input type="checkbox" id="state-spellPoints-checkbox-0">
+                                        spellPoints
+                                    </div>
+                                    <div class="field-input disabled" id="state-spellPoints-container-0">
+                                        <input type="number" id="state-spellPoints-0" min="0">
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <div class="field-label">
+                                        <input type="checkbox" id="state-experience-checkbox-0">
+                                        experience
+                                    </div>
+                                    <div class="field-input disabled" id="state-experience-container-0">
+                                        <input type="number" id="state-experience-0" min="0">
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <div class="field-label">
+                                        <input type="checkbox" id="state-skills-checkbox-0">
+                                        skills
+                                    </div>
+                                    <div class="field-input disabled" id="state-skills-container-0">
+                                        <div class="field-row">
+                                            <div class="field-label">primary (comma-separated)</div>
+                                            <div class="field-input">
+                                                <input type="text" id="state-skills-primary-0" placeholder="0,1,2,3">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <div class="field-label">
+                                        <input type="checkbox" id="state-guardians-checkbox-0">
+                                        guardians
+                                    </div>
+                                    <div class="field-input disabled" id="state-guardians-container-0">
+                                        <div class="field-row">
+                                            <div class="field-label">count (comma-separated)</div>
+                                            <div class="field-input">
+                                                <input type="text" id="state-guardians-count-0" placeholder="15,15,15,0,0,0,0">
+                                            </div>
+                                        </div>
+                                        <div class="field-row">
+                                            <div class="field-label">type (comma-separated)</div>
+                                            <div class="field-input">
+                                                <input type="text" id="state-guardians-type-0" placeholder="59,59,59,-1,-1,-1,-1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <div class="field-label">
+                                        <input type="checkbox" id="state-resources-checkbox-0">
+                                        resources
+                                    </div>
+                                    <div class="field-input disabled" id="state-resources-container-0">
+                                        <input type="text" id="state-resources-0" placeholder="0,0,0,0,0,0,2500,12">
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <div class="field-label">
+                                        <input type="checkbox" id="state-chance-checkbox-0">
+                                        chance
+                                    </div>
+                                    <div class="field-input disabled" id="state-chance-container-0">
+                                        <input type="number" id="state-chance-0" min="0" max="100">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="remove-state">Remove State</button>
                         </div>
                     </div>
-                    <button class="add-item" id="add-state">+</button>
+                    <button class="add-item" id="add-state">Add State</button>
                 </div>
             </div>
             
-            <div class="field-row">
-                <div class="field-label">
-                    <input type="checkbox" id="spells-checkbox">
-                    spells <span class="help-icon">?
-                        <div class="tooltip" id="help-spells">Loading help text...</div>
-                    </span>
-                </div>
-                <div class="field-input disabled" id="spells-container">
-                    <div id="spells-items">
-                        <div class="array-item">
-                            <input type="number" class="spell-item" min="0">
-                            <button class="remove-item">-</button>
-                        </div>
-                    </div>
-                    <button class="add-item" id="add-spell">+</button>
-                </div>
-            </div>
+            <!-- Remove the spells field that was here as it's now inside the states structure -->
         </div>
     </div>
 
@@ -452,82 +603,56 @@
 
     <script>
         // Localization setup
-        const translations = {
-            en: {
-                appTitle: "Creature Bank Editor for Heroes 3: ERA",
-                installPwa: "Install PWA App",
-                darkTheme: "Dark Theme",
-                lightTheme: "Light Theme",
-                currentLanguage: "English",
-                browserSupport: "Primarily supported in Chromium-based browsers (Chrome, Edge, Opera, etc.). Firefox, Safari, and others work with limitations.",
-                requiredFields: "Required Fields",
-                optionalFields: "Optional Fields",
-                saveFile: "Save File",
-                showJsonCode: "Show JSON Code",
-                hideJsonCode: "Hide JSON Code",
-                // Help texts would typically be loaded from a help.txt file, mocking them here
-                helpValue: "The numeric value of the creature bank.",
-                helpDensity: "Determines the density of creatures in the bank.",
-                helpProperties: "Special properties of the creature bank.",
-                helpEnabled: "Determines if the creature bank is enabled.",
-                helpName: "The name of the creature bank.",
-                helpSound: "Sound files associated with the creature bank.",
-                helpStates: "Different states of the creature bank.",
-                helpSpells: "Spells associated with the creature bank."
-            },
-            ru: {
-                appTitle: "Редактор Банка Существ для Heroes 3: ERA",
-                installPwa: "Установить PWA приложением",
-                darkTheme: "Темная тема",
-                lightTheme: "Светлая тема",
-                currentLanguage: "Русский",
-                browserSupport: "Поддерживаются в основном Chromium-браузеры (Chrome, Edge, Opera и др.). Firefox, Safari и др. работают с ограничениями.",
-                requiredFields: "Обязательные поля",
-                optionalFields: "Опциональные поля",
-                saveFile: "Сохранить файл",
-                showJsonCode: "Показать JSON код",
-                hideJsonCode: "Скрыть JSON код",
-                // Help texts in Russian
-                helpValue: "Числовое значение банка существ.",
-                helpDensity: "Определяет плотность существ в банке.",
-                helpProperties: "Специальные свойства банка существ.",
-                helpEnabled: "Определяет, включен ли банк существ.",
-                helpName: "Название банка существ.",
-                helpSound: "Звуковые файлы, связанные с банком существ.",
-                helpStates: "Различные состояния банка существ.",
-                helpSpells: "Заклинания, связанные с банком существ."
-            }
-        };
-
+        let translations = {};
         let currentLang = 'en';
         let isDarkTheme = true;
 
+        // Function to load language file
+        async function loadLanguage(lang) {
+            try {
+                const response = await fetch(`./lang/${lang}.json`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load language file: ${response.status}`);
+                }
+                translations = await response.json();
+                currentLang = lang;
+                updateUILanguage();
+            } catch (error) {
+                console.error('Error loading language file:', error);
+                // Fallback to English if there's an error
+                if (lang !== 'en') {
+                    loadLanguage('en');
+                }
+            }
+        }
+
         // Function to update the UI language
-        function updateLanguage(lang) {
-            currentLang = lang;
-            document.getElementById('app-title').textContent = translations[lang].appTitle;
-            document.getElementById('install-pwa').textContent = translations[lang].installPwa;
+        function updateUILanguage() {
+            document.getElementById('app-title').textContent = translations.appTitle;
+            document.getElementById('install-pwa').textContent = translations.installPwa;
             document.getElementById('theme-toggle-btn').textContent = isDarkTheme ? 
-                translations[lang].darkTheme : translations[lang].lightTheme;
-            document.getElementById('lang-selector-btn').textContent = translations[lang].currentLanguage;
-            document.getElementById('browser-support').textContent = translations[lang].browserSupport;
-            document.getElementById('required-fields-title').textContent = translations[lang].requiredFields;
-            document.getElementById('optional-fields-title').textContent = translations[lang].optionalFields;
-            document.getElementById('save-file').textContent = translations[lang].saveFile;
+                translations.darkTheme : translations.lightTheme;
+            document.getElementById('lang-selector-btn').textContent = translations.currentLanguage;
+            document.getElementById('browser-support').textContent = translations.browserSupport;
+            document.getElementById('required-fields-title').textContent = translations.requiredFields;
+            document.getElementById('optional-fields-title').textContent = translations.optionalFields;
+            document.getElementById('save-file').textContent = translations.saveFile;
             
             const jsonToggleBtn = document.getElementById('toggle-json');
-            jsonToggleBtn.textContent = jsonToggleBtn.textContent === translations['en'].showJsonCode ? 
-                translations[lang].showJsonCode : translations[lang].hideJsonCode;
+            const isShowingJson = document.getElementById('json-preview').classList.contains('show');
+            jsonToggleBtn.textContent = isShowingJson ? 
+                translations.hideJsonCode : translations.showJsonCode;
             
             // Update help texts
-            document.getElementById('help-value').textContent = translations[lang].helpValue;
-            document.getElementById('help-density').textContent = translations[lang].helpDensity;
-            document.getElementById('help-properties').textContent = translations[lang].helpProperties;
-            document.getElementById('help-enabled').textContent = translations[lang].helpEnabled;
-            document.getElementById('help-name').textContent = translations[lang].helpName;
-            document.getElementById('help-sound').textContent = translations[lang].helpSound;
-            document.getElementById('help-states').textContent = translations[lang].helpStates;
-            document.getElementById('help-spells').textContent = translations[lang].helpSpells;
+            document.getElementById('help-value').textContent = translations.helpValue;
+            document.getElementById('help-density').textContent = translations.helpDensity;
+            document.getElementById('help-properties').textContent = translations.helpProperties;
+            document.getElementById('help-enabled').textContent = translations.helpEnabled;
+            document.getElementById('help-name').textContent = translations.helpName;
+            document.getElementById('help-sound').textContent = translations.helpSound;
+            document.getElementById('help-states').textContent = translations.helpStates;
+            document.getElementById('object-subtype-title').textContent = translations.objectSubtype;
+            document.getElementById('help-subtype').textContent = translations.helpSubtype;
         }
 
         // Language selector functionality
@@ -538,7 +663,7 @@
         document.querySelectorAll('#lang-dropdown button').forEach(button => {
             button.addEventListener('click', function() {
                 const lang = this.getAttribute('data-lang');
-                updateLanguage(lang);
+                loadLanguage(lang);
                 document.getElementById('lang-dropdown').classList.remove('show');
             });
         });
@@ -548,7 +673,7 @@
             isDarkTheme = !isDarkTheme;
             document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
             this.textContent = isDarkTheme ? 
-                translations[currentLang].darkTheme : translations[currentLang].lightTheme;
+                translations.darkTheme : translations.lightTheme;
         });
 
         // Close dropdown when clicking outside
@@ -562,9 +687,11 @@
         });
 
         // Optional fields toggle
-        function setupOptionalField(checkboxId, containerId) {
+        function setupOptionalField(checkboxId, containerId, callback) {
             const checkbox = document.getElementById(checkboxId);
             const container = document.getElementById(containerId);
+            
+            if (!checkbox || !container) return;
             
             checkbox.addEventListener('change', function() {
                 if (this.checked) {
@@ -573,83 +700,346 @@
                     container.classList.add('disabled');
                 }
                 updateJsonPreview();
+                if (callback) callback(this.checked);
             });
         }
 
+        // Setup all optional fields
         setupOptionalField('enabled-checkbox', 'enabled-container');
         setupOptionalField('name-checkbox', 'name-container');
         setupOptionalField('sound-checkbox', 'sound-container');
         setupOptionalField('states-checkbox', 'states-container');
-        setupOptionalField('spells-checkbox', 'spells-container');
 
-        // Array field functionality (states and spells)
-        function setupArrayField(addButtonId, itemsContainerId, itemClass, maxItems = 4) {
-            const addButton = document.getElementById(addButtonId);
-            const itemsContainer = document.getElementById(itemsContainerId);
+        // Initialize state field handlers for the first state
+        function setupStateFields(stateIndex) {
+            // Set up all optional fields within a state
+            setupOptionalField(`state-morale-checkbox-${stateIndex}`, `state-morale-container-${stateIndex}`);
+            setupOptionalField(`state-luck-checkbox-${stateIndex}`, `state-luck-container-${stateIndex}`);
+            setupOptionalField(`state-spells-checkbox-${stateIndex}`, `state-spells-container-${stateIndex}`);
+            setupOptionalField(`state-spellPoints-checkbox-${stateIndex}`, `state-spellPoints-container-${stateIndex}`);
+            setupOptionalField(`state-experience-checkbox-${stateIndex}`, `state-experience-container-${stateIndex}`);
+            setupOptionalField(`state-skills-checkbox-${stateIndex}`, `state-skills-container-${stateIndex}`);
+            setupOptionalField(`state-guardians-checkbox-${stateIndex}`, `state-guardians-container-${stateIndex}`);
+            setupOptionalField(`state-resources-checkbox-${stateIndex}`, `state-resources-container-${stateIndex}`);
+            setupOptionalField(`state-chance-checkbox-${stateIndex}`, `state-chance-container-${stateIndex}`);
             
-            addButton.addEventListener('click', function() {
-                const items = itemsContainer.querySelectorAll(`.${itemClass}`);
-                if (items.length < maxItems) {
-                    const newItem = document.createElement('div');
-                    newItem.className = 'array-item';
-                    newItem.innerHTML = `
-                        <input type="number" class="${itemClass}" min="0">
-                        <button class="remove-item">-</button>
-                    `;
-                    itemsContainer.appendChild(newItem);
-                    
-                    newItem.querySelector('.remove-item').addEventListener('click', function() {
-                        newItem.remove();
-                        updateJsonPreview();
-                    });
-                    
-                    newItem.querySelector(`.${itemClass}`).addEventListener('input', updateJsonPreview);
+            // Set up spell fields for the first spell in this state
+            setupOptionalField(`state-spell-id-checkbox-${stateIndex}-0`, `state-spell-id-container-${stateIndex}-0`);
+            setupOptionalField(`state-spell-bits-checkbox-${stateIndex}-0`, `state-spell-bits-container-${stateIndex}-0`);
+            
+            // Fix: Use valid CSS selector syntax - use attribute selectors separately 
+            // Add event listeners for all input fields in this state
+            document.querySelectorAll(`[id^="state-"][id$="${stateIndex}"]`).forEach(input => {
+                if (input.tagName === 'INPUT' && !input.id.includes('checkbox')) {
+                    input.addEventListener('input', updateJsonPreview);
                 }
-                
-                if (itemsContainer.querySelectorAll(`.${itemClass}`).length >= maxItems) {
-                    addButton.disabled = true;
-                }
-                
-                updateJsonPreview();
             });
             
-            // Add event listener to the initial remove button
-            const initialRemoveBtn = itemsContainer.querySelector('.remove-item');
-            if (initialRemoveBtn) {
-                initialRemoveBtn.addEventListener('click', function() {
-                    const itemElement = this.closest('.array-item');
-                    const input = itemElement.querySelector(`.${itemClass}`);
-                    input.value = '';
-                    updateJsonPreview();
+            // Fix: Use valid CSS selector syntax for spell bits fields
+            document.querySelectorAll(`[id^="state-spell-bits-"][id$="${stateIndex}-0"]`).forEach(input => {
+                if (input.tagName === 'INPUT') {
+                    input.addEventListener('input', updateJsonPreview);
+                }
+            });
+            
+            // Setup add/remove spell buttons
+            const addSpellBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
+            if (addSpellBtn) {
+                addSpellBtn.addEventListener('click', function() {
+                    addSpellToState(stateIndex);
                 });
             }
             
-            // Add event listener to the initial input
-            const initialInput = itemsContainer.querySelector(`.${itemClass}`);
-            if (initialInput) {
-                initialInput.addEventListener('input', updateJsonPreview);
+            // Setup remove spell button
+            const removeSpellBtn = document.querySelector(`#state-spells-items-${stateIndex} .remove-spell`);
+            if (removeSpellBtn) {
+                removeSpellBtn.addEventListener('click', function() {
+                    resetSpellFields(stateIndex, 0);
+                });
+            }
+            
+            // Setup remove state button
+            const removeStateBtn = document.querySelectorAll('.remove-state')[stateIndex];
+            if (removeStateBtn) {
+                removeStateBtn.addEventListener('click', function() {
+                    if (document.querySelectorAll('.state-item').length > 1) {
+                        this.closest('.state-item').remove();
+                        renumberStates();
+                        updateJsonPreview();
+                        
+                        // Enable add button if we're below the max
+                        if (document.querySelectorAll('.state-item').length < 4) {
+                            document.getElementById('add-state').disabled = false;
+                        }
+                    } else {
+                        // If it's the last state, just reset the fields
+                        resetStateFields(0);
+                    }
+                });
             }
         }
+        
+        // Function to add a new spell to a state
+        function addSpellToState(stateIndex) {
+            const spellsContainer = document.getElementById(`state-spells-items-${stateIndex}`);
+            const spellsCount = spellsContainer.querySelectorAll('.array-item').length;
+            
+            if (spellsCount < 4) {
+                const newSpellIndex = spellsCount;
+                const newSpellHtml = `
+                    <div class="array-item">
+                        <div class="field-group">
+                            <div class="field-row">
+                                <div class="field-label">
+                                    <input type="checkbox" id="state-spell-id-checkbox-${stateIndex}-${newSpellIndex}">
+                                    id
+                                </div>
+                                <div class="field-input disabled" id="state-spell-id-container-${stateIndex}-${newSpellIndex}">
+                                    <input type="number" id="state-spell-id-${stateIndex}-${newSpellIndex}" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="field-row">
+                                <div class="field-label">
+                                    <input type="checkbox" id="state-spell-bits-checkbox-${stateIndex}-${newSpellIndex}">
+                                    bits
+                                </div>
+                                <div class="field-input disabled" id="state-spell-bits-container-${stateIndex}-${newSpellIndex}">
+                                    <div class="field-group">
+                                        <div class="field-row">
+                                            <div class="field-label">flags</div>
+                                            <div class="field-input">
+                                                <input type="number" id="state-spell-bits-flags-${stateIndex}-${newSpellIndex}" min="0">
+                                            </div>
+                                        </div>
+                                        <div class="field-row">
+                                            <div class="field-label">levels</div>
+                                            <div class="field-input">
+                                                <input type="number" id="state-spell-bits-levels-${stateIndex}-${newSpellIndex}" min="0">
+                                            </div>
+                                        </div>
+                                        <div class="field-row">
+                                            <div class="field-label">schools</div>
+                                            <div class="field-input">
+                                                <input type="number" id="state-spell-bits-schools-${stateIndex}-${newSpellIndex}" min="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="remove-spell">-</button>
+                    </div>
+                `;
+                
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = newSpellHtml;
+                const newSpellElement = tempDiv.firstElementChild;
+                spellsContainer.appendChild(newSpellElement);
+                
+                // Setup the new spell's fields
+                setupOptionalField(`state-spell-id-checkbox-${stateIndex}-${newSpellIndex}`, `state-spell-id-container-${stateIndex}-${newSpellIndex}`);
+                setupOptionalField(`state-spell-bits-checkbox-${stateIndex}-${newSpellIndex}`, `state-spell-bits-container-${stateIndex}-${newSpellIndex}`);
+                
+                // Fix: Update the selector to properly target all input fields in the new spell
+                newSpellElement.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
+                    if (!input.id.includes('checkbox')) {
+                        input.addEventListener('input', updateJsonPreview);
+                    }
+                });
+                
+                // Add remove spell button listener
+                const removeBtn = newSpellElement.querySelector('.remove-spell');
+                removeBtn.addEventListener('click', function() {
+                    newSpellElement.remove();
+                    updateJsonPreview();
+                    
+                    // Re-enable add button
+                    const addBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
+                    if (addBtn) {
+                        addBtn.disabled = false;
+                    }
+                });
+                
+                // Disable add button if we reached the maximum
+                if (spellsContainer.querySelectorAll('.array-item').length >= 4) {
+                    const addBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
+                    if (addBtn) {
+                        addBtn.disabled = true;
+                    }
+                }
+                
+                updateJsonPreview();
+            }
+        }
+        
+        // Function to reset spell fields
+        function resetSpellFields(stateIndex, spellIndex) {
+            document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`).checked = false;
+            document.getElementById(`state-spell-id-container-${stateIndex}-${spellIndex}`).classList.add('disabled');
+            document.getElementById(`state-spell-id-${stateIndex}-${spellIndex}`).value = '';
+            
+            document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`).checked = false;
+            document.getElementById(`state-spell-bits-container-${stateIndex}-${spellIndex}`).classList.add('disabled');
+            document.getElementById(`state-spell-bits-flags-${stateIndex}-${spellIndex}`).value = '';
+            document.getElementById(`state-spell-bits-levels-${stateIndex}-${spellIndex}`).value = '';
+            document.getElementById(`state-spell-bits-schools-${stateIndex}-${spellIndex}`).value = '';
+            
+            updateJsonPreview();
+        }
+        
+        // Function to reset state fields
+        function resetStateFields(stateIndex) {
+            // Reset all checkboxes and inputs for the state
+            document.querySelectorAll(`[id^=state-][id$=-checkbox-${stateIndex}]`).forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            document.querySelectorAll(`[id^=state-][id$=-container-${stateIndex}]`).forEach(container => {
+                container.classList.add('disabled');
+            });
+            
+            document.querySelectorAll(`[id^=state-][id$=-${stateIndex}]`).forEach(input => {
+                if (input.tagName === 'INPUT' && !input.id.includes('checkbox')) {
+                    input.value = '';
+                }
+            });
+            
+            // Reset spell fields
+            resetSpellFields(stateIndex, 0);
+            
+            updateJsonPreview();
+        }
+        
+        // Function to renumber states after removal
+        function renumberStates() {
+            const states = document.querySelectorAll('.state-item');
+            states.forEach((state, index) => {
+                // Update the heading
+                state.querySelector('h4').textContent = `State #${index + 1}`;
+                
+                // Update all IDs and data attributes
+                state.querySelectorAll('[id]').forEach(el => {
+                    // Replace old index with new index in IDs
+                    const oldId = el.id;
+                    // Fix: Use a more reliable way to update IDs
+                    if (oldId.includes('state-')) {
+                        if (oldId.includes('spell')) {
+                            // Handle spell IDs which have two indexes (state and spell)
+                            const matches = oldId.match(/^(.*-)\d+(-.*-)\d+$/);
+                            if (matches && matches.length === 3) {
+                                el.id = matches[1] + index + matches[2] + oldId.match(/\d+$/)[0];
+                            }
+                        } else {
+                            // Handle regular state IDs with one index
+                            const matches = oldId.match(/^(.*-)\d+$/);
+                            if (matches && matches.length === 2) {
+                                el.id = matches[1] + index;
+                            }
+                        }
+                    }
+                });
+                
+                // Update data-state-index attributes
+                state.querySelectorAll('[data-state-index]').forEach(el => {
+                    el.setAttribute('data-state-index', index);
+                });
+                
+                // Update related event listeners
+                setupStateFields(index);
+            });
+        }
+        
+        // Setup for adding new states
+        document.getElementById('add-state').addEventListener('click', function() {
+            const statesContainer = document.getElementById('states-items');
+            const statesCount = statesContainer.querySelectorAll('.state-item').length;
+            
+            if (statesCount < 4) {
+                const newStateIndex = statesCount;
+                const stateTemplate = document.querySelector('.state-item').cloneNode(true);
+                
+                // Update ID attributes and heading
+                stateTemplate.querySelector('h4').textContent = `State #${newStateIndex + 1}`;
+                
+                // Update all IDs within the template
+                stateTemplate.querySelectorAll('[id]').forEach(el => {
+                    const oldId = el.id;
+                    const parts = oldId.split('-');
+                    const indexPosition = oldId.includes('spell') ? oldId.lastIndexOf('-') - 2 : oldId.lastIndexOf('-');
+                    const newId = oldId.substring(0, indexPosition) + '-' + newStateIndex + oldId.substring(oldId.lastIndexOf('-'));
+                    el.id = newId;
+                });
+                
+                // Update data-state-index attributes
+                stateTemplate.querySelectorAll('[data-state-index]').forEach(el => {
+                    el.setAttribute('data-state-index', newStateIndex);
+                });
+                
+                // Reset all checkboxes and inputs
+                stateTemplate.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                stateTemplate.querySelectorAll('.field-input').forEach(container => {
+                    if (!container.id.includes('state-spells-items')) {
+                        container.classList.add('disabled');
+                    }
+                });
+                
+                stateTemplate.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
+                    input.value = '';
+                });
+                
+                // Handle spell items container
+                const spellItemsContainer = stateTemplate.querySelector(`[id^=state-spells-items-]`);
+                if (spellItemsContainer) {
+                    spellItemsContainer.id = `state-spells-items-${newStateIndex}`;
+                    // Keep only one spell item template
+                    const firstSpellItem = spellItemsContainer.querySelector('.array-item');
+                    while (spellItemsContainer.children.length > 1) {
+                        spellItemsContainer.removeChild(spellItemsContainer.lastChild);
+                    }
+                }
+                
+                statesContainer.appendChild(stateTemplate);
+                
+                // Setup the new state's fields
+                setupStateFields(newStateIndex);
+                
+                // Disable add button if we reached the maximum
+                if (statesContainer.querySelectorAll('.state-item').length >= 4) {
+                    this.disabled = true;
+                }
+                
+                updateJsonPreview();
+            }
+        });
+        
+        // Initialize the first state
+        setupStateFields(0);
 
-        setupArrayField('add-state', 'states-items', 'state-item');
-        setupArrayField('add-spell', 'spells-items', 'spell-item');
+        // Array field functionality - remove older functions that aren't needed anymore
+        // setupArrayField('add-state', 'states-items', 'state-item');
+        // setupArrayField('add-spell', 'spells-items', 'spell-item');
 
         // JSON preview toggle
         document.getElementById('toggle-json').addEventListener('click', function() {
             const jsonPreview = document.getElementById('json-preview');
             jsonPreview.classList.toggle('show');
             this.textContent = jsonPreview.classList.contains('show') ? 
-                translations[currentLang].hideJsonCode : translations[currentLang].showJsonCode;
+                translations.hideJsonCode : translations.showJsonCode;
             updateJsonPreview();
         });
 
         // Required fields validation and Save button enable/disable
         function validateRequiredFields() {
+            const subtype = document.getElementById('object-subtype').value;
             const value = document.getElementById('value').value;
             const density = document.getElementById('density').value;
             const properties = document.getElementById('properties').value;
             
-            return value !== '' && density !== '' && properties !== '';
+            return subtype !== '' && value !== '' && density !== '' && properties !== '';
         }
 
         function updateSaveButtonState() {
@@ -691,29 +1081,34 @@
         document.getElementById('sound-loop').addEventListener('input', updateJsonPreview);
         document.getElementById('name').addEventListener('input', updateJsonPreview);
         document.getElementById('enabled').addEventListener('change', updateJsonPreview);
+        document.getElementById('object-subtype').addEventListener('input', function() {
+            updateSaveButtonState();
+            updateJsonPreview();
+        });
 
-        // Generate JSON preview
+        // Generate JSON preview - updated to handle the complex states structure
         function updateJsonPreview() {
             const jsonObj = buildJsonObject();
             const jsonString = JSON.stringify(jsonObj, null, 2);
             document.getElementById('json-preview').textContent = jsonString;
+            updateSaveButtonState(); // Update save button state when JSON is updated
         }
 
         function buildJsonObject() {
-            const jsonObj = {};
+            const innerJsonObj = {};
             
             // Required fields
-            jsonObj.value = parseInt(document.getElementById('value').value) || 0;
-            jsonObj.density = parseInt(document.getElementById('density').value) || 0;
-            jsonObj.properties = document.getElementById('properties').value;
+            innerJsonObj.value = parseInt(document.getElementById('value').value) || 0;
+            innerJsonObj.density = parseInt(document.getElementById('density').value) || 0;
+            innerJsonObj.properties = [document.getElementById('properties').value];
             
             // Optional fields
             if (document.getElementById('enabled-checkbox').checked) {
-                jsonObj.enabled = document.getElementById('enabled').value === 'true';
+                innerJsonObj.enabled = document.getElementById('enabled').value === 'true';
             }
             
             if (document.getElementById('name-checkbox').checked) {
-                jsonObj.name = document.getElementById('name').value;
+                innerJsonObj.name = document.getElementById('name').value;
             }
             
             if (document.getElementById('sound-checkbox').checked) {
@@ -721,43 +1116,179 @@
                 const loop = document.getElementById('sound-loop').value;
                 
                 if (enter || loop) {
-                    jsonObj.sound = {};
-                    if (enter) jsonObj.sound.enter = enter;
-                    if (loop) jsonObj.sound.loop = loop;
+                    innerJsonObj.sound = {};
+                    if (enter) innerJsonObj.sound.enter = enter;
+                    if (loop) innerJsonObj.sound.loop = loop;
                 }
             }
             
+            // Handle states array
             if (document.getElementById('states-checkbox').checked) {
-                const stateInputs = document.querySelectorAll('.state-item');
-                const states = [];
-                
-                stateInputs.forEach(input => {
-                    if (input.value) {
-                        states.push(parseInt(input.value));
+                const stateElements = document.querySelectorAll('.state-item');
+                if (stateElements.length > 0) {
+                    innerJsonObj.states = [];
+                    
+                    stateElements.forEach((stateElement, stateIndex) => {
+                        const stateObj = {};
+                        
+                        // Process all optional fields in the state
+                        if (document.getElementById(`state-morale-checkbox-${stateIndex}`).checked) {
+                            stateObj.morale = parseInt(document.getElementById(`state-morale-${stateIndex}`).value) || 0;
+                        }
+                        
+                        if (document.getElementById(`state-luck-checkbox-${stateIndex}`).checked) {
+                            stateObj.luck = parseInt(document.getElementById(`state-luck-${stateIndex}`).value) || 0;
+                        }
+                        
+                        // Handle spells array within state
+                        if (document.getElementById(`state-spells-checkbox-${stateIndex}`).checked) {
+                            const spellElements = document.querySelectorAll(`#state-spells-items-${stateIndex} .array-item`);
+                            if (spellElements.length > 0) {
+                                stateObj.spells = [];
+                                
+                                spellElements.forEach((spellElement, spellIndex) => {
+                                    const spellObj = {};
+                                    
+                                    // Add id if checked
+                                    if (document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`)) {
+                                        const idCheckbox = document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`);
+                                        if (idCheckbox && idCheckbox.checked) {
+                                            const idInput = document.getElementById(`state-spell-id-${stateIndex}-${spellIndex}`);
+                                            if (idInput) {
+                                                spellObj.id = parseInt(idInput.value) || 0;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Add bits if checked
+                                    if (document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`)) {
+                                        const bitsCheckbox = document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`);
+                                        if (bitsCheckbox && bitsCheckbox.checked) {
+                                            spellObj.bits = {};
+                                            
+                                            const flagsInput = document.getElementById(`state-spell-bits-flags-${stateIndex}-${spellIndex}`);
+                                            const levelsInput = document.getElementById(`state-spell-bits-levels-${stateIndex}-${spellIndex}`);
+                                            const schoolsInput = document.getElementById(`state-spell-bits-schools-${stateIndex}-${spellIndex}`);
+                                            
+                                            if (flagsInput && flagsInput.value) spellObj.bits.flags = parseInt(flagsInput.value);
+                                            if (levelsInput && levelsInput.value) spellObj.bits.levels = parseInt(levelsInput.value);
+                                            if (schoolsInput && schoolsInput.value) spellObj.bits.schools = parseInt(schoolsInput.value);
+                                            
+                                            // Remove empty bits object
+                                            if (Object.keys(spellObj.bits).length === 0) {
+                                                delete spellObj.bits;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Only add non-empty spell objects
+                                    if (Object.keys(spellObj).length > 0) {
+                                        stateObj.spells.push(spellObj);
+                                    }
+                                });
+                                
+                                // Remove spells array if empty
+                                if (stateObj.spells.length === 0) {
+                                    delete stateObj.spells;
+                                }
+                            }
+                        }
+                        
+                        if (document.getElementById(`state-spellPoints-checkbox-${stateIndex}`)) {
+                            const spellPointsCheckbox = document.getElementById(`state-spellPoints-checkbox-${stateIndex}`);
+                            if (spellPointsCheckbox && spellPointsCheckbox.checked) {
+                                const spellPointsInput = document.getElementById(`state-spellPoints-${stateIndex}`);
+                                if (spellPointsInput) {
+                                    stateObj.spellPoints = parseInt(spellPointsInput.value) || 0;
+                                }
+                            }
+                        }
+                        
+                        if (document.getElementById(`state-experience-checkbox-${stateIndex}`)) {
+                            const experienceCheckbox = document.getElementById(`state-experience-checkbox-${stateIndex}`);
+                            if (experienceCheckbox && experienceCheckbox.checked) {
+                                const experienceInput = document.getElementById(`state-experience-${stateIndex}`);
+                                if (experienceInput) {
+                                    stateObj.experience = parseInt(experienceInput.value) || 0;
+                                }
+                            }
+                        }
+                        
+                        if (document.getElementById(`state-skills-checkbox-${stateIndex}`)) {
+                            const skillsCheckbox = document.getElementById(`state-skills-checkbox-${stateIndex}`);
+                            if (skillsCheckbox && skillsCheckbox.checked) {
+                                const primarySkillsInput = document.getElementById(`state-skills-primary-${stateIndex}`);
+                                if (primarySkillsInput && primarySkillsInput.value) {
+                                    stateObj.skills = {
+                                        primary: primarySkillsInput.value.split(',').map(val => parseInt(val.trim()) || 0)
+                                    };
+                                }
+                            }
+                        }
+                        
+                        if (document.getElementById(`state-guardians-checkbox-${stateIndex}`)) {
+                            const guardiansCheckbox = document.getElementById(`state-guardians-checkbox-${stateIndex}`);
+                            if (guardiansCheckbox && guardiansCheckbox.checked) {
+                                const countInput = document.getElementById(`state-guardians-count-${stateIndex}`);
+                                const typeInput = document.getElementById(`state-guardians-type-${stateIndex}`);
+                                
+                                if ((countInput && countInput.value) || (typeInput && typeInput.value)) {
+                                    stateObj.guardians = {};
+                                    if (countInput && countInput.value) {
+                                        stateObj.guardians.count = countInput.value.split(',').map(val => parseInt(val.trim()) || 0);
+                                    }
+                                    if (typeInput && typeInput.value) {
+                                        stateObj.guardians.type = typeInput.value.split(',').map(val => parseInt(val.trim()));
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (document.getElementById(`state-resources-checkbox-${stateIndex}`)) {
+                            const resourcesCheckbox = document.getElementById(`state-resources-checkbox-${stateIndex}`);
+                            if (resourcesCheckbox && resourcesCheckbox.checked) {
+                                const resourcesInput = document.getElementById(`state-resources-${stateIndex}`);
+                                if (resourcesInput && resourcesInput.value) {
+                                    stateObj.resources = resourcesInput.value.split(',').map(val => parseInt(val.trim()) || 0);
+                                }
+                            }
+                        }
+                        
+                        if (document.getElementById(`state-chance-checkbox-${stateIndex}`)) {
+                            const chanceCheckbox = document.getElementById(`state-chance-checkbox-${stateIndex}`);
+                            if (chanceCheckbox && chanceCheckbox.checked) {
+                                const chanceInput = document.getElementById(`state-chance-${stateIndex}`);
+                                if (chanceInput) {
+                                    stateObj.chance = parseInt(chanceInput.value) || 0;
+                                }
+                            }
+                        }
+                        
+                        // Only add non-empty state objects
+                        if (Object.keys(stateObj).length > 0) {
+                            innerJsonObj.states.push(stateObj);
+                        }
+                    });
+                    
+                    // Remove states array if empty
+                    if (innerJsonObj.states.length === 0) {
+                        delete innerJsonObj.states;
                     }
-                });
-                
-                if (states.length > 0) {
-                    jsonObj.states = states;
                 }
             }
             
-            if (document.getElementById('spells-checkbox').checked) {
-                const spellInputs = document.querySelectorAll('.spell-item');
-                const spells = [];
-                
-                spellInputs.forEach(input => {
-                    if (input.value) {
-                        spells.push(parseInt(input.value));
-                    }
-                });
-                
-                if (spells.length > 0) {
-                    jsonObj.spells = spells;
-                }
-            }
+            // Wrap in the required structure
+            const subtype = document.getElementById('object-subtype').value || "13";
             
-            return jsonObj;
+            return {
+                "RMG": {
+                    "objectGeneration": {
+                        "16": {
+                            [subtype]: innerJsonObj
+                        }
+                    }
+                }
+            };
         }
 
         // Save file functionality
@@ -774,6 +1305,7 @@
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+            URL.revokeObjectURL(a.href); // Clean up the created URL
         });
 
         // PWA installation
@@ -815,12 +1347,12 @@
             theme_color: "#1f2937",
             icons: [
                 {
-                    src: "/api/placeholder/192/192",
+                    src: "./icon-192.png",
                     sizes: "192x192",
                     type: "image/png"
                 },
                 {
-                    src: "/api/placeholder/512/512", 
+                    src: "./icon-512.png", 
                     sizes: "512x512",
                     type: "image/png"
                 }
@@ -840,10 +1372,15 @@
                 console.log('Service Worker would be registered here in a real PWA');
             });
         }
+        
+        // Initialize UI - load default language first
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLanguage(currentLang);
+            document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+        });
 
-        // Initialize UI
-        updateLanguage(currentLang);
-        document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+        // Update initial UI state (fallback if language load fails)
+        updateJsonPreview();
     </script>
 </body>
 </html>
