@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1f2937">
+    <title>Creature Bank Editor for Heroes 3: ERA</title>
+    <link rel="manifest" href="#" id="manifestPlaceholder">
+    <link rel="icon" href="/api/placeholder/64/64" type="image/png">
+    <style>
+        :root {
+            --primary-bg: #1f2937;
+            --secondary-bg: #111827;
+            --tertiary-bg: #374151;
+            --text-color: #f3f4f6;
+            --input-bg: #111827;
+            --border-color: #4b5563;
+            --button-bg: #3b82f6;
+            --button-hover: #2563eb;
+            --indented-bg: #111827;
+            --indented-border: #4b5563;
+            --disabled-bg: #4b5563;
+            --disabled-text: #9ca3af;
+        }
+
+        [data-theme="light"] {
+            --primary-bg: #f3f4f6;
+            --secondary-bg: #e5e7eb;
+            --tertiary-bg: #d1d5db;
+            --text-color: #1f2937;
+            --input-bg: #ffffff;
+            --border-color: #9ca3af;
+            --button-bg: #3b82f6;
+            --button-hover: #2563eb;
+            --indented-bg: #e5e7eb;
+            --indented-border: #9ca3af;
+            --disabled-bg: #d1d5db;
+            --disabled-text: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .title-container h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .browser-support {
+            margin-top: 10px;
+            font-size: 12px;
+            padding: 8px;
+            background-color: var(--indented-bg);
+            border: 1px solid var(--indented-border);
+            border-radius: 4px;
+            max-width: 300px;
+        }
+
+        button {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+        }
+
+        .theme-toggle, .lang-selector {
+            position: relative;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px 0;
+            z-index: 100;
+            min-width: 150px;
+            display: none;
+        }
+
+        .dropdown.show {
+            display: block;
+        }
+
+        .dropdown button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: none;
+            color: var(--text-color);
+            padding: 8px 16px;
+        }
+
+        .dropdown button:hover {
+            background-color: var(--tertiary-bg);
+        }
+
+        .editor-container {
+            background-color: var(--secondary-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .field-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: var(--indented-bg);
+            border: 1px solid var(--indented-border);
+        }
+
+        .field-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .field-label {
+            flex: 0 0 200px;
+            display: flex;
+            align-items: center;
+        }
+
+        .help-icon {
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--button-bg);
+            position: relative;
+        }
+
+        .tooltip {
+            position: absolute;
+            top: -10px;
+            left: 25px;
+            background-color: var(--tertiary-bg);
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 250px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            display: none;
+        }
+
+        .help-icon:hover .tooltip {
+            display: block;
+        }
+
+        .field-input {
+            flex: 1;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .array-field {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .array-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .array-item input {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .add-item {
+            margin-top: 10px;
+        }
+
+        .bottom-controls {
+            margin-top: 20px;
+        }
+
+        .save-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .save-button:disabled {
+            background-color: var(--disabled-bg);
+            color: var(--disabled-text);
+            cursor: not-allowed;
+        }
+
+        .json-preview-toggle {
+            margin-bottom: 10px;
+        }
+
+        .json-preview {
+            background-color: var(--indented-bg);
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--indented-border);
+        }
+
+        .json-preview.show {
+            display: block;
+        }
+
+        .install-pwa {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+            }
+            
+            .header-controls {
+                margin-top: 15px;
+            }
+            
+            .field-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .field-label {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="title-container">
+            <h1 id="app-title">Creature Bank Editor for Heroes 3: ERA</h1>
+        </div>
+        <div>
+            <div class="header-controls">
+                <button id="install-pwa" class="install-pwa">Install PWA App</button>
+                <div class="theme-toggle">
+                    <button id="theme-toggle-btn">Dark Theme</button>
+                </div>
+                <div class="lang-selector">
+                    <button id="lang-selector-btn">English</button>
+                    <div class="dropdown" id="lang-dropdown">
+                        <button data-lang="en">English</button>
+                        <button data-lang="ru">Русский</button>
+                    </div>
+                </div>
+            </div>
+            <div class="browser-support" id="browser-support">
+                Primarily supported in Chromium-based browsers (Chrome, Edge, Opera, etc.). Firefox, Safari, and others work with limitations.
+            </div>
+        </div>
+    </header>
+
+    <div class="editor-container">
+        <!-- Required Fields -->
+        <div class="field-group">
+            <h3 id="required-fields-title">Required Fields</h3>
+            
+            <div class="field-row">
+                <div class="field-label">
+                    value <span class="help-icon">?
+                        <div class="tooltip" id="help-value">Loading help text...</div>
+                    </span>
+                </div>
+                <div class="field-input">
+                    <input type="number" id="value" min="0">
+                </div>
+            </div>
+            
+            <div class="field-row">
+                <div class="field-label">
+                    density <span class="help-icon">?
+                        <div class="tooltip" id="help-density">Loading help text...</div>
+                    </span>
+                </div>
+                <div class="field-input">
+                    <input type="number" id="density" min="0">
+                </div>
+            </div>
+            
+            <div class="field-row">
+                <div class="field-label">
+                    properties <span class="help-icon">?
+                        <div class="tooltip" id="help-properties">Loading help text...</div>
+                    </span>
+                </div>
+                <div class="field-input">
+                    <input type="text" id="properties">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Optional Fields -->
+        <div class="field-group">
+            <h3 id="optional-fields-title">Optional Fields</h3>
+            
+            <div class="field-row">
+                <div class="field-label">
+                    <input type="checkbox" id="enabled-checkbox">
+                    enabled <span class="help-icon">?
+                        <div class="tooltip" id="help-enabled">Loading help text...</div>
+                    </span>
+                </div>
+                <div class="field-input disabled" id="enabled-container">
+                    <select id="enabled">
+                        <option value="true">true</option>
+                        <option value="false">false</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="field-row">
+                <div class="field-label">
+                    <input type="checkbox" id="name-checkbox">
+                    name <span class="help-icon">?
+                        <div class="tooltip" id="help-name">Loading help text...</div>
+                    </span>
+                </div>
+                <div class="field-input disabled" id="name-container">
+                    <input type="text" id="name">
+                </div>
+            </div>
+            
+            <div class="field-row">
+                <div class="field-label">
+                    <input type="checkbox" id="sound-checkbox">
+                    sound <span class="help-icon">?
+                        <div class="tooltip" id="help-sound">Loading help text...</div>
+                    </span>
+                </div>
+                <div class="field-input disabled" id="sound-container">
+                    <div class="field-row">
+                        <div class="field-label">enter</div>
+                        <div class="field-input">
+                            <input type="text" id="sound-enter" placeholder="filename.wav">
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-label">loop</div>
+                        <div class="field-input">
+                            <input type="text" id="sound-loop" placeholder="filename.wav">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="field-row">
+                <div class="field-label">
+                    <input type="checkbox" id="states-checkbox">
+                    states <span class="help-icon">?
+                        <div class="tooltip" id="help-states">Loading help text...</div>
+                    </span>
+                </div>
+                <div class="field-input disabled" id="states-container">
+                    <div id="states-items">
+                        <div class="array-item">
+                            <input type="number" class="state-item" min="0">
+                            <button class="remove-item">-</button>
+                        </div>
+                    </div>
+                    <button class="add-item" id="add-state">+</button>
+                </div>
+            </div>
+            
+            <div class="field-row">
+                <div class="field-label">
+                    <input type="checkbox" id="spells-checkbox">
+                    spells <span class="help-icon">?
+                        <div class="tooltip" id="help-spells">Loading help text...</div>
+                    </span>
+                </div>
+                <div class="field-input disabled" id="spells-container">
+                    <div id="spells-items">
+                        <div class="array-item">
+                            <input type="number" class="spell-item" min="0">
+                            <button class="remove-item">-</button>
+                        </div>
+                    </div>
+                    <button class="add-item" id="add-spell">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-controls">
+        <button class="save-button" id="save-file" disabled>Save File</button>
+        
+        <button class="json-preview-toggle" id="toggle-json">Show JSON Code</button>
+        <div class="json-preview" id="json-preview"></div>
+    </div>
+
+    <script>
+        // Localization setup
+        const translations = {
+            en: {
+                appTitle: "Creature Bank Editor for Heroes 3: ERA",
+                installPwa: "Install PWA App",
+                darkTheme: "Dark Theme",
+                lightTheme: "Light Theme",
+                currentLanguage: "English",
+                browserSupport: "Primarily supported in Chromium-based browsers (Chrome, Edge, Opera, etc.). Firefox, Safari, and others work with limitations.",
+                requiredFields: "Required Fields",
+                optionalFields: "Optional Fields",
+                saveFile: "Save File",
+                showJsonCode: "Show JSON Code",
+                hideJsonCode: "Hide JSON Code",
+                // Help texts would typically be loaded from a help.txt file, mocking them here
+                helpValue: "The numeric value of the creature bank.",
+                helpDensity: "Determines the density of creatures in the bank.",
+                helpProperties: "Special properties of the creature bank.",
+                helpEnabled: "Determines if the creature bank is enabled.",
+                helpName: "The name of the creature bank.",
+                helpSound: "Sound files associated with the creature bank.",
+                helpStates: "Different states of the creature bank.",
+                helpSpells: "Spells associated with the creature bank."
+            },
+            ru: {
+                appTitle: "Редактор Банка Существ для Heroes 3: ERA",
+                installPwa: "Установить PWA приложением",
+                darkTheme: "Темная тема",
+                lightTheme: "Светлая тема",
+                currentLanguage: "Русский",
+                browserSupport: "Поддерживаются в основном Chromium-браузеры (Chrome, Edge, Opera и др.). Firefox, Safari и др. работают с ограничениями.",
+                requiredFields: "Обязательные поля",
+                optionalFields: "Опциональные поля",
+                saveFile: "Сохранить файл",
+                showJsonCode: "Показать JSON код",
+                hideJsonCode: "Скрыть JSON код",
+                // Help texts in Russian
+                helpValue: "Числовое значение банка существ.",
+                helpDensity: "Определяет плотность существ в банке.",
+                helpProperties: "Специальные свойства банка существ.",
+                helpEnabled: "Определяет, включен ли банк существ.",
+                helpName: "Название банка существ.",
+                helpSound: "Звуковые файлы, связанные с банком существ.",
+                helpStates: "Различные состояния банка существ.",
+                helpSpells: "Заклинания, связанные с банком существ."
+            }
+        };
+
+        let currentLang = 'en';
+        let isDarkTheme = true;
+
+        // Function to update the UI language
+        function updateLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('app-title').textContent = translations[lang].appTitle;
+            document.getElementById('install-pwa').textContent = translations[lang].installPwa;
+            document.getElementById('theme-toggle-btn').textContent = isDarkTheme ? 
+                translations[lang].darkTheme : translations[lang].lightTheme;
+            document.getElementById('lang-selector-btn').textContent = translations[lang].currentLanguage;
+            document.getElementById('browser-support').textContent = translations[lang].browserSupport;
+            document.getElementById('required-fields-title').textContent = translations[lang].requiredFields;
+            document.getElementById('optional-fields-title').textContent = translations[lang].optionalFields;
+            document.getElementById('save-file').textContent = translations[lang].saveFile;
+            
+            const jsonToggleBtn = document.getElementById('toggle-json');
+            jsonToggleBtn.textContent = jsonToggleBtn.textContent === translations['en'].showJsonCode ? 
+                translations[lang].showJsonCode : translations[lang].hideJsonCode;
+            
+            // Update help texts
+            document.getElementById('help-value').textContent = translations[lang].helpValue;
+            document.getElementById('help-density').textContent = translations[lang].helpDensity;
+            document.getElementById('help-properties').textContent = translations[lang].helpProperties;
+            document.getElementById('help-enabled').textContent = translations[lang].helpEnabled;
+            document.getElementById('help-name').textContent = translations[lang].helpName;
+            document.getElementById('help-sound').textContent = translations[lang].helpSound;
+            document.getElementById('help-states').textContent = translations[lang].helpStates;
+            document.getElementById('help-spells').textContent = translations[lang].helpSpells;
+        }
+
+        // Language selector functionality
+        document.getElementById('lang-selector-btn').addEventListener('click', function() {
+            document.getElementById('lang-dropdown').classList.toggle('show');
+        });
+
+        document.querySelectorAll('#lang-dropdown button').forEach(button => {
+            button.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                updateLanguage(lang);
+                document.getElementById('lang-dropdown').classList.remove('show');
+            });
+        });
+
+        // Theme toggle functionality
+        document.getElementById('theme-toggle-btn').addEventListener('click', function() {
+            isDarkTheme = !isDarkTheme;
+            document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+            this.textContent = isDarkTheme ? 
+                translations[currentLang].darkTheme : translations[currentLang].lightTheme;
+        });
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('#lang-selector-btn')) {
+                const dropdown = document.getElementById('lang-dropdown');
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+
+        // Optional fields toggle
+        function setupOptionalField(checkboxId, containerId) {
+            const checkbox = document.getElementById(checkboxId);
+            const container = document.getElementById(containerId);
+            
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    container.classList.remove('disabled');
+                } else {
+                    container.classList.add('disabled');
+                }
+                updateJsonPreview();
+            });
+        }
+
+        setupOptionalField('enabled-checkbox', 'enabled-container');
+        setupOptionalField('name-checkbox', 'name-container');
+        setupOptionalField('sound-checkbox', 'sound-container');
+        setupOptionalField('states-checkbox', 'states-container');
+        setupOptionalField('spells-checkbox', 'spells-container');
+
+        // Array field functionality (states and spells)
+        function setupArrayField(addButtonId, itemsContainerId, itemClass, maxItems = 4) {
+            const addButton = document.getElementById(addButtonId);
+            const itemsContainer = document.getElementById(itemsContainerId);
+            
+            addButton.addEventListener('click', function() {
+                const items = itemsContainer.querySelectorAll(`.${itemClass}`);
+                if (items.length < maxItems) {
+                    const newItem = document.createElement('div');
+                    newItem.className = 'array-item';
+                    newItem.innerHTML = `
+                        <input type="number" class="${itemClass}" min="0">
+                        <button class="remove-item">-</button>
+                    `;
+                    itemsContainer.appendChild(newItem);
+                    
+                    newItem.querySelector('.remove-item').addEventListener('click', function() {
+                        newItem.remove();
+                        updateJsonPreview();
+                    });
+                    
+                    newItem.querySelector(`.${itemClass}`).addEventListener('input', updateJsonPreview);
+                }
+                
+                if (itemsContainer.querySelectorAll(`.${itemClass}`).length >= maxItems) {
+                    addButton.disabled = true;
+                }
+                
+                updateJsonPreview();
+            });
+            
+            // Add event listener to the initial remove button
+            const initialRemoveBtn = itemsContainer.querySelector('.remove-item');
+            if (initialRemoveBtn) {
+                initialRemoveBtn.addEventListener('click', function() {
+                    const itemElement = this.closest('.array-item');
+                    const input = itemElement.querySelector(`.${itemClass}`);
+                    input.value = '';
+                    updateJsonPreview();
+                });
+            }
+            
+            // Add event listener to the initial input
+            const initialInput = itemsContainer.querySelector(`.${itemClass}`);
+            if (initialInput) {
+                initialInput.addEventListener('input', updateJsonPreview);
+            }
+        }
+
+        setupArrayField('add-state', 'states-items', 'state-item');
+        setupArrayField('add-spell', 'spells-items', 'spell-item');
+
+        // JSON preview toggle
+        document.getElementById('toggle-json').addEventListener('click', function() {
+            const jsonPreview = document.getElementById('json-preview');
+            jsonPreview.classList.toggle('show');
+            this.textContent = jsonPreview.classList.contains('show') ? 
+                translations[currentLang].hideJsonCode : translations[currentLang].showJsonCode;
+            updateJsonPreview();
+        });
+
+        // Required fields validation and Save button enable/disable
+        function validateRequiredFields() {
+            const value = document.getElementById('value').value;
+            const density = document.getElementById('density').value;
+            const properties = document.getElementById('properties').value;
+            
+            return value !== '' && density !== '' && properties !== '';
+        }
+
+        function updateSaveButtonState() {
+            document.getElementById('save-file').disabled = !validateRequiredFields();
+        }
+
+        document.getElementById('value').addEventListener('input', function() {
+            updateSaveButtonState();
+            updateJsonPreview();
+        });
+        
+        document.getElementById('density').addEventListener('input', function() {
+            updateSaveButtonState();
+            updateJsonPreview();
+        });
+        
+        document.getElementById('properties').addEventListener('input', function() {
+            updateSaveButtonState();
+            updateJsonPreview();
+        });
+
+        // Sound field validation (.wav extension)
+        function validateWavFile(input) {
+            if (input.value && !input.value.toLowerCase().endsWith('.wav')) {
+                input.value = input.value + '.wav';
+            }
+            updateJsonPreview();
+        }
+
+        document.getElementById('sound-enter').addEventListener('blur', function() {
+            validateWavFile(this);
+        });
+        
+        document.getElementById('sound-loop').addEventListener('blur', function() {
+            validateWavFile(this);
+        });
+
+        document.getElementById('sound-enter').addEventListener('input', updateJsonPreview);
+        document.getElementById('sound-loop').addEventListener('input', updateJsonPreview);
+        document.getElementById('name').addEventListener('input', updateJsonPreview);
+        document.getElementById('enabled').addEventListener('change', updateJsonPreview);
+
+        // Generate JSON preview
+        function updateJsonPreview() {
+            const jsonObj = buildJsonObject();
+            const jsonString = JSON.stringify(jsonObj, null, 2);
+            document.getElementById('json-preview').textContent = jsonString;
+        }
+
+        function buildJsonObject() {
+            const jsonObj = {};
+            
+            // Required fields
+            jsonObj.value = parseInt(document.getElementById('value').value) || 0;
+            jsonObj.density = parseInt(document.getElementById('density').value) || 0;
+            jsonObj.properties = document.getElementById('properties').value;
+            
+            // Optional fields
+            if (document.getElementById('enabled-checkbox').checked) {
+                jsonObj.enabled = document.getElementById('enabled').value === 'true';
+            }
+            
+            if (document.getElementById('name-checkbox').checked) {
+                jsonObj.name = document.getElementById('name').value;
+            }
+            
+            if (document.getElementById('sound-checkbox').checked) {
+                const enter = document.getElementById('sound-enter').value;
+                const loop = document.getElementById('sound-loop').value;
+                
+                if (enter || loop) {
+                    jsonObj.sound = {};
+                    if (enter) jsonObj.sound.enter = enter;
+                    if (loop) jsonObj.sound.loop = loop;
+                }
+            }
+            
+            if (document.getElementById('states-checkbox').checked) {
+                const stateInputs = document.querySelectorAll('.state-item');
+                const states = [];
+                
+                stateInputs.forEach(input => {
+                    if (input.value) {
+                        states.push(parseInt(input.value));
+                    }
+                });
+                
+                if (states.length > 0) {
+                    jsonObj.states = states;
+                }
+            }
+            
+            if (document.getElementById('spells-checkbox').checked) {
+                const spellInputs = document.querySelectorAll('.spell-item');
+                const spells = [];
+                
+                spellInputs.forEach(input => {
+                    if (input.value) {
+                        spells.push(parseInt(input.value));
+                    }
+                });
+                
+                if (spells.length > 0) {
+                    jsonObj.spells = spells;
+                }
+            }
+            
+            return jsonObj;
+        }
+
+        // Save file functionality
+        document.getElementById('save-file').addEventListener('click', function() {
+            if (!validateRequiredFields()) return;
+            
+            const jsonObj = buildJsonObject();
+            const jsonString = JSON.stringify(jsonObj, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'creature_bank.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+
+        // PWA installation
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show the install button
+            const installButton = document.getElementById('install-pwa');
+            installButton.style.display = 'block';
+            
+            installButton.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+                
+                deferredPrompt = null;
+                installButton.style.display = 'none';
+            });
+        });
+
+        // Generate manifest dynamically
+        const manifestData = {
+            name: "Creature Bank Editor for Heroes 3: ERA",
+            short_name: "Creature Bank Editor",
+            description: "JSON editor for Heroes 3: ERA creature banks",
+            start_url: "./",
+            display: "standalone",
+            background_color: "#1f2937",
+            theme_color: "#1f2937",
+            icons: [
+                {
+                    src: "/api/placeholder/192/192",
+                    sizes: "192x192",
+                    type: "image/png"
+                },
+                {
+                    src: "/api/placeholder/512/512", 
+                    sizes: "512x512",
+                    type: "image/png"
+                }
+            ]
+        };
+
+        const manifestString = JSON.stringify(manifestData);
+        const manifestBlob = new Blob([manifestString], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.getElementById('manifestPlaceholder').href = manifestURL;
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // In a real app, you would register a real service worker file
+                // For this demo, we'll just log to console
+                console.log('Service Worker would be registered here in a real PWA');
+            });
+        }
+
+        // Initialize UI
+        updateLanguage(currentLang);
+        document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+    </script>
+</body>
+</html>

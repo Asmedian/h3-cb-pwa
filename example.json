@@ -1,0 +1,93 @@
+{
+	"RMG": {
+		"objectGeneration": {
+			"16": {
+				"13": {
+                    "value": 10000,
+                    "density": 100,
+                    "properties": [
+                        "CB15.def 100011111000111111111111111111111111111111111111 010000000000000000000000000000000000000000000000 000000100 000000100 16 47 1 0"
+                    ],
+                    "enabled": true,
+                    "name":"creature bank name",
+                    "sound": {
+                        "enter": "SORCENTR.wav",
+                        "loop": "SORCERESSLOOP.wav"
+                    },
+                    "states":[
+                        {
+                            "morale":2,
+                            "luck":-2,
+                            "spells":[
+                                {
+                                    "id":11,
+                                    "bits":{
+                                        "flags":16,
+                                        "levels":31,
+                                        "schools":15
+                                    }
+                                },
+                                {
+                                    "bits":{
+                                        "levels":8,
+                                        "schools":1
+                                    }
+                                }
+                            ],
+                            "spellPoints":11,
+                            "experience":2000,
+                            "skills":{
+                                "primary":[
+                                    0,
+                                    12,
+                                    1,
+                                    1
+                                ]
+                            },
+                            "artifactTypeCounts":[
+                                0,
+                                1,
+                                0,
+                                0
+                            ],
+                            "chance":100,
+                            "creatureRewardCount":0,
+                            "creatureRewardType":-1,
+                            "guardians":{
+                                "count":[
+                                    15,
+                                    15,
+                                    15,
+                                    15,
+                                    15,
+                                    15,
+                                    0
+                                ],
+                                "type":[
+                                    59,
+                                    59,
+                                    59,
+                                    59,
+                                    59,
+                                    59,
+                                    -1
+                                ]
+                            },
+                            "resources":[
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                2500,
+                                12
+                            ],
+                            "upgrade":0
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
