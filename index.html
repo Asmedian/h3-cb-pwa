@@ -435,20 +435,24 @@
                                 <div class="field-row">
                                     <div class="field-label">
                                         <input type="checkbox" id="state-morale-checkbox-0">
-                                        morale
+                                        morale <span class="help-icon">?
+                                            <div class="tooltip" id="help-state-morale-0">Loading help text...</div>
+                                        </span>
                                     </div>
                                     <div class="field-input disabled" id="state-morale-container-0">
-                                        <input type="number" id="state-morale-0">
+                                        <input type="number" id="state-morale-0" min="-3" max="3">
                                     </div>
                                 </div>
 
                                 <div class="field-row">
                                     <div class="field-label">
                                         <input type="checkbox" id="state-luck-checkbox-0">
-                                        luck
+                                        luck <span class="help-icon">?
+                                            <div class="tooltip" id="help-state-luck-0">Loading help text...</div>
+                                        </span>
                                     </div>
                                     <div class="field-input disabled" id="state-luck-container-0">
-                                        <input type="number" id="state-luck-0">
+                                        <input type="number" id="state-luck-0" min="-3" max="3">
                                     </div>
                                 </div>
 
@@ -643,16 +647,229 @@
             jsonToggleBtn.textContent = isShowingJson ? 
                 translations.hideJsonCode : translations.showJsonCode;
             
-            // Update help texts
-            document.getElementById('help-value').textContent = translations.helpValue;
-            document.getElementById('help-density').textContent = translations.helpDensity;
-            document.getElementById('help-properties').textContent = translations.helpProperties;
-            document.getElementById('help-enabled').textContent = translations.helpEnabled;
-            document.getElementById('help-name').textContent = translations.helpName;
-            document.getElementById('help-sound').textContent = translations.helpSound;
-            document.getElementById('help-states').textContent = translations.helpStates;
+            // Update field labels with translations
+            document.querySelectorAll('.field-label').forEach(label => {
+                // Skip labels that contain checkboxes
+                if (label.querySelector('input[type="checkbox"]')) return;
+                
+                // Get the text node (first text part of the label)
+                const textNode = Array.from(label.childNodes).find(node => 
+                    node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+                
+                if (textNode) {
+                    const key = textNode.textContent.trim();
+                    if (translations.fieldLabels && translations.fieldLabels[key]) {
+                        textNode.textContent = translations.fieldLabels[key] + ' ';
+                    }
+                }
+            });
+            
+            // Update checkbox labels
+            document.querySelectorAll('.field-label input[type="checkbox"]').forEach(checkbox => {
+                const label = checkbox.parentElement;
+                // Get the text node after the checkbox
+                const textNode = Array.from(label.childNodes).find(node => 
+                    node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+                
+                if (textNode) {
+                    const key = textNode.textContent.trim();
+                    if (translations.fieldLabels && translations.fieldLabels[key]) {
+                        textNode.textContent = ' ' + translations.fieldLabels[key] + ' ';
+                    }
+                }
+            });
+            
+            // Update basic help texts
+            document.getElementById('help-value').textContent = translations.helpTexts?.value || translations.helpValue;
+            document.getElementById('help-density').textContent = translations.helpTexts?.density || translations.helpDensity;
+            document.getElementById('help-properties').textContent = translations.helpTexts?.properties || translations.helpProperties;
+            document.getElementById('help-enabled').textContent = translations.helpTexts?.enabled || translations.helpEnabled;
+            document.getElementById('help-name').textContent = translations.helpTexts?.name || translations.helpName;
+            document.getElementById('help-sound').textContent = translations.helpTexts?.sound || translations.helpSound;
+            document.getElementById('help-states').textContent = translations.helpTexts?.states || translations.helpStates;
             document.getElementById('object-subtype-title').textContent = translations.objectSubtype;
-            document.getElementById('help-subtype').textContent = translations.helpSubtype;
+            document.getElementById('help-subtype').textContent = translations.helpTexts?.subtype || translations.helpSubtype;
+            
+            // Add detailed help texts for state fields
+            if (translations.helpTexts) {
+                // Update morale help
+                const moraleHelp = document.querySelectorAll('[id^="help-state-morale-"]');
+                moraleHelp.forEach(el => {
+                    if (el) el.textContent = translations.helpTexts.statesMorale;
+                });
+                
+                // Update luck help
+                const luckHelp = document.querySelectorAll('[id^="help-state-luck-"]');
+                luckHelp.forEach(el => {
+                    if (el) el.textContent = translations.helpTexts.statesLuck;
+                });
+                
+                // Update spells help
+                const spellsHelp = document.querySelectorAll('[id^="help-state-spells-"]');
+                spellsHelp.forEach(el => {
+                    if (el) el.textContent = translations.helpTexts.spells;
+                });
+                
+                // Update spell ID help
+                const spellIdHelp = document.querySelectorAll('[id^="help-state-spell-id-"]');
+                spellIdHelp.forEach(el => {
+                    if (el) el.textContent = translations.helpTexts.spellsId;
+                });
+                
+                // Update spell bits help
+                const spellBitsHelp = document.querySelectorAll('[id^="help-state-spell-bits-"]');
+                spellBitsHelp.forEach(el => {
+                    if (el) el.textContent = translations.helpTexts.spellsBits;
+                });
+                
+                // Update spell bits flags help
+                const spellBitsFlagsHelp = document.querySelectorAll('.field-label:contains("flags")');
+                spellBitsFlagsHelp.forEach(el => {
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.bitsFlags}</div></span>`;
+                    } else if (el.querySelector('.tooltip')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.bitsFlags;
+                    }
+                });
+                
+                // Update spell bits levels help
+                const spellBitsLevelsHelp = document.querySelectorAll('.field-label:contains("levels")');
+                spellBitsLevelsHelp.forEach(el => {
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.bitsLevels}</div></span>`;
+                    } else if (el.querySelector('.tooltip')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.bitsLevels;
+                    }
+                });
+                
+                // Update spell bits schools help
+                const spellBitsSchoolsHelp = document.querySelectorAll('.field-label:contains("schools")');
+                spellBitsSchoolsHelp.forEach(el => {
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.bitsSchools}</div></span>`;
+                    } else if (el.querySelector('.tooltip')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.bitsSchools;
+                    }
+                });
+                
+                // Update spell points help
+                const spellPointsHelp = document.querySelectorAll('.field-label:contains("spellPoints")');
+                spellPointsHelp.forEach(el => {
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.spellPoints}</div></span>`;
+                    } else if (el.querySelector('.tooltip')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.spellPoints;
+                    }
+                });
+                
+                // Update experience help
+                const experienceHelp = document.querySelectorAll('.field-label:contains("experience")');
+                experienceHelp.forEach(el => {
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.experience}</div></span>`;
+                    } else if (el.querySelector('.tooltip')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.experience;
+                    }
+                });
+                
+                // Update skills help
+                const skillsHelp = document.querySelectorAll('.field-label:contains("skills")');
+                skillsHelp.forEach(el => {
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon') && !el.querySelector('input[type="checkbox"]')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.skills}</div></span>`;
+                    } else if (el.querySelector('.tooltip')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.skills;
+                    }
+                });
+                
+                // Update skills primary help
+                const skillsPrimaryHelp = document.querySelectorAll('.field-label:contains("primary")');
+                skillsPrimaryHelp.forEach(el => {
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.skillsPrimary}</div></span>`;
+                    } else if (el.querySelector('.tooltip')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.skillsPrimary;
+                    }
+                });
+                
+                // Update guardians help
+                const guardiansHelp = document.querySelectorAll('.field-label:contains("guardians")');
+                guardiansHelp.forEach(el => {
+                    // Skip checkbox labels
+                    if (el.querySelector('input[type="checkbox"]')) return;
+                    
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.guardians}</div></span>`;
+                    } else if (el.querySelector('.tooltip')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.guardians;
+                    }
+                });
+                
+                // Update guardians count help
+                const guardiansCountHelp = document.querySelectorAll('.field-label:contains("count")');
+                guardiansCountHelp.forEach(el => {
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon') && el.textContent.includes('guardians')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.guardiansCount}</div></span>`;
+                    } else if (el.querySelector('.tooltip') && el.textContent.includes('guardians')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.guardiansCount;
+                    }
+                });
+                
+                // Update guardians type help
+                const guardiansTypeHelp = document.querySelectorAll('.field-label:contains("type")');
+                guardiansTypeHelp.forEach(el => {
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon') && el.textContent.includes('guardians')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.guardiansType}</div></span>`;
+                    } else if (el.querySelector('.tooltip') && el.textContent.includes('guardians')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.guardiansType;
+                    }
+                });
+                
+                // Update resources help
+                const resourcesHelp = document.querySelectorAll('.field-label:contains("resources")');
+                resourcesHelp.forEach(el => {
+                    // Skip checkbox labels
+                    if (el.querySelector('input[type="checkbox"]')) return;
+                    
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.resources}</div></span>`;
+                    } else if (el.querySelector('.tooltip')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.resources;
+                    }
+                });
+                
+                // Update chance help
+                const chanceHelp = document.querySelectorAll('.field-label:contains("chance")');
+                chanceHelp.forEach(el => {
+                    // Skip checkbox labels
+                    if (el.querySelector('input[type="checkbox"]')) return;
+                    
+                    // Add tooltip structure if not present
+                    if (!el.querySelector('.help-icon')) {
+                        el.innerHTML += ` <span class="help-icon">?<div class="tooltip">${translations.helpTexts.chance}</div></span>`;
+                    } else if (el.querySelector('.tooltip')) {
+                        el.querySelector('.tooltip').textContent = translations.helpTexts.chance;
+                    }
+                });
+                
+                // Add custom .contains method for older browsers if needed
+                if (!Element.prototype.contains) {
+                    Element.prototype.contains = function(text) {
+                        return this.textContent.includes(text);
+                    };
+                }
+            }
         }
 
         // Language selector functionality
