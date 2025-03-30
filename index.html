@@ -398,7 +398,7 @@
                                                     count<br>(comma-separated) <span class="help-icon">?
                                                         <div class="tooltip" id="help-guardiansCount">Loading help text...</div>
                                                 </div>
-                                                <div class="field-input">
+                                                <div class="field-input disabled" id="state-guardians-count-container-0">
                                                     <input type="text" id="state-guardians-count-0" placeholder="15,15,15,0,0,0,0">
                                                 </div>
                                             </div>
@@ -407,7 +407,7 @@
                                                     type<br>(comma-separated) <span class="help-icon">?
                                                         <div class="tooltip" id="help-guardiansType">Loading help text...</div>
                                                 </div>
-                                                <div class="field-input">
+                                                <div class="field-input disabled" id="state-guardians-type-container-0">
                                                     <input type="text" id="state-guardians-type-0" placeholder="59,59,59,-1,-1,-1,-1">
                                                 </div>
                                             </div>
@@ -593,8 +593,38 @@
         checkbox.addEventListener('change', function() {
             if (this.checked) {
                 container.classList.remove('disabled');
+                
+                // Enable any nested field-input elements within this container
+                if (containerId.includes('state-spell-bits-container')) {
+                    // For bits container, explicitly enable all input containers inside
+                    const inputContainers = container.querySelectorAll('.field-input');
+                    inputContainers.forEach(inputContainer => {
+                        inputContainer.classList.remove('disabled');
+                    });
+                } else if (containerId.includes('state-skills-container')) {
+                    // For skills container, explicitly enable the primary input container
+                    const primaryContainer = container.querySelector('.field-input');
+                    if (primaryContainer) {
+                        primaryContainer.classList.remove('disabled');
+                    }
+                }
             } else {
                 container.classList.add('disabled');
+                
+                // Disable any nested field-input elements within this container
+                if (containerId.includes('state-spell-bits-container')) {
+                    // For bits container, explicitly disable all input containers inside
+                    const inputContainers = container.querySelectorAll('.field-input');
+                    inputContainers.forEach(inputContainer => {
+                        inputContainer.classList.add('disabled');
+                    });
+                } else if (containerId.includes('state-skills-container')) {
+                    // For skills container, explicitly disable the primary input container
+                    const primaryContainer = container.querySelector('.field-input');
+                    if (primaryContainer) {
+                        primaryContainer.classList.add('disabled');
+                    }
+                }
             }
             updateJsonPreview();
             if (callback) callback(this.checked);
@@ -636,25 +666,34 @@
         setupOptionalField(`state-morale-checkbox-${stateIndex}`, `state-morale-container-${stateIndex}`);
         setupOptionalField(`state-luck-checkbox-${stateIndex}`, `state-luck-container-${stateIndex}`);
         setupOptionalField(`state-spells-checkbox-${stateIndex}`, `state-spells-container-${stateIndex}`);
+        setupOptionalField(`state-spell-id-checkbox-${stateIndex}-0`, `state-spell-id-container-${stateIndex}-0`);
+        setupOptionalField(`state-spell-bits-checkbox-${stateIndex}-0`, `state-spell-bits-container-${stateIndex}-0`);
         setupOptionalField(`state-spellPoints-checkbox-${stateIndex}`, `state-spellPoints-container-${stateIndex}`);
         setupOptionalField(`state-experience-checkbox-${stateIndex}`, `state-experience-container-${stateIndex}`);
         setupOptionalField(`state-skills-checkbox-${stateIndex}`, `state-skills-container-${stateIndex}`);
         setupOptionalField(`state-artifactTypeCounts-checkbox-${stateIndex}`, `state-artifactTypeCounts-container-${stateIndex}`);
         setupOptionalField(`state-creatureRewardCount-checkbox-${stateIndex}`, `state-creatureRewardCount-container-${stateIndex}`);
         setupOptionalField(`state-creatureRewardType-checkbox-${stateIndex}`, `state-creatureRewardType-container-${stateIndex}`);
-        setupOptionalField(`state-guardians-checkbox-${stateIndex}`, `state-guardians-container-${stateIndex}`);
+        setupOptionalField(`state-guardians-checkbox-${stateIndex}`, `state-guardians-container-${stateIndex}`, function(isChecked) {
+            // Add this callback to handle the inner guardians containers
+            const countContainer = document.getElementById(`state-guardians-count-container-${stateIndex}`);
+            const typeContainer = document.getElementById(`state-guardians-type-container-${stateIndex}`);
+            
+            if (isChecked) {
+                if (countContainer) countContainer.classList.remove('disabled');
+                if (typeContainer) typeContainer.classList.remove('disabled');
+            } else {
+                if (countContainer) countContainer.classList.add('disabled');
+                if (typeContainer) typeContainer.classList.add('disabled');
+            }
+        });
         setupOptionalField(`state-resources-checkbox-${stateIndex}`, `state-resources-container-${stateIndex}`);
         setupOptionalField(`state-upgrade-checkbox-${stateIndex}`, `state-upgrade-container-${stateIndex}`);
         setupOptionalField(`state-chance-checkbox-${stateIndex}`, `state-chance-container-${stateIndex}`);
         
-        // Set up spell fields for the first spell in this state
-        setupOptionalField(`state-spell-id-checkbox-${stateIndex}-0`, `state-spell-id-container-${stateIndex}-0`);
-        setupOptionalField(`state-spell-bits-checkbox-${stateIndex}-0`, `state-spell-bits-container-${stateIndex}-0`);
-        
-        // Fix: Use valid CSS selector syntax - use attribute selectors separately 
-        // Add event listeners for all input fields in this state
-        document.querySelectorAll(`[id^="state-"][id$="${stateIndex}"]`).forEach(input => {
-            if (input.tagName === 'INPUT' && !input.id.includes('checkbox')) {
+        // Fix: Use improved selectors for input field events
+        document.querySelectorAll(`input[id^="state-"][id$="${stateIndex}"]`).forEach(input => {
+            if (!input.id.includes('checkbox')) {
                 input.addEventListener('input', updateJsonPreview);
             }
         });
@@ -844,22 +883,37 @@
             
             // Update all IDs and data attributes
             state.querySelectorAll('[id]').forEach(el => {
-                // Replace old index with new index in IDs
                 const oldId = el.id;
-                // Fix: Use a more reliable way to update IDs
-                if (oldId.includes('state-')) {
-                    if (oldId.includes('spell')) {
-                        // Handle spell IDs which have two indexes (state and spell)
-                        const matches = oldId.match(/^(.*-)\d+(-.*-)\d+$/);
-                        if (matches && matches.length === 3) {
-                            el.id = matches[1] + index + matches[2] + oldId.match(/\d+$/)[0];
+                
+                // Use same improved ID update logic for renumbering
+                if (oldId.includes('spell') && !oldId.includes('spellPoints')) {
+                    const parts = oldId.split('-');
+                    const nums = parts.filter(part => !isNaN(parseInt(part)));
+
+                    if (nums.length === 1) {
+                        // Example: state-spells-checkbox-0
+                        parts[parts.length - 1] = index;
+                    } else if (nums.length >= 2) {
+                        // Example: state-spells-checkbox-0-0 - change the second to last number
+                        const lastIndex = parts.length - 2;
+                        if (!isNaN(parseInt(parts[lastIndex]))) {
+                            parts[lastIndex] = index;
                         }
-                    } else {
-                        // Handle regular state IDs with one index
-                        const matches = oldId.match(/^(.*-)\d+$/);
-                        if (matches && matches.length === 2) {
-                            el.id = matches[1] + index;
-                        }
+                    }
+
+                    el.id = parts.join('-');
+                } else if (oldId.includes('spellPoints')) {
+                    // Handle spellPoints IDs
+                    const parts = oldId.split('-');
+                    if (parts.length > 2) {
+                        parts[parts.length - 1] = index; // Update the last part with the new state index
+                        el.id = parts.join('-');
+                    }
+                } else if (oldId.startsWith('state-')) {
+                    // Handle regular state IDs with one index at the end
+                    const lastDashPos = oldId.lastIndexOf('-');
+                    if (lastDashPos !== -1) {
+                        el.id = oldId.substring(0, lastDashPos + 1) + index;
                     }
                 }
             });
@@ -886,13 +940,39 @@
             // Update ID attributes and heading
             stateTemplate.querySelector('h4').textContent = `State #${newStateIndex + 1}`;
             
-            // Update all IDs within the template
+            // Update all IDs within the template - FIX THE ID UPDATE LOGIC
             stateTemplate.querySelectorAll('[id]').forEach(el => {
                 const oldId = el.id;
-                const parts = oldId.split('-');
-                const indexPosition = oldId.includes('spell') ? oldId.lastIndexOf('-') - 2 : oldId.lastIndexOf('-');
-                const newId = oldId.substring(0, indexPosition) + '-' + newStateIndex + oldId.substring(oldId.lastIndexOf('-'));
-                el.id = newId;
+                
+                // Fix: Use a consistent approach for all ID types
+                if (oldId.includes('spell') && !oldId.includes('spellPoints')) {
+                    const parts = oldId.split('-');
+                    const nums = parts.filter(part => !isNaN(parseInt(part)));
+
+                    if (nums.length === 1) {
+                        // Example: state-spells-checkbox-0
+                        parts[parts.length - 1] = newStateIndex;
+                    } else if (nums.length >= 2) {
+                        // Example: state-spells-checkbox-0-0 - change the second to last number
+                        const lastIndex = parts.length - 2;
+                        if (!isNaN(parseInt(parts[lastIndex]))) {
+                            parts[lastIndex] = newStateIndex;
+                        }
+                    }
+
+                    el.id = parts.join('-');
+                } else if (oldId.includes('spellPoints')) {
+                    const parts = oldId.split('-');
+                    if (parts.length > 2) {
+                        parts[parts.length - 1] = newStateIndex; // Update the last part with the new state index
+                        el.id = parts.join('-');
+                    }
+                } else if (oldId.startsWith('state-')) {
+                    const lastDashPos = oldId.lastIndexOf('-');
+                    if (lastDashPos !== -1) {
+                        el.id = oldId.substring(0, lastDashPos + 1) + newStateIndex;
+                    }
+                }
             });
             
             // Update data-state-index attributes
@@ -1105,56 +1185,64 @@
             if (stateElements.length > 0) {
                 innerJsonObj.states = [];
                 
-                stateElements.forEach((stateElement, stateIndex) => {
+                stateElements.forEach((stateElement, stateIdx) => {
+                    // Get the actual state index from the heading text
+                    const stateHeading = stateElement.querySelector('h4').textContent;
+                    const stateIndex = parseInt(stateHeading.match(/\d+/)[0]) - 1;
                     const stateObj = {};
                     
-                    // Process all optional fields in the state
-                    if (document.getElementById(`state-morale-checkbox-${stateIndex}`).checked) {
-                        stateObj.morale = parseInt(document.getElementById(`state-morale-${stateIndex}`).value) || 0;
+                    // Process all optional fields in the state - FIX SELECTORS
+                    const moraleCheckbox = stateElement.querySelector(`input[id^="state-morale-checkbox"]`);
+                    if (moraleCheckbox && moraleCheckbox.checked) {
+                        const moraleInput = stateElement.querySelector(`input[id^="state-morale-"][type="number"]`);
+                        if (moraleInput && moraleInput.value !== '') {
+                            stateObj.morale = parseInt(moraleInput.value);
+                        }
                     }
                     
-                    if (document.getElementById(`state-luck-checkbox-${stateIndex}`).checked) {
-                        stateObj.luck = parseInt(document.getElementById(`state-luck-${stateIndex}`).value) || 0;
+                    const luckCheckbox = stateElement.querySelector(`input[id^="state-luck-checkbox"]`);
+                    if (luckCheckbox && luckCheckbox.checked) {
+                        const luckInput = stateElement.querySelector(`input[id^="state-luck-"][type="number"]`);
+                        if (luckInput && luckInput.value !== '') {
+                            stateObj.luck = parseInt(luckInput.value);
+                        }
                     }
                     
                     // Handle spells array within state
-                    if (document.getElementById(`state-spells-checkbox-${stateIndex}`).checked) {
-                        const spellElements = document.querySelectorAll(`#state-spells-items-${stateIndex} .array-item`);
+                    const spellsCheckbox = stateElement.querySelector(`input[id^="state-spells-checkbox"]`);
+                    if (spellsCheckbox && spellsCheckbox.checked) {
+                        const spellElements = stateElement.querySelectorAll('.array-item');
                         if (spellElements.length > 0) {
                             stateObj.spells = [];
                             
-                            spellElements.forEach((spellElement, spellIndex) => {
+                            spellElements.forEach((spellElement, spellIdx) => {
                                 const spellObj = {};
                                 
                                 // Add id if checked
-                                if (document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`)) {
-                                    const idCheckbox = document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`);
-                                    if (idCheckbox && idCheckbox.checked) {
-                                        const idInput = document.getElementById(`state-spell-id-${stateIndex}-${spellIndex}`);
-                                        if (idInput) {
-                                            spellObj.id = parseInt(idInput.value) || 0;
-                                        }
+                                const idCheckbox = spellElement.querySelector(`input[id^="state-spell-id-checkbox"]`);
+                                if (idCheckbox && idCheckbox.checked) {
+                                    const idInput = spellElement.querySelector(`input[id^="state-spell-id-"][type="number"]`);
+                                    if (idInput && idInput.value !== '') {
+                                        spellObj.id = parseInt(idInput.value);
                                     }
                                 }
                                 
                                 // Add bits if checked
-                                if (document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`)) {
-                                    const bitsCheckbox = document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`);
-                                    if (bitsCheckbox && bitsCheckbox.checked) {
-                                        spellObj.bits = {};
-                                        
-                                        const flagsInput = document.getElementById(`state-spell-bits-flags-${stateIndex}-${spellIndex}`);
-                                        const levelsInput = document.getElementById(`state-spell-bits-levels-${stateIndex}-${spellIndex}`);
-                                        const schoolsInput = document.getElementById(`state-spell-bits-schools-${stateIndex}-${spellIndex}`);
-                                        
-                                        if (flagsInput && flagsInput.value) spellObj.bits.flags = parseInt(flagsInput.value);
-                                        if (levelsInput && levelsInput.value) spellObj.bits.levels = parseInt(levelsInput.value);
-                                        if (schoolsInput && schoolsInput.value) spellObj.bits.schools = parseInt(schoolsInput.value);
-                                        
-                                        // Remove empty bits object
-                                        if (Object.keys(spellObj.bits).length === 0) {
-                                            delete spellObj.bits;
-                                        }
+                                const bitsCheckbox = spellElement.querySelector(`input[id^="state-spell-bits-checkbox"]`);
+                                if (bitsCheckbox && bitsCheckbox.checked) {
+                                    spellObj.bits = {};
+                                    
+                                    const flagsInput = spellElement.querySelector(`input[id^="state-spell-bits-flags"]`);
+                                    const levelsInput = spellElement.querySelector(`input[id^="state-spell-bits-levels"]`);
+                                    const schoolsInput = spellElement.querySelector(`input[id^="state-spell-bits-schools"]`);
+                                    
+                                    if (flagsInput && flagsInput.value !== '') spellObj.bits.flags = parseInt(flagsInput.value);
+                                    if (levelsInput && levelsInput.value !== '') spellObj.bits.levels = parseInt(levelsInput.value);
+                                    if (schoolsInput && schoolsInput.value !== '') spellObj.bits.schools = parseInt(schoolsInput.value);
+                                    
+                                    // Remove empty bits object
+                                    if (Object.keys(spellObj.bits).length === 0) {
+                                        delete spellObj.bits;
                                     }
                                 }
                                 
@@ -1171,113 +1259,108 @@
                         }
                     }
                     
-                    if (document.getElementById(`state-spellPoints-checkbox-${stateIndex}`)) {
-                        const spellPointsCheckbox = document.getElementById(`state-spellPoints-checkbox-${stateIndex}`);
-                        if (spellPointsCheckbox && spellPointsCheckbox.checked) {
-                            const spellPointsInput = document.getElementById(`state-spellPoints-${stateIndex}`);
-                            if (spellPointsInput) {
-                                stateObj.spellPoints = parseInt(spellPointsInput.value) || 0;
+                    const spellPointsCheckbox = stateElement.querySelector(`input[id^="state-spellPoints-checkbox"]`);
+                    if (spellPointsCheckbox && spellPointsCheckbox.checked) {
+                        const spellPointsInput = stateElement.querySelector(`input[id^="state-spellPoints-"][type="number"]`);
+                        if (spellPointsInput && spellPointsInput.value !== '') {
+                            stateObj.spellPoints = parseInt(spellPointsInput.value);
+                        }
+                    }
+                    
+                    const experienceCheckbox = stateElement.querySelector(`input[id^="state-experience-checkbox"]`);
+                    if (experienceCheckbox && experienceCheckbox.checked) {
+                        const experienceInput = stateElement.querySelector(`input[id^="state-experience-"][type="number"]`);
+                        if (experienceInput && experienceInput.value !== '') {
+                            stateObj.experience = parseInt(experienceInput.value);
+                        }
+                    }
+                    
+                    const skillsCheckbox = stateElement.querySelector(`input[id^="state-skills-checkbox"]`);
+                    if (skillsCheckbox && skillsCheckbox.checked) {
+                        const primarySkillsInput = stateElement.querySelector(`input[id^="state-skills-primary-"]`);
+                        if (primarySkillsInput && primarySkillsInput.value) {
+                            stateObj.skills = {
+                                primary: primarySkillsInput.value.split(',').map(val => {
+                                    const parsed = parseInt(val.trim());
+                                    return isNaN(parsed) ? 0 : parsed;
+                                })
+                            };
+                        }
+                    }
+                    
+                    const artifactTypeCountsCheckbox = stateElement.querySelector(`input[id^="state-artifactTypeCounts-checkbox"]`);
+                    if (artifactTypeCountsCheckbox && artifactTypeCountsCheckbox.checked) {
+                        const artifactTypeCountsInput = stateElement.querySelector(`input[id^="state-artifactTypeCounts-"]`);
+                        if (artifactTypeCountsInput && artifactTypeCountsInput.value) {
+                            stateObj.artifactTypeCounts = artifactTypeCountsInput.value.split(',').map(val => {
+                                const parsed = parseInt(val.trim());
+                                return isNaN(parsed) ? 0 : parsed;
+                            });
+                        }
+                    }
+                    
+                    const creatureRewardCountCheckbox = stateElement.querySelector(`input[id^="state-creatureRewardCount-checkbox"]`);
+                    if (creatureRewardCountCheckbox && creatureRewardCountCheckbox.checked) {
+                        const creatureRewardCountInput = stateElement.querySelector(`input[id^="state-creatureRewardCount-"][type="number"]`);
+                        if (creatureRewardCountInput && creatureRewardCountInput.value !== '') {
+                            stateObj.creatureRewardCount = parseInt(creatureRewardCountInput.value);
+                        }
+                    }
+                    
+                    const creatureRewardTypeCheckbox = stateElement.querySelector(`input[id^="state-creatureRewardType-checkbox"]`);
+                    if (creatureRewardTypeCheckbox && creatureRewardTypeCheckbox.checked) {
+                        const creatureRewardTypeInput = stateElement.querySelector(`input[id^="state-creatureRewardType-"][type="number"]`);
+                        if (creatureRewardTypeInput && creatureRewardTypeInput.value !== '') {
+                            stateObj.creatureRewardType = parseInt(creatureRewardTypeInput.value);
+                        }
+                    }
+                    
+                    const guardiansCheckbox = stateElement.querySelector(`input[id^="state-guardians-checkbox"]`);
+                    if (guardiansCheckbox && guardiansCheckbox.checked) {
+                        const countInput = stateElement.querySelector(`input[id^="state-guardians-count-"]`);
+                        const typeInput = stateElement.querySelector(`input[id^="state-guardians-type-"]`);
+                        
+                        if ((countInput && countInput.value) || (typeInput && typeInput.value)) {
+                            stateObj.guardians = {};
+                            if (countInput && countInput.value) {
+                                stateObj.guardians.count = countInput.value.split(',').map(val => {
+                                    const parsed = parseInt(val.trim());
+                                    return isNaN(parsed) ? 0 : parsed;
+                                });
+                            }
+                            if (typeInput && typeInput.value) {
+                                stateObj.guardians.type = typeInput.value.split(',').map(val => {
+                                    const parsed = parseInt(val.trim());
+                                    return isNaN(parsed) ? -1 : parsed;
+                                });
                             }
                         }
                     }
                     
-                    if (document.getElementById(`state-experience-checkbox-${stateIndex}`)) {
-                        const experienceCheckbox = document.getElementById(`state-experience-checkbox-${stateIndex}`);
-                        if (experienceCheckbox && experienceCheckbox.checked) {
-                            const experienceInput = document.getElementById(`state-experience-${stateIndex}`);
-                            if (experienceInput) {
-                                stateObj.experience = parseInt(experienceInput.value) || 0;
-                            }
+                    const resourcesCheckbox = stateElement.querySelector(`input[id^="state-resources-checkbox"]`);
+                    if (resourcesCheckbox && resourcesCheckbox.checked) {
+                        const resourcesInput = stateElement.querySelector(`input[id^="state-resources-"]`);
+                        if (resourcesInput && resourcesInput.value) {
+                            stateObj.resources = resourcesInput.value.split(',').map(val => {
+                                const parsed = parseInt(val.trim());
+                                return isNaN(parsed) ? 0 : parsed;
+                            });
                         }
                     }
                     
-                    if (document.getElementById(`state-skills-checkbox-${stateIndex}`)) {
-                        const skillsCheckbox = document.getElementById(`state-skills-checkbox-${stateIndex}`);
-                        if (skillsCheckbox && skillsCheckbox.checked) {
-                            const primarySkillsInput = document.getElementById(`state-skills-primary-${stateIndex}`);
-                            if (primarySkillsInput && primarySkillsInput.value) {
-                                stateObj.skills = {
-                                    primary: primarySkillsInput.value.split(',').map(val => parseInt(val.trim()) || 0)
-                                };
-                            }
+                    const upgradeCheckbox = stateElement.querySelector(`input[id^="state-upgrade-checkbox"]`);
+                    if (upgradeCheckbox && upgradeCheckbox.checked) {
+                        const upgradeInput = stateElement.querySelector(`input[id^="state-upgrade-"][type="number"]`);
+                        if (upgradeInput && upgradeInput.value !== '') {
+                            stateObj.upgrade = parseInt(upgradeInput.value);
                         }
                     }
                     
-                    if (document.getElementById(`state-artifactTypeCounts-checkbox-${stateIndex}`)) {
-                        const artifactTypeCountsCheckbox = document.getElementById(`state-artifactTypeCounts-checkbox-${stateIndex}`);
-                        if (artifactTypeCountsCheckbox && artifactTypeCountsCheckbox.checked) {
-                            const artifactTypeCountsInput = document.getElementById(`state-artifactTypeCounts-${stateIndex}`);
-                            if (artifactTypeCountsInput && artifactTypeCountsInput.value) {
-                                stateObj.artifactTypeCounts = artifactTypeCountsInput.value.split(',').map(val => parseInt(val.trim()) || 0);
-                            }
-                        }
-                    }
-                    
-                    if (document.getElementById(`state-creatureRewardCount-checkbox-${stateIndex}`)) {
-                        const creatureRewardCountCheckbox = document.getElementById(`state-creatureRewardCount-checkbox-${stateIndex}`);
-                        if (creatureRewardCountCheckbox && creatureRewardCountCheckbox.checked) {
-                            const creatureRewardCountInput = document.getElementById(`state-creatureRewardCount-${stateIndex}`);
-                            if (creatureRewardCountInput) {
-                                stateObj.creatureRewardCount = parseInt(creatureRewardCountInput.value) || 0;
-                            }
-                        }
-                    }
-                    
-                    if (document.getElementById(`state-creatureRewardType-checkbox-${stateIndex}`)) {
-                        const creatureRewardTypeCheckbox = document.getElementById(`state-creatureRewardType-checkbox-${stateIndex}`);
-                        if (creatureRewardTypeCheckbox && creatureRewardTypeCheckbox.checked) {
-                            const creatureRewardTypeInput = document.getElementById(`state-creatureRewardType-${stateIndex}`);
-                            if (creatureRewardTypeInput) {
-                                stateObj.creatureRewardType = parseInt(creatureRewardTypeInput.value) || -1;
-                            }
-                        }
-                    }
-                    
-                    if (document.getElementById(`state-guardians-checkbox-${stateIndex}`)) {
-                        const guardiansCheckbox = document.getElementById(`state-guardians-checkbox-${stateIndex}`);
-                        if (guardiansCheckbox && guardiansCheckbox.checked) {
-                            const countInput = document.getElementById(`state-guardians-count-${stateIndex}`);
-                            const typeInput = document.getElementById(`state-guardians-type-${stateIndex}`);
-                            
-                            if ((countInput && countInput.value) || (typeInput && typeInput.value)) {
-                                stateObj.guardians = {};
-                                if (countInput && countInput.value) {
-                                    stateObj.guardians.count = countInput.value.split(',').map(val => parseInt(val.trim()) || 0);
-                                }
-                                if (typeInput && typeInput.value) {
-                                    stateObj.guardians.type = typeInput.value.split(',').map(val => parseInt(val.trim()));
-                                }
-                            }
-                        }
-                    }
-                    
-                    if (document.getElementById(`state-resources-checkbox-${stateIndex}`)) {
-                        const resourcesCheckbox = document.getElementById(`state-resources-checkbox-${stateIndex}`);
-                        if (resourcesCheckbox && resourcesCheckbox.checked) {
-                            const resourcesInput = document.getElementById(`state-resources-${stateIndex}`);
-                            if (resourcesInput && resourcesInput.value) {
-                                stateObj.resources = resourcesInput.value.split(',').map(val => parseInt(val.trim()) || 0);
-                            }
-                        }
-                    }
-                    
-                    if (document.getElementById(`state-upgrade-checkbox-${stateIndex}`)) {
-                        const upgradeCheckbox = document.getElementById(`state-upgrade-checkbox-${stateIndex}`);
-                        if (upgradeCheckbox && upgradeCheckbox.checked) {
-                            const upgradeInput = document.getElementById(`state-upgrade-${stateIndex}`);
-                            if (upgradeInput) {
-                                stateObj.upgrade = parseInt(upgradeInput.value) || 0;
-                            }
-                        }
-                    }
-                    
-                    if (document.getElementById(`state-chance-checkbox-${stateIndex}`)) {
-                        const chanceCheckbox = document.getElementById(`state-chance-checkbox-${stateIndex}`);
-                        if (chanceCheckbox && chanceCheckbox.checked) {
-                            const chanceInput = document.getElementById(`state-chance-${stateIndex}`);
-                            if (chanceInput) {
-                                stateObj.chance = parseInt(chanceInput.value) || 0;
-                            }
+                    const chanceCheckbox = stateElement.querySelector(`input[id^="state-chance-checkbox"]`);
+                    if (chanceCheckbox && chanceCheckbox.checked) {
+                        const chanceInput = stateElement.querySelector(`input[id^="state-chance-"][type="number"]`);
+                        if (chanceInput && chanceInput.value !== '') {
+                            stateObj.chance = parseInt(chanceInput.value);
                         }
                     }
                     
