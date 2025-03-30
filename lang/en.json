@@ -12,6 +12,8 @@
   "saveFile": "Save File",
   "showJsonCode": "Show JSON Code",
   "hideJsonCode": "Hide JSON Code",
+  "propertyWarning": "The 5th number must match object type (16) and the 6th number must match object subtype",
+  "propertyHint": "Format: name.def [8 groups of numbers separated by spaces]\nExample: CBname.def 100011111 01000000 000000100 000000100 16 13 1 0",
   "fieldLabels": {
     "subtype": "subtype",
     "value": "value",

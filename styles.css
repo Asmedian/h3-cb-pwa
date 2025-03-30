@@ -242,6 +242,41 @@ input[type="checkbox"]:checked::after {
     pointer-events: none;
 }
 
+/* Add exception for help icons in disabled fields */
+.disabled .help-icon {
+    opacity: 1;
+    pointer-events: auto;
+    position: relative;
+    z-index: 101; /* Higher than the regular tooltip z-index */
+}
+
+.disabled .help-icon .tooltip {
+    pointer-events: auto;
+}
+
+.property-item {
+    display: flex;
+    margin-bottom: 5px;
+    align-items: center;
+}
+
+.property-input {
+    flex: 1;
+    margin-right: 5px;
+}
+
+.remove-property {
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+}
+
+#add-property {
+    margin-top: 5px;
+}
+
 .array-field {
     margin-left: 20px;
     margin-top: 10px;
@@ -332,4 +367,51 @@ input[type="checkbox"]:checked::after {
 
 .margin-left-10 {
     margin-left: 10px;
+}
+
+.property-warning {
+    color: #f59e0b;
+    margin-right: 8px;
+    cursor: help;
+    font-size: 16px;
+}
+
+.invalid-input {
+    border: 2px solid #ff5252;
+    background-color: rgba(255, 82, 82, 0.1);
+}
+
+.property-hint {
+    font-size: 0.8em;
+    color: var(--text-color);
+    opacity: 0.7;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Styles for resizable textarea and line break indicators */
+.textarea-container {
+    position: relative;
+    width: 100%;
+}
+
+textarea.resizable-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.line-break-indicator {
+    position: absolute;
+    color: var(--border-color);
+    font-size: 12px;
+    user-select: none;
+    pointer-events: none;
+    opacity: 0.7;
 }

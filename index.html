@@ -69,41 +69,25 @@
         
         <div class="field-row">
             <div class="field-label margin-left-10">
-                value <span class="help-icon">?
-                    <div class="tooltip" id="help-value">Loading help text...</div>
-                </span>
-            </div>
-            <div class="field-input">
-                <input type="number" id="value" min="0">
-            </div>
-        </div>
-        
-        <div class="field-row">
-            <div class="field-label margin-left-10">
-                density <span class="help-icon">?
-                    <div class="tooltip" id="help-density">Loading help text...</div>
-                </span>
-            </div>
-            <div class="field-input">
-                <input type="number" id="density" min="0">
-            </div>
-        </div>
-        
-        <div class="field-row">
-            <div class="field-label margin-left-10">
                 properties <span class="help-icon">?
                     <div class="tooltip" id="help-properties">Loading help text...</div>
                 </span>
             </div>
             <div class="field-input">
-                <input type="text" id="properties">
+                <div id="properties-container">
+                    <div class="property-item">
+                        <input type="text" class="property-input" id="property-0">
+                        <button class="remove-property">-</button>
+                    </div>
+                </div>
+                <button class="add-item" id="add-property">Add Property</button>
             </div>
         </div>
     </div>
     
-    <!-- Optional Fields -->
+    <!-- Object Generation -->
     <div class="field-group">
-        <h3 id="optional-fields-title">Optional Fields</h3>
+        <h3 id="object-generation-title">Object Generation</h3>
         
         <div class="field-row">
             <div class="field-label margin-left-10">
@@ -119,6 +103,33 @@
                 </select>
             </div>
         </div>
+        
+        <div class="field-row">
+            <div class="field-label margin-left-10">
+                value <span class="help-icon">?
+                    <div class="tooltip" id="help-value">Loading help text...</div>
+                </span>
+            </div>
+            <div class="field-input disabled" id="value-container">
+                <input type="number" id="value" min="0">
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-label margin-left-10">
+                density <span class="help-icon">?
+                    <div class="tooltip" id="help-density">Loading help text...</div>
+                </span>
+            </div>
+            <div class="field-input disabled" id="density-container">
+                <input type="number" id="density" min="0">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Optional Fields -->
+    <div class="field-group">
+        <h3 id="optional-fields-title">Optional Fields</h3>
         
         <div class="field-row">
             <div class="field-label margin-left-10">
@@ -181,7 +192,9 @@
                                     <div class="tooltip" id="help-textVisit">Loading help text...</div>
                             </div>
                             <div class="field-input">
-                                <input type="text" id="text-visit" placeholder="Welcome to the new creature bank.">
+                                <div class="textarea-container">
+                                    <textarea id="text-visit" class="resizable-textarea" placeholder="Welcome to the new creature bank."></textarea>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -415,6 +428,17 @@
 
                                 <div class="field-row">
                                     <div class="field-label margin-left-10">
+                                        <input type="checkbox" id="state-upgrade-checkbox-0">
+                                        upgrade <span class="help-icon">?
+                                            <div class="tooltip" id="help-upgrade">Loading help text...</div>
+                                    </div>
+                                    <div class="field-input disabled" id="state-upgrade-container-0">
+                                        <input type="number" id="state-upgrade-0" min="0" value="0">
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <div class="field-label margin-left-10">
                                         <input type="checkbox" id="state-chance-checkbox-0">
                                         chance <span class="help-icon">?
                                             <div class="tooltip" id="help-stateChance">Loading help text...</div>
@@ -525,6 +549,7 @@
         document.getElementById('help-artifactTypeCounts').textContent = translations.helpTexts.artifactTypeCounts;
         document.getElementById('help-creatureRewardCount').textContent = translations.helpTexts.creatureRewardCount;
         document.getElementById('help-creatureRewardType').textContent = translations.helpTexts.creatureRewardType;
+        document.getElementById('help-upgrade').textContent = translations.helpTexts.upgrade;
     }
 
     // Language selector functionality
@@ -577,7 +602,29 @@
     }
 
     // Setup all optional fields
-    setupOptionalField('enabled-checkbox', 'enabled-container');
+    setupOptionalField('enabled-checkbox', 'enabled-container', function(isChecked) {
+        // Toggle value and density fields based on enabled checkbox
+        const valueContainer = document.getElementById('value-container');
+        const densityContainer = document.getElementById('density-container');
+        const valueInput = document.getElementById('value');
+        const densityInput = document.getElementById('density');
+        
+        if (isChecked) {
+            valueContainer.classList.remove('disabled');
+            densityContainer.classList.remove('disabled');
+            
+            // Set default values when enabled
+            valueInput.value = 2000;
+            densityInput.value = 100;
+        } else {
+            valueContainer.classList.add('disabled');
+            densityContainer.classList.add('disabled');
+            
+            // Clear values when disabled
+            valueInput.value = '';
+            densityInput.value = '';
+        }
+    });
     setupOptionalField('name-checkbox', 'name-container');
     setupOptionalField('sound-checkbox', 'sound-container');
     setupOptionalField('text-checkbox', 'text-container');
@@ -597,6 +644,7 @@
         setupOptionalField(`state-creatureRewardType-checkbox-${stateIndex}`, `state-creatureRewardType-container-${stateIndex}`);
         setupOptionalField(`state-guardians-checkbox-${stateIndex}`, `state-guardians-container-${stateIndex}`);
         setupOptionalField(`state-resources-checkbox-${stateIndex}`, `state-resources-container-${stateIndex}`);
+        setupOptionalField(`state-upgrade-checkbox-${stateIndex}`, `state-upgrade-container-${stateIndex}`);
         setupOptionalField(`state-chance-checkbox-${stateIndex}`, `state-chance-container-${stateIndex}`);
         
         // Set up spell fields for the first spell in this state
@@ -911,11 +959,25 @@
     // Required fields validation and Save button enable/disable
     function validateRequiredFields() {
         const subtype = document.getElementById('object-subtype').value;
-        const value = document.getElementById('value').value;
-        const density = document.getElementById('density').value;
-        const properties = document.getElementById('properties').value;
         
-        return subtype !== '' && value !== '' && density !== '' && properties !== '';
+        // Check if at least one valid property exists
+        const propertyInputs = document.querySelectorAll('.property-input');
+        let hasValidProperty = false;
+        propertyInputs.forEach(input => {
+            if (input.value.trim() !== '' && validateProperty(input.value.trim())) {
+                hasValidProperty = true;
+            }
+        });
+        
+        // Value and density are only required if enabled is checked
+        const enabledChecked = document.getElementById('enabled-checkbox').checked;
+        if (enabledChecked) {
+            const value = document.getElementById('value').value;
+            const density = document.getElementById('density').value;
+            return subtype !== '' && value !== '' && density !== '' && hasValidProperty;
+        }
+        
+        return subtype !== '' && hasValidProperty;
     }
 
     function updateSaveButtonState() {
@@ -932,10 +994,11 @@
         updateJsonPreview();
     });
     
-    document.getElementById('properties').addEventListener('input', function() {
-        updateSaveButtonState();
-        updateJsonPreview();
-    });
+    // Remove this event listener as the element doesn't exist anymore
+    // document.getElementById('properties').addEventListener('input', function() {
+    //     updateSaveButtonState();
+    //     updateJsonPreview();
+    // });
 
     // Sound field validation (.wav extension)
     function validateWavFile(input) {
@@ -966,7 +1029,13 @@
     // Generate JSON preview - updated to handle the complex states structure
     function updateJsonPreview() {
         const jsonObj = buildJsonObject();
-        const jsonString = JSON.stringify(jsonObj, null, 2);
+        
+        // Custom stringify to handle newlines in text.visit
+        let jsonString = JSON.stringify(jsonObj, (key, value) => {
+            // Return the value unchanged (even with newlines) for all properties
+            return value;
+        }, 2);
+        
         document.getElementById('json-preview').textContent = jsonString;
         updateSaveButtonState(); // Update save button state when JSON is updated
     }
@@ -974,14 +1043,35 @@
     function buildJsonObject() {
         const innerJsonObj = {};
         
-        // Required fields
-        innerJsonObj.value = parseInt(document.getElementById('value').value) || 0;
-        innerJsonObj.density = parseInt(document.getElementById('density').value) || 0;
-        innerJsonObj.properties = [document.getElementById('properties').value];
+        // Required fields - Updated to handle multiple properties with validation
+        const propertyInputs = document.querySelectorAll('.property-input');
+        const properties = [];
+        propertyInputs.forEach(input => {
+            if (input.value.trim() !== '') {
+                // Only add properties that pass validation
+                if (validateProperty(input.value.trim())) {
+                    properties.push(input.value.trim());
+                    // Remove error styling if previously applied
+                    input.classList.remove('invalid-input');
+                } else {
+                    // Add error styling to invalid properties
+                    input.classList.add('invalid-input');
+                }
+            }
+        });
+        innerJsonObj.properties = properties;
         
-        // Optional fields
+        // Optional fields including value and density which are tied to enabled
         if (document.getElementById('enabled-checkbox').checked) {
             innerJsonObj.enabled = document.getElementById('enabled').value === 'true';
+            
+            // Get values from inputs, or use defaults if empty/zero
+            const valueInput = document.getElementById('value');
+            const densityInput = document.getElementById('density');
+            
+            // Use default values if inputs are empty or zero
+            innerJsonObj.value = parseInt(valueInput.value) || 2000;
+            innerJsonObj.density = parseInt(densityInput.value) || 100;
         }
         
         if (document.getElementById('name-checkbox').checked) {
@@ -1004,7 +1094,7 @@
             
             if (visit) {
                 innerJsonObj.text = {
-                    visit: visit
+                    visit: visit // Don't do any special processing - newlines will be preserved
                 };
             }
         }
@@ -1171,6 +1261,16 @@
                         }
                     }
                     
+                    if (document.getElementById(`state-upgrade-checkbox-${stateIndex}`)) {
+                        const upgradeCheckbox = document.getElementById(`state-upgrade-checkbox-${stateIndex}`);
+                        if (upgradeCheckbox && upgradeCheckbox.checked) {
+                            const upgradeInput = document.getElementById(`state-upgrade-${stateIndex}`);
+                            if (upgradeInput) {
+                                stateObj.upgrade = parseInt(upgradeInput.value) || 0;
+                            }
+                        }
+                    }
+                    
                     if (document.getElementById(`state-chance-checkbox-${stateIndex}`)) {
                         const chanceCheckbox = document.getElementById(`state-chance-checkbox-${stateIndex}`);
                         if (chanceCheckbox && chanceCheckbox.checked) {
@@ -1298,6 +1398,229 @@
 
     // Update initial UI state (fallback if language load fails)
     updateJsonPreview();
+
+    // Properties functionality
+    let propertyCounter = 1;
+    
+    document.getElementById('add-property').addEventListener('click', function() {
+        const propertiesContainer = document.getElementById('properties-container');
+        const newPropertyItem = document.createElement('div');
+        newPropertyItem.className = 'property-item';
+        
+        // Create property input
+        const newPropertyInput = document.createElement('input');
+        newPropertyInput.type = 'text';
+        newPropertyInput.className = 'property-input';
+        newPropertyInput.id = `property-${propertyCounter}`;
+        setupPropertyInput(newPropertyInput);
+        
+        // Create remove button
+        const removeButton = document.createElement('button');
+        removeButton.className = 'remove-property';
+        removeButton.textContent = '-';
+        removeButton.addEventListener('click', function() {
+            if (propertiesContainer.children.length > 1) {
+                propertiesContainer.removeChild(newPropertyItem);
+                updateJsonPreview();
+                updateSaveButtonState();
+            }
+        });
+        
+        // Add elements to DOM
+        newPropertyItem.appendChild(newPropertyInput);
+        newPropertyItem.appendChild(removeButton);
+        propertiesContainer.appendChild(newPropertyItem);
+        
+        propertyCounter++;
+        updateJsonPreview();
+    });
+    
+    // Add event listener to the first property input
+    setupPropertyInput(document.querySelector('.property-input'));
+    
+    // Add event listener to the first remove-property button
+    document.querySelector('.remove-property').addEventListener('click', function() {
+        if (document.getElementById('properties-container').children.length > 1) {
+            this.parentElement.remove();
+            updateJsonPreview();
+            updateSaveButtonState();
+        }
+    });
+
+    // Add this validation function after other helper functions
+    function validateProperty(propertyValue) {
+        // Check for required format: "name.def numbers numbers numbers numbers numbers numbers numbers numbers"
+        const regex = /^.+\.def(\s+\d+){8}$/;
+        return regex.test(propertyValue);
+    }
+
+    // Add new function to validate type and subtype values in property
+    function validatePropertyTypeSubtype(propertyValue) {
+        if (!validateProperty(propertyValue)) return false;
+        
+        const parts = propertyValue.split(/\s+/);
+        // Get the 5th and 6th numbers (index 5 and 6 after the .def part)
+        const typeValue = parts[5];
+        const subtypeValue = parts[6];
+        
+        // Get the current object type and subtype values
+        const objectType = "16"; // This is fixed in the HTML
+        const objectSubtype = document.getElementById('object-subtype').value;
+        
+        // Check if both match
+        return typeValue === objectType && subtypeValue === objectSubtype;
+    }
+
+    // Function to create and update warning icons for property inputs
+    function updatePropertyWarnings() {
+        document.querySelectorAll('.property-input').forEach(input => {
+            // Check if warning icon already exists
+            let warningIcon = input.parentElement.querySelector('.property-warning');
+            
+            if (input.value.trim() !== '' && validateProperty(input.value.trim())) {
+                // If the property format is valid, check type and subtype
+                if (!validatePropertyTypeSubtype(input.value.trim())) {
+                    // If type or subtype doesn't match, show warning
+                    if (!warningIcon) {
+                        // Create warning icon if it doesn't exist
+                        warningIcon = document.createElement('span');
+                        warningIcon.className = 'property-warning';
+                        warningIcon.innerHTML = '⚠️';
+                        warningIcon.title = 'The 5th number must match object type (16) and the 6th number must match object subtype';
+                        
+                        // Insert warning icon before the input
+                        input.parentElement.insertBefore(warningIcon, input);
+                    }
+                    warningIcon.style.display = 'inline';
+                } else if (warningIcon) {
+                    // If values match and warning exists, hide it
+                    warningIcon.style.display = 'none';
+                }
+            } else if (warningIcon) {
+                // If input is empty or invalid format, hide warning
+                warningIcon.style.display = 'none';
+            }
+        });
+    }
+
+    // Modify property input event listeners to include type/subtype validation
+    function setupPropertyInput(input) {
+        input.addEventListener('input', function() {
+            if (this.value.trim() !== '') {
+                if (validateProperty(this.value.trim())) {
+                    this.classList.remove('invalid-input');
+                } else {
+                    this.classList.add('invalid-input');
+                }
+            } else {
+                this.classList.remove('invalid-input');
+            }
+            updatePropertyWarnings();
+            updateJsonPreview();
+            updateSaveButtonState();
+        });
+    }
+
+    // Add listener for subtype changes to update property warnings
+    document.getElementById('object-subtype').addEventListener('input', function() {
+        updatePropertyWarnings();
+        updateSaveButtonState();
+        updateJsonPreview();
+    });
+
+    // Update initial UI state
+    document.addEventListener('DOMContentLoaded', () => {
+        loadLanguage(currentLang);
+        document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+        updatePropertyWarnings();
+    });
+
+    // Add CSS for invalid input styling within the script tag
+    document.head.insertAdjacentHTML('beforeend', `
+        <style>
+            .invalid-input {
+                border: 2px solid #ff5252;
+                background-color: rgba(255, 82, 82, 0.1);
+            }
+            .property-hint {
+                font-size: 0.8em;
+                color: #666;
+                margin-top: 5px;
+                display: block;
+            }
+            .property-warning {
+                margin-right: 5px;
+                color: #ff5252;
+                cursor: help;
+            }
+        </style>
+    `);
+
+    // Add hint text for property format
+    const propertiesContainer = document.getElementById('properties-container');
+    const hintElement = document.createElement('span');
+    hintElement.className = 'property-hint';
+    hintElement.innerHTML = 'Format: name.def [8 groups of numbers separated by spaces]<br>Example: CBname.def 100011111 01000000 000000100 000000100 16 13 1 0';
+    propertiesContainer.parentNode.insertBefore(hintElement, propertiesContainer.nextSibling);
+
+    // Function to add line break indicators
+    function updateLineBreakIndicators(textarea) {
+        // Clear existing indicators
+        const container = textarea.closest('.textarea-container');
+        container.querySelectorAll('.line-break-indicator').forEach(el => el.remove());
+        
+        // Get text content and find line breaks
+        const text = textarea.value;
+        const lines = text.split('\n');
+        
+        if (lines.length <= 1) return; // No line breaks
+        
+        // Calculate line heights
+        const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
+        const paddingTop = parseInt(window.getComputedStyle(textarea).paddingTop);
+        
+        // Add indicator for each line break (except the last line)
+        for (let i = 0; i < lines.length - 1; i++) {
+            const indicator = document.createElement('span');
+            indicator.className = 'line-break-indicator';
+            indicator.textContent = '↵'; // Line break symbol
+            
+            // Calculate position based on text content
+            const tempDiv = document.createElement('div');
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.visibility = 'hidden';
+            tempDiv.style.fontSize = window.getComputedStyle(textarea).fontSize;
+            tempDiv.style.fontFamily = window.getComputedStyle(textarea).fontFamily;
+            tempDiv.textContent = lines[i];
+            document.body.appendChild(tempDiv);
+            
+            // Position at the end of each line
+            const width = tempDiv.clientWidth;
+            const top = paddingTop + (i * lineHeight) + (lineHeight / 2) - 8; // Adjust vertical position
+            
+            indicator.style.left = `${width + 12}px`; // Add padding
+            indicator.style.top = `${top}px`;
+            
+            container.appendChild(indicator);
+            document.body.removeChild(tempDiv);
+        }
+    }
+    
+    // Modify the text-visit input event handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const textVisit = document.getElementById('text-visit');
+        if (textVisit) {
+            textVisit.addEventListener('input', function() {
+                updateJsonPreview();
+                updateLineBreakIndicators(this);
+            });
+            
+            // Update indicators when textarea is resized
+            textVisit.addEventListener('mouseup', function() {
+                updateLineBreakIndicators(this);
+            });
+        }
+    });
 </script>
 </body>
 </html>
