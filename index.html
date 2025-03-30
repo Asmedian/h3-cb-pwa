@@ -7,404 +7,132 @@
     <title>Creature Bank Editor for Heroes 3: ERA</title>
     <link rel="manifest" href="#" id="manifestPlaceholder">
     <link rel="icon" href="./icon-64.png" type="image/png">
-    <style>
-        :root {
-            --primary-bg: #1f2937;
-            --secondary-bg: #111827;
-            --tertiary-bg: #374151;
-            --text-color: #f3f4f6;
-            --input-bg: #111827;
-            --border-color: #4b5563;
-            --button-bg: #3b82f6;
-            --button-hover: #2563eb;
-            --indented-bg: #111827;
-            --indented-border: #4b5563;
-            --disabled-bg: #4b5563;
-            --disabled-text: #9ca3af;
-        }
-
-        [data-theme="light"] {
-            --primary-bg: #f3f4f6;
-            --secondary-bg: #e5e7eb;
-            --tertiary-bg: #d1d5db;
-            --text-color: #1f2937;
-            --input-bg: #ffffff;
-            --border-color: #9ca3af;
-            --button-bg: #3b82f6;
-            --button-hover: #2563eb;
-            --indented-bg: #e5e7eb;
-            --indented-border: #9ca3af;
-            --disabled-bg: #d1d5db;
-            --disabled-text: #6b7280;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--primary-bg);
-            color: var(--text-color);
-            line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
-            padding: 20px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 30px;
-        }
-
-        .title-container h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 15px;
-        }
-
-        .browser-support {
-            margin-top: 10px;
-            font-size: 12px;
-            padding: 8px;
-            background-color: var(--indented-bg);
-            border: 1px solid var(--indented-border);
-            border-radius: 4px;
-            max-width: 300px;
-        }
-
-        button {
-            background-color: var(--button-bg);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
-
-        button:hover {
-            background-color: var(--button-hover);
-        }
-
-        .theme-toggle, .lang-selector {
-            position: relative;
-        }
-
-        .dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background-color: var(--secondary-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px 0;
-            z-index: 100;
-            min-width: 150px;
-            display: none;
-        }
-
-        .dropdown.show {
-            display: block;
-        }
-
-        .dropdown button {
-            display: block;
-            width: 100%;
-            text-align: left;
-            background: none;
-            color: var(--text-color);
-            padding: 8px 16px;
-        }
-
-        .dropdown button:hover {
-            background-color: var(--tertiary-bg);
-        }
-
-        .editor-container {
-            background-color: var(--secondary-bg);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .field-group {
-            width: 100%;
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 6px;
-            background-color: var(--indented-bg);
-            border: 1px solid var(--indented-border);
-        }
-
-        .field-row {
-            display: flex;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-
-        .field-label {
-            flex: 0 0 200px;
-            display: flex;
-            align-items: center;
-        }
-
-        .help-icon {
-            margin-left: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            color: var(--button-bg);
-            position: relative;
-        }
-
-        .tooltip {
-            position: absolute;
-            top: -10px;
-            left: 25px;
-            background-color: var(--tertiary-bg);
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 14px;
-            width: 250px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 100;
-            display: none;
-        }
-
-        .help-icon:hover .tooltip {
-            display: block;
-        }
-
-        .field-input {
-            flex: 1;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 8px 12px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            background-color: var(--input-bg);
-            color: var(--text-color);
-        }
-
-        input[type="checkbox"] {
-            margin-right: 10px;
-        }
-
-        .disabled {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        .array-field {
-            margin-left: 20px;
-            margin-top: 10px;
-        }
-
-        .array-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .add-item {
-            margin-top: 10px;
-        }
-
-        .bottom-controls {
-            margin-top: 20px;
-        }
-
-        .save-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-
-        .save-button:disabled {
-            background-color: var(--disabled-bg);
-            color: var (--disabled-text);
-            cursor: not-allowed;
-        }
-
-        .json-preview-toggle {
-            margin-bottom: 10px;
-        }
-
-        .json-preview {
-            background-color: var(--indented-bg);
-            padding: 15px;
-            border-radius: 6px;
-            display: none;
-            white-space: pre-wrap;
-            font-family: monospace;
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid var(--indented-border);
-        }
-
-        .json-preview.show {
-            display: block;
-        }
-
-        .install-pwa {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-            }
-            
-            .header-controls {
-                margin-top: 15px;
-            }
-            
-            .field-row {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .field-label {
-                margin-bottom: 5px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="./styles.css">
 </head>
+
 <body>
-    <header>
-        <div class="title-container">
-            <h1 id="app-title">Creature Bank Editor for Heroes 3: ERA</h1>
-        </div>
-        <div>
-            <div class="header-controls">
-                <button id="install-pwa" class="install-pwa">Install PWA App</button>
-                <div class="theme-toggle">
-                    <button id="theme-toggle-btn">Dark Theme</button>
-                </div>
-                <div class="lang-selector">
-                    <button id="lang-selector-btn">English</button>
-                    <div class="dropdown" id="lang-dropdown">
-                        <button data-lang="en">English</button>
-                        <button data-lang="ru">Русский</button>
-                    </div>
+<header>
+    <div class="title-container">
+        <h1 id="app-title">Creature Bank Editor for Heroes 3: ERA</h1>
+    </div>
+    <div>
+        <div class="header-controls">
+            <button id="install-pwa" class="install-pwa">Install PWA App</button>
+            <div class="theme-toggle">
+                <button id="theme-toggle-btn">Dark Theme</button>
+            </div>
+            <div class="lang-selector">
+                <button id="lang-selector-btn">English</button>
+                <div class="dropdown" id="lang-dropdown">
+                    <button data-lang="en">English</button>
+                    <button data-lang="ru">Русский</button>
                 </div>
             </div>
-            <div class="browser-support" id="browser-support">
-                Primarily supported in Chromium-based browsers (Chrome, Edge, Opera, etc.). Firefox, Safari, and others work with limitations.
-            </div>
         </div>
-    </header>
+        <div class="browser-support" id="browser-support">
+            Primarily supported in Chromium-based browsers (Chrome, Edge, Opera, etc.). Firefox, Safari, and others work with limitations.
+        </div>
+    </div>
+</header>
 
-    <div class="editor-container">
-        <!-- Object Subtype -->
-        <div class="field-group">
-            <h3 id="object-subtype-title">Object parameters</h3>
-            
-            <div class="field-row">
-                <div class="field-label">
-                    type <span class="help-icon">?
-                        <div class="tooltip" id="help-objectType">Loading help text...</div>
-                    </span>
-                </div>
-                <div class="field-input">
-                    16
-                </div>
+<div class="editor-container">
+    <!-- Object Subtype -->
+    <div class="field-group">
+        <h3 id="object-subtype-title">Object parameters</h3>
+        
+        <div class="field-row">
+            <div class="field-label margin-left-10">
+                type <span class="help-icon">?
+                    <div class="tooltip" id="help-objectType">Loading help text...</div>
+                </span>
             </div>
-            
-            <div class="field-row">
-                <div class="field-label">
-                    subtype <span class="help-icon">?
-                        <div class="tooltip" id="help-objectSubtype">Loading help text...</div>
-                    </span>
-                </div>
-                <div class="field-input">
-                    <input type="number" id="object-subtype" min="0" value="13">
-                </div>
-            </div>
-        </div>
-
-        <!-- Required Fields -->
-        <div class="field-group">
-            <h3 id="required-fields-title">Required Fields</h3>
-            
-            <div class="field-row">
-                <div class="field-label">
-                    value <span class="help-icon">?
-                        <div class="tooltip" id="help-value">Loading help text...</div>
-                    </span>
-                </div>
-                <div class="field-input">
-                    <input type="number" id="value" min="0">
-                </div>
-            </div>
-            
-            <div class="field-row">
-                <div class="field-label">
-                    density <span class="help-icon">?
-                        <div class="tooltip" id="help-density">Loading help text...</div>
-                    </span>
-                </div>
-                <div class="field-input">
-                    <input type="number" id="density" min="0">
-                </div>
-            </div>
-            
-            <div class="field-row">
-                <div class="field-label">
-                    properties <span class="help-icon">?
-                        <div class="tooltip" id="help-properties">Loading help text...</div>
-                    </span>
-                </div>
-                <div class="field-input">
-                    <input type="text" id="properties">
-                </div>
+            <div class="field-input margin-left-10">
+                16
             </div>
         </div>
         
-        <!-- Optional Fields -->
+        <div class="field-row">
+            <div class="field-label margin-left-10">
+                subtype <span class="help-icon">?
+                    <div class="tooltip" id="help-objectSubtype">Loading help text...</div>
+                </span>
+            </div>
+            <div class="field-input">
+                <input type="number" id="object-subtype" min="0" value="13">
+            </div>
+        </div>
+    </div>
+
+    <!-- Required Fields -->
+    <div class="field-group">
+        <h3 id="required-fields-title">Required Fields</h3>
+        
+        <div class="field-row">
+            <div class="field-label margin-left-10">
+                value <span class="help-icon">?
+                    <div class="tooltip" id="help-value">Loading help text...</div>
+                </span>
+            </div>
+            <div class="field-input">
+                <input type="number" id="value" min="0">
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-label margin-left-10">
+                density <span class="help-icon">?
+                    <div class="tooltip" id="help-density">Loading help text...</div>
+                </span>
+            </div>
+            <div class="field-input">
+                <input type="number" id="density" min="0">
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-label margin-left-10">
+                properties <span class="help-icon">?
+                    <div class="tooltip" id="help-properties">Loading help text...</div>
+                </span>
+            </div>
+            <div class="field-input">
+                <input type="text" id="properties">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Optional Fields -->
+    <div class="field-group">
+        <h3 id="optional-fields-title">Optional Fields</h3>
+        
+        <div class="field-row">
+            <div class="field-label margin-left-10">
+                <input type="checkbox" id="enabled-checkbox">
+                enabled <span class="help-icon">?
+                    <div class="tooltip" id="help-enabled">Loading help text...</div>
+                </span>
+            </div>
+            <div class="field-input disabled" id="enabled-container">
+                <select id="enabled">
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="field-row">
+            <div class="field-label margin-left-10">
+                <input type="checkbox" id="name-checkbox">
+                name <span class="help-icon">?
+                    <div class="tooltip" id="help-name">Loading help text...</div>
+                </span>
+            </div>
+            <div class="field-input disabled" id="name-container">
+                <input type="text" id="name">
+            </div>
+        </div>
+        
         <div class="field-group">
-            <h3 id="optional-fields-title">Optional Fields</h3>
-            
-            <div class="field-row">
-                <div class="field-label">
-                    <input type="checkbox" id="enabled-checkbox">
-                    enabled <span class="help-icon">?
-                        <div class="tooltip" id="help-enabled">Loading help text...</div>
-                    </span>
-                </div>
-                <div class="field-input disabled" id="enabled-container">
-                    <select id="enabled">
-                        <option value="true">true</option>
-                        <option value="false">false</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="field-row">
-                <div class="field-label">
-                    <input type="checkbox" id="name-checkbox">
-                    name <span class="help-icon">?
-                        <div class="tooltip" id="help-name">Loading help text...</div>
-                    </span>
-                </div>
-                <div class="field-input disabled" id="name-container">
-                    <input type="text" id="name">
-                </div>
-            </div>
-            
             <div class="field-row">
                 <div class="field-label">
                     <input type="checkbox" id="sound-checkbox">
@@ -413,29 +141,57 @@
                     </span>
                 </div>
                 <div class="field-input disabled" id="sound-container">
-                    <div class="field-row">
-                        <div class="field-label">
-                            enter <span class="help-icon">?
-                                <div class="tooltip" id="help-soundEnter">Loading help text...</div>
+                    <div class="field-group">
+                        <div class="field-row">
+                            <div class="field-label margin-left-10">
+                                enter <span class="help-icon">?
+                                    <div class="tooltip" id="help-soundEnter">Loading help text...</div>
+                            </div>
+                            <div class="field-input">
+                                <input type="text" id="sound-enter" placeholder="filename.wav">
+                            </div>
                         </div>
-                        <div class="field-input">
-                            <input type="text" id="sound-enter" placeholder="filename.wav">
-                        </div>
-                    </div>
-                    <div class="field-row">
-                        <div class="field-label">
-                            loop <span class="help-icon">?
-                                <div class="tooltip" id="help-soundLoop">Loading help text...</div>
-                        </div>
-                        <div class="field-input">
-                            <input type="text" id="sound-loop" placeholder="filename.wav">
+                        <div class="field-row">
+                            <div class="field-label margin-left-10">
+                                loop <span class="help-icon">?
+                                    <div class="tooltip" id="help-soundLoop">Loading help text...</div>
+                            </div>
+                            <div class="field-input">
+                                <input type="text" id="sound-loop" placeholder="filename.wav">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+        </div>
+        
+        <div class="field-group">
             <div class="field-row">
                 <div class="field-label">
+                    <input type="checkbox" id="text-checkbox">
+                    text <span class="help-icon">?
+                        <div class="tooltip" id="help-text">Loading help text...</div>
+                    </span>
+                </div>
+                <div class="field-input disabled" id="text-container">
+                    <div class="field-group">
+                        <div class="field-row">
+                            <div class="field-label margin-left-10">
+                                visit <span class="help-icon">?
+                                    <div class="tooltip" id="help-textVisit">Loading help text...</div>
+                            </div>
+                            <div class="field-input">
+                                <input type="text" id="text-visit" placeholder="Welcome to the new creature bank.">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-row">
+                <div class="field-label-small">
                     <input type="checkbox" id="states-checkbox">
                     states <span class="help-icon">?
                         <div class="tooltip" id="help-states">Loading help text...</div>
@@ -450,7 +206,7 @@
                                 
                                 <!-- Optional fields within state -->
                                 <div class="field-row">
-                                    <div class="field-label">
+                                    <div class="field-label margin-left-10">
                                         <input type="checkbox" id="state-morale-checkbox-0">
                                         morale <span class="help-icon">?
                                             <div class="tooltip" id="help-moral">Loading help text...</div>
@@ -461,7 +217,7 @@
                                 </div>
 
                                 <div class="field-row">
-                                    <div class="field-label">
+                                    <div class="field-label margin-left-10">
                                         <input type="checkbox" id="state-luck-checkbox-0">
                                         luck <span class="help-icon">?
                                             <div class="tooltip" id="help-luck">Loading help text...</div>
@@ -471,75 +227,77 @@
                                     </div>
                                 </div>
 
-                                <div class="field-row">
-                                    <div class="field-label">
-                                        <input type="checkbox" id="state-spells-checkbox-0">
-                                        spells <span class="help-icon">?
-                                            <div class="tooltip" id="help-spells">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-spells-container-0">
-                                        <div id="state-spells-items-0">
-                                            <div class="array-item">
-                                                <div class="field-group">
-                                                    <div class="field-row">
-                                                        <div class="field-label">
-                                                            <input type="checkbox" id="state-spell-id-checkbox-0-0">
-                                                            id <span class="help-icon">?
-                                                                <div class="tooltip" id="help-spellsId">Loading help text...</div>
+                                <div class="field-group">
+                                    <div class="field-row">
+                                        <div class="field-label">
+                                            <input type="checkbox" id="state-spells-checkbox-0">
+                                            spells <span class="help-icon">?
+                                                <div class="tooltip" id="help-spells">Loading help text...</div>
+                                        </div>
+                                        <div class="field-input disabled" id="state-spells-container-0">
+                                            <div id="state-spells-items-0">
+                                                <div class="array-item">
+                                                    <div class="field-group">
+                                                        <div class="field-row">
+                                                            <div class="field-label">
+                                                                <input type="checkbox" id="state-spell-id-checkbox-0-0">
+                                                                id <span class="help-icon">?
+                                                                    <div class="tooltip" id="help-spellsId">Loading help text...</div>
+                                                            </div>
+                                                            <div class="field-input disabled" id="state-spell-id-container-0-0">
+                                                                <input type="number" id="state-spell-id-0-0" min="0">
+                                                            </div>
                                                         </div>
-                                                        <div class="field-input disabled" id="state-spell-id-container-0-0">
-                                                            <input type="number" id="state-spell-id-0-0" min="0">
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div class="field-row">
-                                                        <div class="field-label">
-                                                            <input type="checkbox" id="state-spell-bits-checkbox-0-0">
-                                                            bits <span class="help-icon">?
-                                                                <div class="tooltip" id="help-spellsBits">Loading help text...</div>
-                                                        </div>
-                                                        <div class="field-input disabled" id="state-spell-bits-container-0-0">
-                                                            <div class="field-group">
-                                                                <div class="field-row">
-                                                                    <div class="field-label">
-                                                                        flags <span class="help-icon">?
-                                                                            <div class="tooltip" id="help-bitsFlags">Loading help text...</div>
+                                                        
+                                                        <div class="field-row">
+                                                            <div class="field-label">
+                                                                <input type="checkbox" id="state-spell-bits-checkbox-0-0">
+                                                                bits <span class="help-icon">?
+                                                                    <div class="tooltip" id="help-spellsBits">Loading help text...</div>
+                                                            </div>
+                                                            <div class="field-input disabled" id="state-spell-bits-container-0-0">
+                                                                <div class="field-group">
+                                                                    <div class="field-row">
+                                                                        <div class="field-label">
+                                                                            flags <span class="help-icon">?
+                                                                                <div class="tooltip" id="help-bitsFlags">Loading help text...</div>
+                                                                        </div>
+                                                                        <div class="field-input">
+                                                                            <input type="number" id="state-spell-bits-flags-0-0" min="0">
+                                                                        </div>
                                                                     </div>
-                                                                    <div class="field-input">
-                                                                        <input type="number" id="state-spell-bits-flags-0-0" min="0">
+                                                                    <div class="field-row">
+                                                                        <div class="field-label">
+                                                                            levels <span class="help-icon">?
+                                                                                <div class="tooltip" id="help-bitsLevels">Loading help text...</div>
+                                                                        </div>
+                                                                        <div class="field-input">
+                                                                            <input type="number" id="state-spell-bits-levels-0-0" min="0">
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                                <div class="field-row">
-                                                                    <div class="field-label">
-                                                                        levels <span class="help-icon">?
-                                                                            <div class="tooltip" id="help-bitsLevels">Loading help text...</div>
-                                                                    </div>
-                                                                    <div class="field-input">
-                                                                        <input type="number" id="state-spell-bits-levels-0-0" min="0">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="field-row">
-                                                                    <div class="field-label">
-                                                                        schools <span class="help-icon">?
-                                                                            <div class="tooltip" id="help-bitsSchools">Loading help text...</div>
-                                                                    </div>
-                                                                    <div class="field-input">
-                                                                        <input type="number" id="state-spell-bits-schools-0-0" min="0">
+                                                                    <div class="field-row">
+                                                                        <div class="field-label">
+                                                                            schools <span class="help-icon">?
+                                                                                <div class="tooltip" id="help-bitsSchools">Loading help text...</div>
+                                                                        </div>
+                                                                        <div class="field-input">
+                                                                            <input type="number" id="state-spell-bits-schools-0-0" min="0">
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <button class="remove-spell">-</button>
                                                 </div>
-                                                <button class="remove-spell">-</button>
                                             </div>
+                                            <button id="add-spell" class="add-spell" data-state-index="0">+</button>
                                         </div>
-                                        <button class="add-spell" data-state-index="0">+</button>
                                     </div>
                                 </div>
 
                                 <div class="field-row">
-                                    <div class="field-label">
+                                    <div class="field-label margin-left-10">
                                         <input type="checkbox" id="state-spellPoints-checkbox-0">
                                         spellPoints <span class="help-icon">?
                                             <div class="tooltip" id="help-spellPoints">Loading help text...</div>
@@ -550,7 +308,7 @@
                                 </div>
 
                                 <div class="field-row">
-                                    <div class="field-label">
+                                    <div class="field-label margin-left-10">
                                         <input type="checkbox" id="state-experience-checkbox-0">
                                         experience <span class="help-icon">?
                                             <div class="tooltip" id="help-experience">Loading help text...</div>
@@ -560,55 +318,92 @@
                                     </div>
                                 </div>
 
-                                <div class="field-row">
-                                    <div class="field-label">
-                                        <input type="checkbox" id="state-skills-checkbox-0">
-                                        skills <span class="help-icon">?
-                                            <div class="tooltip" id="help-skills">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-skills-container-0">
-                                        <div class="field-row">
-                                            <div class="field-label">
-                                                primary<br>(comma-separated) <span class="help-icon">?
-                                                    <div class="tooltip" id="help-skillsPrimary">Loading help text...</div>
-                                            </div>
-                                            <div class="field-input">
-                                                <input type="text" id="state-skills-primary-0" placeholder="0,1,2,3">
+                                <div class="field-group">
+                                    <div class="field-row">
+                                        <div class="field-label">
+                                            <input type="checkbox" id="state-skills-checkbox-0">
+                                            skills <span class="help-icon">?
+                                                <div class="tooltip" id="help-skills">Loading help text...</div>
+                                        </div>
+                                        <div class="field-input disabled" id="state-skills-container-0">
+                                            <div class="field-row">
+                                                <div class="field-label">
+                                                    primary<br>(comma-separated) <span class="help-icon">?
+                                                        <div class="tooltip" id="help-skillsPrimary">Loading help text...</div>
+                                                </div>
+                                                <div class="field-input">
+                                                    <input type="text" id="state-skills-primary-0" placeholder="0,1,2,3">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="field-row">
-                                    <div class="field-label">
-                                        <input type="checkbox" id="state-guardians-checkbox-0">
-                                        guardians <span class="help-icon">?
-                                            <div class="tooltip" id="help-guardians">Loading help text...</div>
+                                    <div class="field-label margin-left-10">
+                                        <input type="checkbox" id="state-artifactTypeCounts-checkbox-0">
+                                        artifactTypeCounts <span class="help-icon">?
+                                            <div class="tooltip" id="help-artifactTypeCounts">Loading help text...</div>
                                     </div>
-                                    <div class="field-input disabled" id="state-guardians-container-0">
-                                        <div class="field-row">
-                                            <div class="field-label">
-                                                count<br>(comma-separated) <span class="help-icon">?
-                                                    <div class="tooltip" id="help-guardiansCount">Loading help text...</div>
-                                            </div>
-                                            <div class="field-input">
-                                                <input type="text" id="state-guardians-count-0" placeholder="15,15,15,0,0,0,0">
-                                            </div>
+                                    <div class="field-input disabled" id="state-artifactTypeCounts-container-0">
+                                        <input type="text" id="state-artifactTypeCounts-0" placeholder="0,1,0,0">
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <div class="field-label margin-left-10">
+                                        <input type="checkbox" id="state-creatureRewardCount-checkbox-0">
+                                        creatureRewardCount <span class="help-icon">?
+                                            <div class="tooltip" id="help-creatureRewardCount">Loading help text...</div>
+                                    </div>
+                                    <div class="field-input disabled" id="state-creatureRewardCount-container-0">
+                                        <input type="number" id="state-creatureRewardCount-0" min="0">
+                                    </div>
+                                </div>
+
+                                <div class="field-row">
+                                    <div class="field-label margin-left-10">
+                                        <input type="checkbox" id="state-creatureRewardType-checkbox-0">
+                                        creatureRewardType <span class="help-icon">?
+                                            <div class="tooltip" id="help-creatureRewardType">Loading help text...</div>
+                                    </div>
+                                    <div class="field-input disabled" id="state-creatureRewardType-container-0">
+                                        <input type="number" id="state-creatureRewardType-0">
+                                    </div>
+                                </div>
+
+                                <div class="field-group">
+                                    <div class="field-row">
+                                        <div class="field-label">
+                                            <input type="checkbox" id="state-guardians-checkbox-0">
+                                            guardians <span class="help-icon">?
+                                                <div class="tooltip" id="help-guardians">Loading help text...</div>
                                         </div>
-                                        <div class="field-row">
-                                            <div class="field-label">
-                                                type<br>(comma-separated) <span class="help-icon">?
-                                                    <div class="tooltip" id="help-guardiansType">Loading help text...</div>
+                                        <div class="field-input disabled" id="state-guardians-container-0">
+                                            <div class="field-row">
+                                                <div class="field-label">
+                                                    count<br>(comma-separated) <span class="help-icon">?
+                                                        <div class="tooltip" id="help-guardiansCount">Loading help text...</div>
+                                                </div>
+                                                <div class="field-input">
+                                                    <input type="text" id="state-guardians-count-0" placeholder="15,15,15,0,0,0,0">
+                                                </div>
                                             </div>
-                                            <div class="field-input">
-                                                <input type="text" id="state-guardians-type-0" placeholder="59,59,59,-1,-1,-1,-1">
+                                            <div class="field-row">
+                                                <div class="field-label">
+                                                    type<br>(comma-separated) <span class="help-icon">?
+                                                        <div class="tooltip" id="help-guardiansType">Loading help text...</div>
+                                                </div>
+                                                <div class="field-input">
+                                                    <input type="text" id="state-guardians-type-0" placeholder="59,59,59,-1,-1,-1,-1">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="field-row">
-                                    <div class="field-label">
+                                    <div class="field-label margin-left-10">
                                         <input type="checkbox" id="state-resources-checkbox-0">
                                         resources <span class="help-icon">?
                                             <div class="tooltip" id="help-resources">Loading help text...</div>
@@ -619,10 +414,10 @@
                                 </div>
 
                                 <div class="field-row">
-                                    <div class="field-label">
+                                    <div class="field-label margin-left-10">
                                         <input type="checkbox" id="state-chance-checkbox-0">
                                         chance <span class="help-icon">?
-                                            <div class="tooltip" id="help-upgradeChance">Loading help text...</div>
+                                            <div class="tooltip" id="help-stateChance">Loading help text...</div>
                                     </div>
                                     <div class="field-input disabled" id="state-chance-container-0">
                                         <input type="number" id="state-chance-0" min="0" max="100">
@@ -635,821 +430,874 @@
                     <button class="add-item" id="add-state">Add State</button>
                 </div>
             </div>
-            
-            <!-- Remove the spells field that was here as it's now inside the states structure -->
         </div>
-    </div>
 
-    <div class="bottom-controls">
-        <button class="save-button" id="save-file" disabled>Save File</button>
         
-        <button class="json-preview-toggle" id="toggle-json">Show JSON Code</button>
-        <div class="json-preview" id="json-preview"></div>
+        <!-- Remove the spells field that was here as it's now inside the states structure -->
     </div>
+</div>
 
-    <script>
-        // Localization setup
-        let translations = {};
-        let currentLang = 'en';
-        let isDarkTheme = true;
+<div class="bottom-controls">
+    <button class="save-button" id="save-file" disabled>Save File</button>
+    
+    <button class="json-preview-toggle" id="toggle-json">Show JSON Code</button>
+    <div class="json-preview" id="json-preview"></div>
+</div>
 
-        // Function to load language file
-        async function loadLanguage(lang) {
-            try {
-                const response = await fetch(`./lang/${lang}.json`);
-                if (!response.ok) {
-                    throw new Error(`Failed to load language file: ${response.status}`);
-                }
-                translations = await response.json();
-                currentLang = lang;
-                updateUILanguage();
-            } catch (error) {
-                console.error('Error loading language file:', error);
-                // Fallback to English if there's an error
-                if (lang !== 'en') {
-                    loadLanguage('en');
-                }
+<script>
+    // Localization setup
+    let translations = {};
+    let currentLang = 'en';
+    let isDarkTheme = true;
+
+    // Function to load language file
+    async function loadLanguage(lang) {
+        try {
+            const response = await fetch(`./lang/${lang}.json`);
+            if (!response.ok) {
+                throw new Error(`Failed to load language file: ${response.status}`);
+            }
+            translations = await response.json();
+            currentLang = lang;
+            updateUILanguage();
+        } catch (error) {
+            console.error('Error loading language file:', error);
+            // Fallback to English if there's an error
+            if (lang !== 'en') {
+                loadLanguage('en');
             }
         }
+    }
 
-        // Function to update the UI language
-        function updateUILanguage() {
-            document.getElementById('app-title').textContent = translations.appTitle;
-            document.getElementById('install-pwa').textContent = translations.installPwa;
-            document.getElementById('theme-toggle-btn').textContent = isDarkTheme ? 
-                translations.darkTheme : translations.lightTheme;
-            document.getElementById('lang-selector-btn').textContent = translations.currentLanguage;
-            document.getElementById('browser-support').textContent = translations.browserSupport;
-            document.getElementById('object-subtype-title').textContent = translations.objectParameters;
-            document.getElementById('required-fields-title').textContent = translations.requiredFields;
-            document.getElementById('optional-fields-title').textContent = translations.optionalFields;
-            document.getElementById('save-file').textContent = translations.saveFile;
-            
-            const jsonToggleBtn = document.getElementById('toggle-json');
-            const isShowingJson = document.getElementById('json-preview').classList.contains('show');
-            jsonToggleBtn.textContent = isShowingJson ? 
-                translations.hideJsonCode : translations.showJsonCode;
-            
-            // label texts
-            // document.getElementById('------').textContent = translations.fieldLabels.----------;
+    // Function to update the UI language
+    function updateUILanguage() {
+        document.getElementById('app-title').textContent = translations.appTitle;
+        document.getElementById('install-pwa').textContent = translations.installPwa;
+        document.getElementById('theme-toggle-btn').textContent = isDarkTheme ? 
+            translations.darkTheme : translations.lightTheme;
+        document.getElementById('lang-selector-btn').textContent = translations.currentLanguage;
+        document.getElementById('browser-support').textContent = translations.browserSupport;
+        document.getElementById('object-subtype-title').textContent = translations.objectParameters;
+        document.getElementById('required-fields-title').textContent = translations.requiredFields;
+        document.getElementById('optional-fields-title').textContent = translations.optionalFields;
+        document.getElementById('add-spell').textContent = translations.addSpell;
+        document.getElementById('save-file').textContent = translations.saveFile;
+        
+        const jsonToggleBtn = document.getElementById('toggle-json');
+        const isShowingJson = document.getElementById('json-preview').classList.contains('show');
+        jsonToggleBtn.textContent = isShowingJson ? 
+            translations.hideJsonCode : translations.showJsonCode;
+        
+        // label texts
+        // document.getElementById('help-text').textContent = translations.fieldLabels.text;
 
-            // help texts
-            document.getElementById('help-objectType').textContent = translations.helpTexts.objectType;
-            document.getElementById('help-objectSubtype').textContent = translations.helpTexts.objectSubtype;
-            document.getElementById('help-value').textContent = translations.helpTexts.value;
-            document.getElementById('help-density').textContent = translations.helpTexts.density;
-            document.getElementById('help-properties').textContent = translations.helpTexts.properties;
-            document.getElementById('help-enabled').textContent = translations.helpTexts.enabled;
-            document.getElementById('help-name').textContent = translations.helpTexts.name;
-            document.getElementById('help-sound').textContent = translations.helpTexts.sound;
-            document.getElementById('help-soundEnter').textContent = translations.helpTexts.soundEnter;
-            document.getElementById('help-soundLoop').textContent = translations.helpTexts.soundLoop;
-            document.getElementById('help-states').textContent = translations.helpTexts.states;
-            document.getElementById('help-moral').textContent = translations.helpTexts.statesMorale;
-            document.getElementById('help-luck').textContent = translations.helpTexts.statesLuck;
-            document.getElementById('help-spells').textContent = translations.helpTexts.spells;
-            document.getElementById('help-spellsId').textContent = translations.helpTexts.spellsId;
-            document.getElementById('help-spellsBits').textContent = translations.helpTexts.spellsBits;
-            document.getElementById('help-bitsFlags').textContent = translations.helpTexts.bitsFlags;
-            document.getElementById('help-bitsLevels').textContent = translations.helpTexts.bitsLevels;
-            document.getElementById('help-bitsSchools').textContent = translations.helpTexts.bitsSchools;
-            document.getElementById('help-resources').textContent = translations.helpTexts.resources;
-            document.getElementById('help-guardians').textContent = translations.helpTexts.guardians;
-            document.getElementById('help-guardiansCount').textContent = translations.helpTexts.guardiansCount;
-            document.getElementById('help-guardiansType').textContent = translations.helpTexts.guardiansType;
-            document.getElementById('help-experience').textContent = translations.helpTexts.experience;
-            document.getElementById('help-skills').textContent = translations.helpTexts.skills;
-            document.getElementById('help-skillsPrimary').textContent = translations.helpTexts.skillsPrimary;
-            document.getElementById('help-upgradeChance').textContent = translations.helpTexts.upgradeChance;
-            document.getElementById('help-spellPoints').textContent = translations.helpTexts.spellPoints;
+        // help texts
+        document.getElementById('help-objectType').textContent = translations.helpTexts.objectType;
+        document.getElementById('help-objectSubtype').textContent = translations.helpTexts.objectSubtype;
+        document.getElementById('help-value').textContent = translations.helpTexts.value;
+        document.getElementById('help-density').textContent = translations.helpTexts.density;
+        document.getElementById('help-properties').textContent = translations.helpTexts.properties;
+        document.getElementById('help-enabled').textContent = translations.helpTexts.enabled;
+        document.getElementById('help-name').textContent = translations.helpTexts.name;
+        document.getElementById('help-sound').textContent = translations.helpTexts.sound;
+        document.getElementById('help-soundEnter').textContent = translations.helpTexts.soundEnter;
+        document.getElementById('help-soundLoop').textContent = translations.helpTexts.soundLoop;
+        document.getElementById('help-text').textContent = translations.helpTexts.text;
+        document.getElementById('help-textVisit').textContent = translations.helpTexts.textVisit;
+        document.getElementById('help-states').textContent = translations.helpTexts.states;
+        document.getElementById('help-moral').textContent = translations.helpTexts.statesMorale;
+        document.getElementById('help-luck').textContent = translations.helpTexts.statesLuck;
+        document.getElementById('help-spells').textContent = translations.helpTexts.spells;
+        document.getElementById('help-spellsId').textContent = translations.helpTexts.spellsId;
+        document.getElementById('help-spellsBits').textContent = translations.helpTexts.spellsBits;
+        document.getElementById('help-bitsFlags').textContent = translations.helpTexts.bitsFlags;
+        document.getElementById('help-bitsLevels').textContent = translations.helpTexts.bitsLevels;
+        document.getElementById('help-bitsSchools').textContent = translations.helpTexts.bitsSchools;
+        document.getElementById('help-resources').textContent = translations.helpTexts.resources;
+        document.getElementById('help-guardians').textContent = translations.helpTexts.guardians;
+        document.getElementById('help-guardiansCount').textContent = translations.helpTexts.guardiansCount;
+        document.getElementById('help-guardiansType').textContent = translations.helpTexts.guardiansType;
+        document.getElementById('help-experience').textContent = translations.helpTexts.experience;
+        document.getElementById('help-skills').textContent = translations.helpTexts.skills;
+        document.getElementById('help-skillsPrimary').textContent = translations.helpTexts.skillsPrimary;
+        document.getElementById('help-stateChance').textContent = translations.helpTexts.stateChance;
+        document.getElementById('help-spellPoints').textContent = translations.helpTexts.spellPoints;
+        document.getElementById('help-artifactTypeCounts').textContent = translations.helpTexts.artifactTypeCounts;
+        document.getElementById('help-creatureRewardCount').textContent = translations.helpTexts.creatureRewardCount;
+        document.getElementById('help-creatureRewardType').textContent = translations.helpTexts.creatureRewardType;
+    }
+
+    // Language selector functionality
+    document.getElementById('lang-selector-btn').addEventListener('click', function() {
+        document.getElementById('lang-dropdown').classList.toggle('show');
+    });
+
+    document.querySelectorAll('#lang-dropdown button').forEach(button => {
+        button.addEventListener('click', function() {
+            const lang = this.getAttribute('data-lang');
+            loadLanguage(lang);
+            document.getElementById('lang-dropdown').classList.remove('show');
+        });
+    });
+
+    // Theme toggle functionality
+    document.getElementById('theme-toggle-btn').addEventListener('click', function() {
+        isDarkTheme = !isDarkTheme;
+        document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+        this.textContent = isDarkTheme ? 
+            translations.darkTheme : translations.lightTheme;
+    });
+
+    // Close dropdown when clicking outside
+    window.addEventListener('click', function(event) {
+        if (!event.target.matches('#lang-selector-btn')) {
+            const dropdown = document.getElementById('lang-dropdown');
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
         }
+    });
 
-        // Language selector functionality
-        document.getElementById('lang-selector-btn').addEventListener('click', function() {
-            document.getElementById('lang-dropdown').classList.toggle('show');
+    // Optional fields toggle
+    function setupOptionalField(checkboxId, containerId, callback) {
+        const checkbox = document.getElementById(checkboxId);
+        const container = document.getElementById(containerId);
+        
+        if (!checkbox || !container) return;
+        
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                container.classList.remove('disabled');
+            } else {
+                container.classList.add('disabled');
+            }
+            updateJsonPreview();
+            if (callback) callback(this.checked);
         });
+    }
 
-        document.querySelectorAll('#lang-dropdown button').forEach(button => {
-            button.addEventListener('click', function() {
-                const lang = this.getAttribute('data-lang');
-                loadLanguage(lang);
-                document.getElementById('lang-dropdown').classList.remove('show');
-            });
-        });
+    // Setup all optional fields
+    setupOptionalField('enabled-checkbox', 'enabled-container');
+    setupOptionalField('name-checkbox', 'name-container');
+    setupOptionalField('sound-checkbox', 'sound-container');
+    setupOptionalField('text-checkbox', 'text-container');
+    setupOptionalField('states-checkbox', 'states-container');
 
-        // Theme toggle functionality
-        document.getElementById('theme-toggle-btn').addEventListener('click', function() {
-            isDarkTheme = !isDarkTheme;
-            document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
-            this.textContent = isDarkTheme ? 
-                translations.darkTheme : translations.lightTheme;
-        });
-
-        // Close dropdown when clicking outside
-        window.addEventListener('click', function(event) {
-            if (!event.target.matches('#lang-selector-btn')) {
-                const dropdown = document.getElementById('lang-dropdown');
-                if (dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                }
+    // Initialize state field handlers for the first state
+    function setupStateFields(stateIndex) {
+        // Set up all optional fields within a state
+        setupOptionalField(`state-morale-checkbox-${stateIndex}`, `state-morale-container-${stateIndex}`);
+        setupOptionalField(`state-luck-checkbox-${stateIndex}`, `state-luck-container-${stateIndex}`);
+        setupOptionalField(`state-spells-checkbox-${stateIndex}`, `state-spells-container-${stateIndex}`);
+        setupOptionalField(`state-spellPoints-checkbox-${stateIndex}`, `state-spellPoints-container-${stateIndex}`);
+        setupOptionalField(`state-experience-checkbox-${stateIndex}`, `state-experience-container-${stateIndex}`);
+        setupOptionalField(`state-skills-checkbox-${stateIndex}`, `state-skills-container-${stateIndex}`);
+        setupOptionalField(`state-artifactTypeCounts-checkbox-${stateIndex}`, `state-artifactTypeCounts-container-${stateIndex}`);
+        setupOptionalField(`state-creatureRewardCount-checkbox-${stateIndex}`, `state-creatureRewardCount-container-${stateIndex}`);
+        setupOptionalField(`state-creatureRewardType-checkbox-${stateIndex}`, `state-creatureRewardType-container-${stateIndex}`);
+        setupOptionalField(`state-guardians-checkbox-${stateIndex}`, `state-guardians-container-${stateIndex}`);
+        setupOptionalField(`state-resources-checkbox-${stateIndex}`, `state-resources-container-${stateIndex}`);
+        setupOptionalField(`state-chance-checkbox-${stateIndex}`, `state-chance-container-${stateIndex}`);
+        
+        // Set up spell fields for the first spell in this state
+        setupOptionalField(`state-spell-id-checkbox-${stateIndex}-0`, `state-spell-id-container-${stateIndex}-0`);
+        setupOptionalField(`state-spell-bits-checkbox-${stateIndex}-0`, `state-spell-bits-container-${stateIndex}-0`);
+        
+        // Fix: Use valid CSS selector syntax - use attribute selectors separately 
+        // Add event listeners for all input fields in this state
+        document.querySelectorAll(`[id^="state-"][id$="${stateIndex}"]`).forEach(input => {
+            if (input.tagName === 'INPUT' && !input.id.includes('checkbox')) {
+                input.addEventListener('input', updateJsonPreview);
             }
         });
-
-        // Optional fields toggle
-        function setupOptionalField(checkboxId, containerId, callback) {
-            const checkbox = document.getElementById(checkboxId);
-            const container = document.getElementById(containerId);
-            
-            if (!checkbox || !container) return;
-            
-            checkbox.addEventListener('change', function() {
-                if (this.checked) {
-                    container.classList.remove('disabled');
-                } else {
-                    container.classList.add('disabled');
-                }
-                updateJsonPreview();
-                if (callback) callback(this.checked);
+        
+        // Fix: Use valid CSS selector syntax for spell bits fields
+        document.querySelectorAll(`[id^="state-spell-bits-"][id$="${stateIndex}-0"]`).forEach(input => {
+            if (input.tagName === 'INPUT') {
+                input.addEventListener('input', updateJsonPreview);
+            }
+        });
+        
+        // Setup add/remove spell buttons
+        const addSpellBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
+        if (addSpellBtn) {
+            addSpellBtn.addEventListener('click', function() {
+                addSpellToState(stateIndex);
             });
         }
-
-        // Setup all optional fields
-        setupOptionalField('enabled-checkbox', 'enabled-container');
-        setupOptionalField('name-checkbox', 'name-container');
-        setupOptionalField('sound-checkbox', 'sound-container');
-        setupOptionalField('states-checkbox', 'states-container');
-
-        // Initialize state field handlers for the first state
-        function setupStateFields(stateIndex) {
-            // Set up all optional fields within a state
-            setupOptionalField(`state-morale-checkbox-${stateIndex}`, `state-morale-container-${stateIndex}`);
-            setupOptionalField(`state-luck-checkbox-${stateIndex}`, `state-luck-container-${stateIndex}`);
-            setupOptionalField(`state-spells-checkbox-${stateIndex}`, `state-spells-container-${stateIndex}`);
-            setupOptionalField(`state-spellPoints-checkbox-${stateIndex}`, `state-spellPoints-container-${stateIndex}`);
-            setupOptionalField(`state-experience-checkbox-${stateIndex}`, `state-experience-container-${stateIndex}`);
-            setupOptionalField(`state-skills-checkbox-${stateIndex}`, `state-skills-container-${stateIndex}`);
-            setupOptionalField(`state-guardians-checkbox-${stateIndex}`, `state-guardians-container-${stateIndex}`);
-            setupOptionalField(`state-resources-checkbox-${stateIndex}`, `state-resources-container-${stateIndex}`);
-            setupOptionalField(`state-chance-checkbox-${stateIndex}`, `state-chance-container-${stateIndex}`);
-            
-            // Set up spell fields for the first spell in this state
-            setupOptionalField(`state-spell-id-checkbox-${stateIndex}-0`, `state-spell-id-container-${stateIndex}-0`);
-            setupOptionalField(`state-spell-bits-checkbox-${stateIndex}-0`, `state-spell-bits-container-${stateIndex}-0`);
-            
-            // Fix: Use valid CSS selector syntax - use attribute selectors separately 
-            // Add event listeners for all input fields in this state
-            document.querySelectorAll(`[id^="state-"][id$="${stateIndex}"]`).forEach(input => {
-                if (input.tagName === 'INPUT' && !input.id.includes('checkbox')) {
-                    input.addEventListener('input', updateJsonPreview);
-                }
+        
+        // Setup remove spell button
+        const removeSpellBtn = document.querySelector(`#state-spells-items-${stateIndex} .remove-spell`);
+        if (removeSpellBtn) {
+            removeSpellBtn.addEventListener('click', function() {
+                resetSpellFields(stateIndex, 0);
             });
-            
-            // Fix: Use valid CSS selector syntax for spell bits fields
-            document.querySelectorAll(`[id^="state-spell-bits-"][id$="${stateIndex}-0"]`).forEach(input => {
-                if (input.tagName === 'INPUT') {
-                    input.addEventListener('input', updateJsonPreview);
-                }
-            });
-            
-            // Setup add/remove spell buttons
-            const addSpellBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
-            if (addSpellBtn) {
-                addSpellBtn.addEventListener('click', function() {
-                    addSpellToState(stateIndex);
-                });
-            }
-            
-            // Setup remove spell button
-            const removeSpellBtn = document.querySelector(`#state-spells-items-${stateIndex} .remove-spell`);
-            if (removeSpellBtn) {
-                removeSpellBtn.addEventListener('click', function() {
-                    resetSpellFields(stateIndex, 0);
-                });
-            }
-            
-            // Setup remove state button
-            const removeStateBtn = document.querySelectorAll('.remove-state')[stateIndex];
-            if (removeStateBtn) {
-                removeStateBtn.addEventListener('click', function() {
-                    if (document.querySelectorAll('.state-item').length > 1) {
-                        this.closest('.state-item').remove();
-                        renumberStates();
-                        updateJsonPreview();
-                        
-                        // Enable add button if we're below the max
-                        if (document.querySelectorAll('.state-item').length < 4) {
-                            document.getElementById('add-state').disabled = false;
-                        }
-                    } else {
-                        // If it's the last state, just reset the fields
-                        resetStateFields(0);
+        }
+        
+        // Setup remove state button
+        const removeStateBtn = document.querySelectorAll('.remove-state')[stateIndex];
+        if (removeStateBtn) {
+            removeStateBtn.addEventListener('click', function() {
+                if (document.querySelectorAll('.state-item').length > 1) {
+                    this.closest('.state-item').remove();
+                    renumberStates();
+                    updateJsonPreview();
+                    
+                    // Enable add button if we're below the max
+                    if (document.querySelectorAll('.state-item').length < 4) {
+                        document.getElementById('add-state').disabled = false;
                     }
-                });
-            }
+                } else {
+                    // If it's the last state, just reset the fields
+                    resetStateFields(0);
+                }
+            });
         }
+    }
+    
+    // Function to add a new spell to a state
+    function addSpellToState(stateIndex) {
+        const spellsContainer = document.getElementById(`state-spells-items-${stateIndex}`);
+        const spellsCount = spellsContainer.querySelectorAll('.array-item').length;
         
-        // Function to add a new spell to a state
-        function addSpellToState(stateIndex) {
-            const spellsContainer = document.getElementById(`state-spells-items-${stateIndex}`);
-            const spellsCount = spellsContainer.querySelectorAll('.array-item').length;
-            
-            if (spellsCount < 4) {
-                const newSpellIndex = spellsCount;
-                const newSpellHtml = `
-                    <div class="array-item">
-                        <div class="field-group">
-                            <div class="field-row">
-                                <div class="field-label">
-                                    <input type="checkbox" id="state-spell-id-checkbox-${stateIndex}-${newSpellIndex}">
-                                    id
-                                </div>
-                                <div class="field-input disabled" id="state-spell-id-container-${stateIndex}-${newSpellIndex}">
-                                    <input type="number" id="state-spell-id-${stateIndex}-${newSpellIndex}" min="0">
-                                </div>
+        if (spellsCount < 4) {
+            const newSpellIndex = spellsCount;
+            const newSpellHtml = `
+                <div class="array-item">
+                    <div class="field-group">
+                        <div class="field-row">
+                            <div class="field-label">
+                                <input type="checkbox" id="state-spell-id-checkbox-${stateIndex}-${newSpellIndex}">
+                                id
                             </div>
-                            
-                            <div class="field-row">
-                                <div class="field-label">
-                                    <input type="checkbox" id="state-spell-bits-checkbox-${stateIndex}-${newSpellIndex}">
-                                    bits
-                                </div>
-                                <div class="field-input disabled" id="state-spell-bits-container-${stateIndex}-${newSpellIndex}">
-                                    <div class="field-group">
-                                        <div class="field-row">
-                                            <div class="field-label">flags</div>
-                                            <div class="field-input">
-                                                <input type="number" id="state-spell-bits-flags-${stateIndex}-${newSpellIndex}" min="0">
-                                            </div>
+                            <div class="field-input disabled" id="state-spell-id-container-${stateIndex}-${newSpellIndex}">
+                                <input type="number" id="state-spell-id-${stateIndex}-${newSpellIndex}" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="field-row">
+                            <div class="field-label">
+                                <input type="checkbox" id="state-spell-bits-checkbox-${stateIndex}-${newSpellIndex}">
+                                bits
+                            </div>
+                            <div class="field-input disabled" id="state-spell-bits-container-${stateIndex}-${newSpellIndex}">
+                                <div class="field-group">
+                                    <div class="field-row">
+                                        <div class="field-label">flags</div>
+                                        <div class="field-input">
+                                            <input type="number" id="state-spell-bits-flags-${stateIndex}-${newSpellIndex}" min="0">
                                         </div>
-                                        <div class="field-row">
-                                            <div class="field-label">levels</div>
-                                            <div class="field-input">
-                                                <input type="number" id="state-spell-bits-levels-${stateIndex}-${newSpellIndex}" min="0">
-                                            </div>
+                                    </div>
+                                    <div class="field-row">
+                                        <div class="field-label">levels</div>
+                                        <div class="field-input">
+                                            <input type="number" id="state-spell-bits-levels-${stateIndex}-${newSpellIndex}" min="0">
                                         </div>
-                                        <div class="field-row">
-                                            <div class="field-label">schools</div>
-                                            <div class="field-input">
-                                                <input type="number" id="state-spell-bits-schools-${stateIndex}-${newSpellIndex}" min="0">
-                                            </div>
+                                    </div>
+                                    <div class="field-row">
+                                        <div class="field-label">schools</div>
+                                        <div class="field-input">
+                                            <input type="number" id="state-spell-bits-schools-${stateIndex}-${newSpellIndex}" min="0">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button class="remove-spell">-</button>
                     </div>
-                `;
-                
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = newSpellHtml;
-                const newSpellElement = tempDiv.firstElementChild;
-                spellsContainer.appendChild(newSpellElement);
-                
-                // Setup the new spell's fields
-                setupOptionalField(`state-spell-id-checkbox-${stateIndex}-${newSpellIndex}`, `state-spell-id-container-${stateIndex}-${newSpellIndex}`);
-                setupOptionalField(`state-spell-bits-checkbox-${stateIndex}-${newSpellIndex}`, `state-spell-bits-container-${stateIndex}-${newSpellIndex}`);
-                
-                // Fix: Update the selector to properly target all input fields in the new spell
-                newSpellElement.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
-                    if (!input.id.includes('checkbox')) {
-                        input.addEventListener('input', updateJsonPreview);
-                    }
-                });
-                
-                // Add remove spell button listener
-                const removeBtn = newSpellElement.querySelector('.remove-spell');
-                removeBtn.addEventListener('click', function() {
-                    newSpellElement.remove();
-                    updateJsonPreview();
-                    
-                    // Re-enable add button
-                    const addBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
-                    if (addBtn) {
-                        addBtn.disabled = false;
-                    }
-                });
-                
-                // Disable add button if we reached the maximum
-                if (spellsContainer.querySelectorAll('.array-item').length >= 4) {
-                    const addBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
-                    if (addBtn) {
-                        addBtn.disabled = true;
-                    }
-                }
-                
-                updateJsonPreview();
-            }
-        }
-        
-        // Function to reset spell fields
-        function resetSpellFields(stateIndex, spellIndex) {
-            document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`).checked = false;
-            document.getElementById(`state-spell-id-container-${stateIndex}-${spellIndex}`).classList.add('disabled');
-            document.getElementById(`state-spell-id-${stateIndex}-${spellIndex}`).value = '';
+                    <button class="remove-spell">-</button>
+                </div>
+            `;
             
-            document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`).checked = false;
-            document.getElementById(`state-spell-bits-container-${stateIndex}-${spellIndex}`).classList.add('disabled');
-            document.getElementById(`state-spell-bits-flags-${stateIndex}-${spellIndex}`).value = '';
-            document.getElementById(`state-spell-bits-levels-${stateIndex}-${spellIndex}`).value = '';
-            document.getElementById(`state-spell-bits-schools-${stateIndex}-${spellIndex}`).value = '';
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newSpellHtml;
+            const newSpellElement = tempDiv.firstElementChild;
+            spellsContainer.appendChild(newSpellElement);
+            
+            // Setup the new spell's fields
+            setupOptionalField(`state-spell-id-checkbox-${stateIndex}-${newSpellIndex}`, `state-spell-id-container-${stateIndex}-${newSpellIndex}`);
+            setupOptionalField(`state-spell-bits-checkbox-${stateIndex}-${newSpellIndex}`, `state-spell-bits-container-${stateIndex}-${newSpellIndex}`);
+            
+            // Fix: Update the selector to properly target all input fields in the new spell
+            newSpellElement.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
+                if (!input.id.includes('checkbox')) {
+                    input.addEventListener('input', updateJsonPreview);
+                }
+            });
+            
+            // Add remove spell button listener
+            const removeBtn = newSpellElement.querySelector('.remove-spell');
+            removeBtn.addEventListener('click', function() {
+                newSpellElement.remove();
+                updateJsonPreview();
+                
+                // Re-enable add button
+                const addBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
+                if (addBtn) {
+                    addBtn.disabled = false;
+                }
+            });
+            
+            // Disable add button if we reached the maximum
+            if (spellsContainer.querySelectorAll('.array-item').length >= 4) {
+                const addBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
+                if (addBtn) {
+                    addBtn.disabled = true;
+                }
+            }
             
             updateJsonPreview();
         }
+    }
+    
+    // Function to reset spell fields
+    function resetSpellFields(stateIndex, spellIndex) {
+        document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`).checked = false;
+        document.getElementById(`state-spell-id-container-${stateIndex}-${spellIndex}`).classList.add('disabled');
+        document.getElementById(`state-spell-id-${stateIndex}-${spellIndex}`).value = '';
         
-        // Function to reset state fields
-        function resetStateFields(stateIndex) {
-            // Reset all checkboxes and inputs for the state
-            document.querySelectorAll(`[id^=state-][id$=-checkbox-${stateIndex}]`).forEach(checkbox => {
+        document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`).checked = false;
+        document.getElementById(`state-spell-bits-container-${stateIndex}-${spellIndex}`).classList.add('disabled');
+        document.getElementById(`state-spell-bits-flags-${stateIndex}-${spellIndex}`).value = '';
+        document.getElementById(`state-spell-bits-levels-${stateIndex}-${spellIndex}`).value = '';
+        document.getElementById(`state-spell-bits-schools-${stateIndex}-${spellIndex}`).value = '';
+        
+        updateJsonPreview();
+    }
+    
+    // Function to reset state fields
+    function resetStateFields(stateIndex) {
+        // Reset all checkboxes and inputs for the state
+        document.querySelectorAll(`[id^=state-][id$=-checkbox-${stateIndex}]`).forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        document.querySelectorAll(`[id^=state-][id$=-container-${stateIndex}]`).forEach(container => {
+            container.classList.add('disabled');
+        });
+        
+        document.querySelectorAll(`[id^=state-][id$=-${stateIndex}]`).forEach(input => {
+            if (input.tagName === 'INPUT' && !input.id.includes('checkbox')) {
+                input.value = '';
+            }
+        });
+        
+        // Reset spell fields
+        resetSpellFields(stateIndex, 0);
+        
+        updateJsonPreview();
+    }
+    
+    // Function to renumber states after removal
+    function renumberStates() {
+        const states = document.querySelectorAll('.state-item');
+        states.forEach((state, index) => {
+            // Update the heading
+            state.querySelector('h4').textContent = `State #${index + 1}`;
+            
+            // Update all IDs and data attributes
+            state.querySelectorAll('[id]').forEach(el => {
+                // Replace old index with new index in IDs
+                const oldId = el.id;
+                // Fix: Use a more reliable way to update IDs
+                if (oldId.includes('state-')) {
+                    if (oldId.includes('spell')) {
+                        // Handle spell IDs which have two indexes (state and spell)
+                        const matches = oldId.match(/^(.*-)\d+(-.*-)\d+$/);
+                        if (matches && matches.length === 3) {
+                            el.id = matches[1] + index + matches[2] + oldId.match(/\d+$/)[0];
+                        }
+                    } else {
+                        // Handle regular state IDs with one index
+                        const matches = oldId.match(/^(.*-)\d+$/);
+                        if (matches && matches.length === 2) {
+                            el.id = matches[1] + index;
+                        }
+                    }
+                }
+            });
+            
+            // Update data-state-index attributes
+            state.querySelectorAll('[data-state-index]').forEach(el => {
+                el.setAttribute('data-state-index', index);
+            });
+            
+            // Update related event listeners
+            setupStateFields(index);
+        });
+    }
+    
+    // Setup for adding new states
+    document.getElementById('add-state').addEventListener('click', function() {
+        const statesContainer = document.getElementById('states-items');
+        const statesCount = statesContainer.querySelectorAll('.state-item').length;
+        
+        if (statesCount < 4) {
+            const newStateIndex = statesCount;
+            const stateTemplate = document.querySelector('.state-item').cloneNode(true);
+            
+            // Update ID attributes and heading
+            stateTemplate.querySelector('h4').textContent = `State #${newStateIndex + 1}`;
+            
+            // Update all IDs within the template
+            stateTemplate.querySelectorAll('[id]').forEach(el => {
+                const oldId = el.id;
+                const parts = oldId.split('-');
+                const indexPosition = oldId.includes('spell') ? oldId.lastIndexOf('-') - 2 : oldId.lastIndexOf('-');
+                const newId = oldId.substring(0, indexPosition) + '-' + newStateIndex + oldId.substring(oldId.lastIndexOf('-'));
+                el.id = newId;
+            });
+            
+            // Update data-state-index attributes
+            stateTemplate.querySelectorAll('[data-state-index]').forEach(el => {
+                el.setAttribute('data-state-index', newStateIndex);
+            });
+            
+            // Reset all checkboxes and inputs
+            stateTemplate.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
             
-            document.querySelectorAll(`[id^=state-][id$=-container-${stateIndex}]`).forEach(container => {
-                container.classList.add('disabled');
-            });
-            
-            document.querySelectorAll(`[id^=state-][id$=-${stateIndex}]`).forEach(input => {
-                if (input.tagName === 'INPUT' && !input.id.includes('checkbox')) {
-                    input.value = '';
+            stateTemplate.querySelectorAll('.field-input').forEach(container => {
+                if (!container.id.includes('state-spells-items')) {
+                    container.classList.add('disabled');
                 }
             });
             
-            // Reset spell fields
-            resetSpellFields(stateIndex, 0);
-            
-            updateJsonPreview();
-        }
-        
-        // Function to renumber states after removal
-        function renumberStates() {
-            const states = document.querySelectorAll('.state-item');
-            states.forEach((state, index) => {
-                // Update the heading
-                state.querySelector('h4').textContent = `State #${index + 1}`;
-                
-                // Update all IDs and data attributes
-                state.querySelectorAll('[id]').forEach(el => {
-                    // Replace old index with new index in IDs
-                    const oldId = el.id;
-                    // Fix: Use a more reliable way to update IDs
-                    if (oldId.includes('state-')) {
-                        if (oldId.includes('spell')) {
-                            // Handle spell IDs which have two indexes (state and spell)
-                            const matches = oldId.match(/^(.*-)\d+(-.*-)\d+$/);
-                            if (matches && matches.length === 3) {
-                                el.id = matches[1] + index + matches[2] + oldId.match(/\d+$/)[0];
-                            }
-                        } else {
-                            // Handle regular state IDs with one index
-                            const matches = oldId.match(/^(.*-)\d+$/);
-                            if (matches && matches.length === 2) {
-                                el.id = matches[1] + index;
-                            }
-                        }
-                    }
-                });
-                
-                // Update data-state-index attributes
-                state.querySelectorAll('[data-state-index]').forEach(el => {
-                    el.setAttribute('data-state-index', index);
-                });
-                
-                // Update related event listeners
-                setupStateFields(index);
+            stateTemplate.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
+                input.value = '';
             });
-        }
-        
-        // Setup for adding new states
-        document.getElementById('add-state').addEventListener('click', function() {
-            const statesContainer = document.getElementById('states-items');
-            const statesCount = statesContainer.querySelectorAll('.state-item').length;
             
-            if (statesCount < 4) {
-                const newStateIndex = statesCount;
-                const stateTemplate = document.querySelector('.state-item').cloneNode(true);
-                
-                // Update ID attributes and heading
-                stateTemplate.querySelector('h4').textContent = `State #${newStateIndex + 1}`;
-                
-                // Update all IDs within the template
-                stateTemplate.querySelectorAll('[id]').forEach(el => {
-                    const oldId = el.id;
-                    const parts = oldId.split('-');
-                    const indexPosition = oldId.includes('spell') ? oldId.lastIndexOf('-') - 2 : oldId.lastIndexOf('-');
-                    const newId = oldId.substring(0, indexPosition) + '-' + newStateIndex + oldId.substring(oldId.lastIndexOf('-'));
-                    el.id = newId;
-                });
-                
-                // Update data-state-index attributes
-                stateTemplate.querySelectorAll('[data-state-index]').forEach(el => {
-                    el.setAttribute('data-state-index', newStateIndex);
-                });
-                
-                // Reset all checkboxes and inputs
-                stateTemplate.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                    checkbox.checked = false;
-                });
-                
-                stateTemplate.querySelectorAll('.field-input').forEach(container => {
-                    if (!container.id.includes('state-spells-items')) {
-                        container.classList.add('disabled');
-                    }
-                });
-                
-                stateTemplate.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
-                    input.value = '';
-                });
-                
-                // Handle spell items container
-                const spellItemsContainer = stateTemplate.querySelector(`[id^=state-spells-items-]`);
-                if (spellItemsContainer) {
-                    spellItemsContainer.id = `state-spells-items-${newStateIndex}`;
-                    // Keep only one spell item template
-                    const firstSpellItem = spellItemsContainer.querySelector('.array-item');
-                    while (spellItemsContainer.children.length > 1) {
-                        spellItemsContainer.removeChild(spellItemsContainer.lastChild);
-                    }
-                }
-                
-                statesContainer.appendChild(stateTemplate);
-                
-                // Setup the new state's fields
-                setupStateFields(newStateIndex);
-                
-                // Disable add button if we reached the maximum
-                if (statesContainer.querySelectorAll('.state-item').length >= 4) {
-                    this.disabled = true;
-                }
-                
-                updateJsonPreview();
-            }
-        });
-        
-        // Initialize the first state
-        setupStateFields(0);
-
-        // Array field functionality - remove older functions that aren't needed anymore
-        // setupArrayField('add-state', 'states-items', 'state-item');
-        // setupArrayField('add-spell', 'spells-items', 'spell-item');
-
-        // JSON preview toggle
-        document.getElementById('toggle-json').addEventListener('click', function() {
-            const jsonPreview = document.getElementById('json-preview');
-            jsonPreview.classList.toggle('show');
-            this.textContent = jsonPreview.classList.contains('show') ? 
-                translations.hideJsonCode : translations.showJsonCode;
-            updateJsonPreview();
-        });
-
-        // Required fields validation and Save button enable/disable
-        function validateRequiredFields() {
-            const subtype = document.getElementById('object-subtype').value;
-            const value = document.getElementById('value').value;
-            const density = document.getElementById('density').value;
-            const properties = document.getElementById('properties').value;
-            
-            return subtype !== '' && value !== '' && density !== '' && properties !== '';
-        }
-
-        function updateSaveButtonState() {
-            document.getElementById('save-file').disabled = !validateRequiredFields();
-        }
-
-        document.getElementById('value').addEventListener('input', function() {
-            updateSaveButtonState();
-            updateJsonPreview();
-        });
-        
-        document.getElementById('density').addEventListener('input', function() {
-            updateSaveButtonState();
-            updateJsonPreview();
-        });
-        
-        document.getElementById('properties').addEventListener('input', function() {
-            updateSaveButtonState();
-            updateJsonPreview();
-        });
-
-        // Sound field validation (.wav extension)
-        function validateWavFile(input) {
-            if (input.value && !input.value.toLowerCase().endsWith('.wav')) {
-                input.value = input.value + '.wav';
-            }
-            updateJsonPreview();
-        }
-
-        document.getElementById('sound-enter').addEventListener('blur', function() {
-            validateWavFile(this);
-        });
-        
-        document.getElementById('sound-loop').addEventListener('blur', function() {
-            validateWavFile(this);
-        });
-
-        document.getElementById('sound-enter').addEventListener('input', updateJsonPreview);
-        document.getElementById('sound-loop').addEventListener('input', updateJsonPreview);
-        document.getElementById('name').addEventListener('input', updateJsonPreview);
-        document.getElementById('enabled').addEventListener('change', updateJsonPreview);
-        document.getElementById('object-subtype').addEventListener('input', function() {
-            updateSaveButtonState();
-            updateJsonPreview();
-        });
-
-        // Generate JSON preview - updated to handle the complex states structure
-        function updateJsonPreview() {
-            const jsonObj = buildJsonObject();
-            const jsonString = JSON.stringify(jsonObj, null, 2);
-            document.getElementById('json-preview').textContent = jsonString;
-            updateSaveButtonState(); // Update save button state when JSON is updated
-        }
-
-        function buildJsonObject() {
-            const innerJsonObj = {};
-            
-            // Required fields
-            innerJsonObj.value = parseInt(document.getElementById('value').value) || 0;
-            innerJsonObj.density = parseInt(document.getElementById('density').value) || 0;
-            innerJsonObj.properties = [document.getElementById('properties').value];
-            
-            // Optional fields
-            if (document.getElementById('enabled-checkbox').checked) {
-                innerJsonObj.enabled = document.getElementById('enabled').value === 'true';
-            }
-            
-            if (document.getElementById('name-checkbox').checked) {
-                innerJsonObj.name = document.getElementById('name').value;
-            }
-            
-            if (document.getElementById('sound-checkbox').checked) {
-                const enter = document.getElementById('sound-enter').value;
-                const loop = document.getElementById('sound-loop').value;
-                
-                if (enter || loop) {
-                    innerJsonObj.sound = {};
-                    if (enter) innerJsonObj.sound.enter = enter;
-                    if (loop) innerJsonObj.sound.loop = loop;
+            // Handle spell items container
+            const spellItemsContainer = stateTemplate.querySelector(`[id^=state-spells-items-]`);
+            if (spellItemsContainer) {
+                spellItemsContainer.id = `state-spells-items-${newStateIndex}`;
+                // Keep only one spell item template
+                const firstSpellItem = spellItemsContainer.querySelector('.array-item');
+                while (spellItemsContainer.children.length > 1) {
+                    spellItemsContainer.removeChild(spellItemsContainer.lastChild);
                 }
             }
             
-            // Handle states array
-            if (document.getElementById('states-checkbox').checked) {
-                const stateElements = document.querySelectorAll('.state-item');
-                if (stateElements.length > 0) {
-                    innerJsonObj.states = [];
-                    
-                    stateElements.forEach((stateElement, stateIndex) => {
-                        const stateObj = {};
-                        
-                        // Process all optional fields in the state
-                        if (document.getElementById(`state-morale-checkbox-${stateIndex}`).checked) {
-                            stateObj.morale = parseInt(document.getElementById(`state-morale-${stateIndex}`).value) || 0;
-                        }
-                        
-                        if (document.getElementById(`state-luck-checkbox-${stateIndex}`).checked) {
-                            stateObj.luck = parseInt(document.getElementById(`state-luck-${stateIndex}`).value) || 0;
-                        }
-                        
-                        // Handle spells array within state
-                        if (document.getElementById(`state-spells-checkbox-${stateIndex}`).checked) {
-                            const spellElements = document.querySelectorAll(`#state-spells-items-${stateIndex} .array-item`);
-                            if (spellElements.length > 0) {
-                                stateObj.spells = [];
-                                
-                                spellElements.forEach((spellElement, spellIndex) => {
-                                    const spellObj = {};
-                                    
-                                    // Add id if checked
-                                    if (document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`)) {
-                                        const idCheckbox = document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`);
-                                        if (idCheckbox && idCheckbox.checked) {
-                                            const idInput = document.getElementById(`state-spell-id-${stateIndex}-${spellIndex}`);
-                                            if (idInput) {
-                                                spellObj.id = parseInt(idInput.value) || 0;
-                                            }
-                                        }
-                                    }
-                                    
-                                    // Add bits if checked
-                                    if (document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`)) {
-                                        const bitsCheckbox = document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`);
-                                        if (bitsCheckbox && bitsCheckbox.checked) {
-                                            spellObj.bits = {};
-                                            
-                                            const flagsInput = document.getElementById(`state-spell-bits-flags-${stateIndex}-${spellIndex}`);
-                                            const levelsInput = document.getElementById(`state-spell-bits-levels-${stateIndex}-${spellIndex}`);
-                                            const schoolsInput = document.getElementById(`state-spell-bits-schools-${stateIndex}-${spellIndex}`);
-                                            
-                                            if (flagsInput && flagsInput.value) spellObj.bits.flags = parseInt(flagsInput.value);
-                                            if (levelsInput && levelsInput.value) spellObj.bits.levels = parseInt(levelsInput.value);
-                                            if (schoolsInput && schoolsInput.value) spellObj.bits.schools = parseInt(schoolsInput.value);
-                                            
-                                            // Remove empty bits object
-                                            if (Object.keys(spellObj.bits).length === 0) {
-                                                delete spellObj.bits;
-                                            }
-                                        }
-                                    }
-                                    
-                                    // Only add non-empty spell objects
-                                    if (Object.keys(spellObj).length > 0) {
-                                        stateObj.spells.push(spellObj);
-                                    }
-                                });
-                                
-                                // Remove spells array if empty
-                                if (stateObj.spells.length === 0) {
-                                    delete stateObj.spells;
-                                }
-                            }
-                        }
-                        
-                        if (document.getElementById(`state-spellPoints-checkbox-${stateIndex}`)) {
-                            const spellPointsCheckbox = document.getElementById(`state-spellPoints-checkbox-${stateIndex}`);
-                            if (spellPointsCheckbox && spellPointsCheckbox.checked) {
-                                const spellPointsInput = document.getElementById(`state-spellPoints-${stateIndex}`);
-                                if (spellPointsInput) {
-                                    stateObj.spellPoints = parseInt(spellPointsInput.value) || 0;
-                                }
-                            }
-                        }
-                        
-                        if (document.getElementById(`state-experience-checkbox-${stateIndex}`)) {
-                            const experienceCheckbox = document.getElementById(`state-experience-checkbox-${stateIndex}`);
-                            if (experienceCheckbox && experienceCheckbox.checked) {
-                                const experienceInput = document.getElementById(`state-experience-${stateIndex}`);
-                                if (experienceInput) {
-                                    stateObj.experience = parseInt(experienceInput.value) || 0;
-                                }
-                            }
-                        }
-                        
-                        if (document.getElementById(`state-skills-checkbox-${stateIndex}`)) {
-                            const skillsCheckbox = document.getElementById(`state-skills-checkbox-${stateIndex}`);
-                            if (skillsCheckbox && skillsCheckbox.checked) {
-                                const primarySkillsInput = document.getElementById(`state-skills-primary-${stateIndex}`);
-                                if (primarySkillsInput && primarySkillsInput.value) {
-                                    stateObj.skills = {
-                                        primary: primarySkillsInput.value.split(',').map(val => parseInt(val.trim()) || 0)
-                                    };
-                                }
-                            }
-                        }
-                        
-                        if (document.getElementById(`state-guardians-checkbox-${stateIndex}`)) {
-                            const guardiansCheckbox = document.getElementById(`state-guardians-checkbox-${stateIndex}`);
-                            if (guardiansCheckbox && guardiansCheckbox.checked) {
-                                const countInput = document.getElementById(`state-guardians-count-${stateIndex}`);
-                                const typeInput = document.getElementById(`state-guardians-type-${stateIndex}`);
-                                
-                                if ((countInput && countInput.value) || (typeInput && typeInput.value)) {
-                                    stateObj.guardians = {};
-                                    if (countInput && countInput.value) {
-                                        stateObj.guardians.count = countInput.value.split(',').map(val => parseInt(val.trim()) || 0);
-                                    }
-                                    if (typeInput && typeInput.value) {
-                                        stateObj.guardians.type = typeInput.value.split(',').map(val => parseInt(val.trim()));
-                                    }
-                                }
-                            }
-                        }
-                        
-                        if (document.getElementById(`state-resources-checkbox-${stateIndex}`)) {
-                            const resourcesCheckbox = document.getElementById(`state-resources-checkbox-${stateIndex}`);
-                            if (resourcesCheckbox && resourcesCheckbox.checked) {
-                                const resourcesInput = document.getElementById(`state-resources-${stateIndex}`);
-                                if (resourcesInput && resourcesInput.value) {
-                                    stateObj.resources = resourcesInput.value.split(',').map(val => parseInt(val.trim()) || 0);
-                                }
-                            }
-                        }
-                        
-                        if (document.getElementById(`state-chance-checkbox-${stateIndex}`)) {
-                            const chanceCheckbox = document.getElementById(`state-chance-checkbox-${stateIndex}`);
-                            if (chanceCheckbox && chanceCheckbox.checked) {
-                                const chanceInput = document.getElementById(`state-chance-${stateIndex}`);
-                                if (chanceInput) {
-                                    stateObj.chance = parseInt(chanceInput.value) || 0;
-                                }
-                            }
-                        }
-                        
-                        // Only add non-empty state objects
-                        if (Object.keys(stateObj).length > 0) {
-                            innerJsonObj.states.push(stateObj);
-                        }
-                    });
-                    
-                    // Remove states array if empty
-                    if (innerJsonObj.states.length === 0) {
-                        delete innerJsonObj.states;
-                    }
-                }
+            statesContainer.appendChild(stateTemplate);
+            
+            // Setup the new state's fields
+            setupStateFields(newStateIndex);
+            
+            // Disable add button if we reached the maximum
+            if (statesContainer.querySelectorAll('.state-item').length >= 4) {
+                this.disabled = true;
             }
             
-            // Wrap in the required structure
-            const subtype = document.getElementById('object-subtype').value || "13";
-            
-            return {
-                "RMG": {
-                    "objectGeneration": {
-                        "16": {
-                            [subtype]: innerJsonObj
-                        }
-                    }
-                }
-            };
+            updateJsonPreview();
         }
+    });
+    
+    // Initialize the first state
+    setupStateFields(0);
 
-        // Save file functionality
-        document.getElementById('save-file').addEventListener('click', function() {
-            if (!validateRequiredFields()) return;
-            
-            const jsonObj = buildJsonObject();
-            const jsonString = JSON.stringify(jsonObj, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'creature_bank.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(a.href); // Clean up the created URL
-        });
+    // Array field functionality - remove older functions that aren't needed anymore
+    // setupArrayField('add-state', 'states-items', 'state-item');
+    // setupArrayField('add-spell', 'spells-items', 'spell-item');
 
-        // PWA installation
-        let deferredPrompt;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Show the install button
-            const installButton = document.getElementById('install-pwa');
-            installButton.style.display = 'block';
-            
-            installButton.addEventListener('click', async () => {
-                if (!deferredPrompt) return;
-                
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                
-                if (outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                } else {
-                    console.log('User dismissed the install prompt');
-                }
-                
-                deferredPrompt = null;
-                installButton.style.display = 'none';
-            });
-        });
-
-        // Generate manifest dynamically
-        const manifestData = {
-            name: "Creature Bank Editor for Heroes 3: ERA",
-            short_name: "Creature Bank Editor",
-            description: "JSON editor for Heroes 3: ERA creature banks",
-            start_url: "./",
-            display: "standalone",
-            background_color: "#1f2937",
-            theme_color: "#1f2937",
-            icons: [
-                {
-                    src: "./icon-192.png",
-                    sizes: "192x192",
-                    type: "image/png"
-                },
-                {
-                    src: "./icon-512.png", 
-                    sizes: "512x512",
-                    type: "image/png"
-                }
-            ]
-        };
-
-        const manifestString = JSON.stringify(manifestData);
-        const manifestBlob = new Blob([manifestString], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(manifestBlob);
-        document.getElementById('manifestPlaceholder').href = manifestURL;
-
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                // In a real app, you would register a real service worker file
-                // For this demo, we'll just log to console
-                console.log('Service Worker would be registered here in a real PWA');
-            });
-        }
-        
-        // Initialize UI - load default language first
-        document.addEventListener('DOMContentLoaded', () => {
-            loadLanguage(currentLang);
-            document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
-        });
-
-        // Update initial UI state (fallback if language load fails)
+    // JSON preview toggle
+    document.getElementById('toggle-json').addEventListener('click', function() {
+        const jsonPreview = document.getElementById('json-preview');
+        jsonPreview.classList.toggle('show');
+        this.textContent = jsonPreview.classList.contains('show') ? 
+            translations.hideJsonCode : translations.showJsonCode;
         updateJsonPreview();
-    </script>
+    });
+
+    // Required fields validation and Save button enable/disable
+    function validateRequiredFields() {
+        const subtype = document.getElementById('object-subtype').value;
+        const value = document.getElementById('value').value;
+        const density = document.getElementById('density').value;
+        const properties = document.getElementById('properties').value;
+        
+        return subtype !== '' && value !== '' && density !== '' && properties !== '';
+    }
+
+    function updateSaveButtonState() {
+        document.getElementById('save-file').disabled = !validateRequiredFields();
+    }
+
+    document.getElementById('value').addEventListener('input', function() {
+        updateSaveButtonState();
+        updateJsonPreview();
+    });
+    
+    document.getElementById('density').addEventListener('input', function() {
+        updateSaveButtonState();
+        updateJsonPreview();
+    });
+    
+    document.getElementById('properties').addEventListener('input', function() {
+        updateSaveButtonState();
+        updateJsonPreview();
+    });
+
+    // Sound field validation (.wav extension)
+    function validateWavFile(input) {
+        if (input.value && !input.value.toLowerCase().endsWith('.wav')) {
+            input.value = input.value + '.wav';
+        }
+        updateJsonPreview();
+    }
+
+    document.getElementById('sound-enter').addEventListener('blur', function() {
+        validateWavFile(this);
+    });
+    
+    document.getElementById('sound-loop').addEventListener('blur', function() {
+        validateWavFile(this);
+    });
+
+    document.getElementById('sound-enter').addEventListener('input', updateJsonPreview);
+    document.getElementById('sound-loop').addEventListener('input', updateJsonPreview);
+    document.getElementById('text-visit').addEventListener('input', updateJsonPreview);
+    document.getElementById('name').addEventListener('input', updateJsonPreview);
+    document.getElementById('enabled').addEventListener('change', updateJsonPreview);
+    document.getElementById('object-subtype').addEventListener('input', function() {
+        updateSaveButtonState();
+        updateJsonPreview();
+    });
+
+    // Generate JSON preview - updated to handle the complex states structure
+    function updateJsonPreview() {
+        const jsonObj = buildJsonObject();
+        const jsonString = JSON.stringify(jsonObj, null, 2);
+        document.getElementById('json-preview').textContent = jsonString;
+        updateSaveButtonState(); // Update save button state when JSON is updated
+    }
+
+    function buildJsonObject() {
+        const innerJsonObj = {};
+        
+        // Required fields
+        innerJsonObj.value = parseInt(document.getElementById('value').value) || 0;
+        innerJsonObj.density = parseInt(document.getElementById('density').value) || 0;
+        innerJsonObj.properties = [document.getElementById('properties').value];
+        
+        // Optional fields
+        if (document.getElementById('enabled-checkbox').checked) {
+            innerJsonObj.enabled = document.getElementById('enabled').value === 'true';
+        }
+        
+        if (document.getElementById('name-checkbox').checked) {
+            innerJsonObj.name = document.getElementById('name').value;
+        }
+        
+        if (document.getElementById('sound-checkbox').checked) {
+            const enter = document.getElementById('sound-enter').value;
+            const loop = document.getElementById('sound-loop').value;
+            
+            if (enter || loop) {
+                innerJsonObj.sound = {};
+                if (enter) innerJsonObj.sound.enter = enter;
+                if (loop) innerJsonObj.sound.loop = loop;
+            }
+        }
+        
+        if (document.getElementById('text-checkbox').checked) {
+            const visit = document.getElementById('text-visit').value;
+            
+            if (visit) {
+                innerJsonObj.text = {
+                    visit: visit
+                };
+            }
+        }
+        
+        // Handle states array
+        if (document.getElementById('states-checkbox').checked) {
+            const stateElements = document.querySelectorAll('.state-item');
+            if (stateElements.length > 0) {
+                innerJsonObj.states = [];
+                
+                stateElements.forEach((stateElement, stateIndex) => {
+                    const stateObj = {};
+                    
+                    // Process all optional fields in the state
+                    if (document.getElementById(`state-morale-checkbox-${stateIndex}`).checked) {
+                        stateObj.morale = parseInt(document.getElementById(`state-morale-${stateIndex}`).value) || 0;
+                    }
+                    
+                    if (document.getElementById(`state-luck-checkbox-${stateIndex}`).checked) {
+                        stateObj.luck = parseInt(document.getElementById(`state-luck-${stateIndex}`).value) || 0;
+                    }
+                    
+                    // Handle spells array within state
+                    if (document.getElementById(`state-spells-checkbox-${stateIndex}`).checked) {
+                        const spellElements = document.querySelectorAll(`#state-spells-items-${stateIndex} .array-item`);
+                        if (spellElements.length > 0) {
+                            stateObj.spells = [];
+                            
+                            spellElements.forEach((spellElement, spellIndex) => {
+                                const spellObj = {};
+                                
+                                // Add id if checked
+                                if (document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`)) {
+                                    const idCheckbox = document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`);
+                                    if (idCheckbox && idCheckbox.checked) {
+                                        const idInput = document.getElementById(`state-spell-id-${stateIndex}-${spellIndex}`);
+                                        if (idInput) {
+                                            spellObj.id = parseInt(idInput.value) || 0;
+                                        }
+                                    }
+                                }
+                                
+                                // Add bits if checked
+                                if (document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`)) {
+                                    const bitsCheckbox = document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`);
+                                    if (bitsCheckbox && bitsCheckbox.checked) {
+                                        spellObj.bits = {};
+                                        
+                                        const flagsInput = document.getElementById(`state-spell-bits-flags-${stateIndex}-${spellIndex}`);
+                                        const levelsInput = document.getElementById(`state-spell-bits-levels-${stateIndex}-${spellIndex}`);
+                                        const schoolsInput = document.getElementById(`state-spell-bits-schools-${stateIndex}-${spellIndex}`);
+                                        
+                                        if (flagsInput && flagsInput.value) spellObj.bits.flags = parseInt(flagsInput.value);
+                                        if (levelsInput && levelsInput.value) spellObj.bits.levels = parseInt(levelsInput.value);
+                                        if (schoolsInput && schoolsInput.value) spellObj.bits.schools = parseInt(schoolsInput.value);
+                                        
+                                        // Remove empty bits object
+                                        if (Object.keys(spellObj.bits).length === 0) {
+                                            delete spellObj.bits;
+                                        }
+                                    }
+                                }
+                                
+                                // Only add non-empty spell objects
+                                if (Object.keys(spellObj).length > 0) {
+                                    stateObj.spells.push(spellObj);
+                                }
+                            });
+                            
+                            // Remove spells array if empty
+                            if (stateObj.spells.length === 0) {
+                                delete stateObj.spells;
+                            }
+                        }
+                    }
+                    
+                    if (document.getElementById(`state-spellPoints-checkbox-${stateIndex}`)) {
+                        const spellPointsCheckbox = document.getElementById(`state-spellPoints-checkbox-${stateIndex}`);
+                        if (spellPointsCheckbox && spellPointsCheckbox.checked) {
+                            const spellPointsInput = document.getElementById(`state-spellPoints-${stateIndex}`);
+                            if (spellPointsInput) {
+                                stateObj.spellPoints = parseInt(spellPointsInput.value) || 0;
+                            }
+                        }
+                    }
+                    
+                    if (document.getElementById(`state-experience-checkbox-${stateIndex}`)) {
+                        const experienceCheckbox = document.getElementById(`state-experience-checkbox-${stateIndex}`);
+                        if (experienceCheckbox && experienceCheckbox.checked) {
+                            const experienceInput = document.getElementById(`state-experience-${stateIndex}`);
+                            if (experienceInput) {
+                                stateObj.experience = parseInt(experienceInput.value) || 0;
+                            }
+                        }
+                    }
+                    
+                    if (document.getElementById(`state-skills-checkbox-${stateIndex}`)) {
+                        const skillsCheckbox = document.getElementById(`state-skills-checkbox-${stateIndex}`);
+                        if (skillsCheckbox && skillsCheckbox.checked) {
+                            const primarySkillsInput = document.getElementById(`state-skills-primary-${stateIndex}`);
+                            if (primarySkillsInput && primarySkillsInput.value) {
+                                stateObj.skills = {
+                                    primary: primarySkillsInput.value.split(',').map(val => parseInt(val.trim()) || 0)
+                                };
+                            }
+                        }
+                    }
+                    
+                    if (document.getElementById(`state-artifactTypeCounts-checkbox-${stateIndex}`)) {
+                        const artifactTypeCountsCheckbox = document.getElementById(`state-artifactTypeCounts-checkbox-${stateIndex}`);
+                        if (artifactTypeCountsCheckbox && artifactTypeCountsCheckbox.checked) {
+                            const artifactTypeCountsInput = document.getElementById(`state-artifactTypeCounts-${stateIndex}`);
+                            if (artifactTypeCountsInput && artifactTypeCountsInput.value) {
+                                stateObj.artifactTypeCounts = artifactTypeCountsInput.value.split(',').map(val => parseInt(val.trim()) || 0);
+                            }
+                        }
+                    }
+                    
+                    if (document.getElementById(`state-creatureRewardCount-checkbox-${stateIndex}`)) {
+                        const creatureRewardCountCheckbox = document.getElementById(`state-creatureRewardCount-checkbox-${stateIndex}`);
+                        if (creatureRewardCountCheckbox && creatureRewardCountCheckbox.checked) {
+                            const creatureRewardCountInput = document.getElementById(`state-creatureRewardCount-${stateIndex}`);
+                            if (creatureRewardCountInput) {
+                                stateObj.creatureRewardCount = parseInt(creatureRewardCountInput.value) || 0;
+                            }
+                        }
+                    }
+                    
+                    if (document.getElementById(`state-creatureRewardType-checkbox-${stateIndex}`)) {
+                        const creatureRewardTypeCheckbox = document.getElementById(`state-creatureRewardType-checkbox-${stateIndex}`);
+                        if (creatureRewardTypeCheckbox && creatureRewardTypeCheckbox.checked) {
+                            const creatureRewardTypeInput = document.getElementById(`state-creatureRewardType-${stateIndex}`);
+                            if (creatureRewardTypeInput) {
+                                stateObj.creatureRewardType = parseInt(creatureRewardTypeInput.value) || -1;
+                            }
+                        }
+                    }
+                    
+                    if (document.getElementById(`state-guardians-checkbox-${stateIndex}`)) {
+                        const guardiansCheckbox = document.getElementById(`state-guardians-checkbox-${stateIndex}`);
+                        if (guardiansCheckbox && guardiansCheckbox.checked) {
+                            const countInput = document.getElementById(`state-guardians-count-${stateIndex}`);
+                            const typeInput = document.getElementById(`state-guardians-type-${stateIndex}`);
+                            
+                            if ((countInput && countInput.value) || (typeInput && typeInput.value)) {
+                                stateObj.guardians = {};
+                                if (countInput && countInput.value) {
+                                    stateObj.guardians.count = countInput.value.split(',').map(val => parseInt(val.trim()) || 0);
+                                }
+                                if (typeInput && typeInput.value) {
+                                    stateObj.guardians.type = typeInput.value.split(',').map(val => parseInt(val.trim()));
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (document.getElementById(`state-resources-checkbox-${stateIndex}`)) {
+                        const resourcesCheckbox = document.getElementById(`state-resources-checkbox-${stateIndex}`);
+                        if (resourcesCheckbox && resourcesCheckbox.checked) {
+                            const resourcesInput = document.getElementById(`state-resources-${stateIndex}`);
+                            if (resourcesInput && resourcesInput.value) {
+                                stateObj.resources = resourcesInput.value.split(',').map(val => parseInt(val.trim()) || 0);
+                            }
+                        }
+                    }
+                    
+                    if (document.getElementById(`state-chance-checkbox-${stateIndex}`)) {
+                        const chanceCheckbox = document.getElementById(`state-chance-checkbox-${stateIndex}`);
+                        if (chanceCheckbox && chanceCheckbox.checked) {
+                            const chanceInput = document.getElementById(`state-chance-${stateIndex}`);
+                            if (chanceInput) {
+                                stateObj.chance = parseInt(chanceInput.value) || 0;
+                            }
+                        }
+                    }
+                    
+                    // Only add non-empty state objects
+                    if (Object.keys(stateObj).length > 0) {
+                        innerJsonObj.states.push(stateObj);
+                    }
+                });
+                
+                // Remove states array if empty
+                if (innerJsonObj.states.length === 0) {
+                    delete innerJsonObj.states;
+                }
+            }
+        }
+        
+        // Wrap in the required structure
+        const subtype = document.getElementById('object-subtype').value || "13";
+        
+        return {
+            "RMG": {
+                "objectGeneration": {
+                    "16": {
+                        [subtype]: innerJsonObj
+                    }
+                }
+            }
+        };
+    }
+
+    // Save file functionality
+    document.getElementById('save-file').addEventListener('click', function() {
+        if (!validateRequiredFields()) return;
+        
+        const jsonObj = buildJsonObject();
+        const jsonString = JSON.stringify(jsonObj, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'creature_bank.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href); // Clean up the created URL
+    });
+
+    // PWA installation
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show the install button
+        const installButton = document.getElementById('install-pwa');
+        installButton.style.display = 'block';
+        
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+            } else {
+                console.log('User dismissed the install prompt');
+            }
+            
+            deferredPrompt = null;
+            installButton.style.display = 'none';
+        });
+    });
+
+    // Generate manifest dynamically
+    const manifestData = {
+        name: "Creature Bank Editor for Heroes 3: ERA",
+        short_name: "Creature Bank Editor",
+        description: "JSON editor for Heroes 3: ERA creature banks",
+        start_url: "./",
+        display: "standalone",
+        background_color: "#1f2937",
+        theme_color: "#1f2937",
+        icons: [
+            {
+                src: "./icon-192.png",
+                sizes: "192x192",
+                type: "image/png"
+            },
+            {
+                src: "./icon-512.png", 
+                sizes: "512x512",
+                type: "image/png"
+            }
+        ]
+    };
+
+    const manifestString = JSON.stringify(manifestData);
+    const manifestBlob = new Blob([manifestString], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(manifestBlob);
+    document.getElementById('manifestPlaceholder').href = manifestURL;
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            // In a real app, you would register a real service worker file
+            // For this demo, we'll just log to console
+            console.log('Service Worker would be registered here in a real PWA');
+        });
+    }
+    
+    // Initialize UI - load default language first
+    document.addEventListener('DOMContentLoaded', () => {
+        loadLanguage(currentLang);
+        document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+    });
+
+    // Update initial UI state (fallback if language load fails)
+    updateJsonPreview();
+</script>
 </body>
 </html>

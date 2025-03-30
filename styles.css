@@ -1,0 +1,335 @@
+:root {
+    --primary-bg: #1f2937;
+    --secondary-bg: #111827;
+    --tertiary-bg: #374151;
+    --text-color: #f3f4f6;
+    --input-bg: #111827;
+    --border-color: #4b5563;
+    --button-bg: #3b82f6;
+    --button-hover: #2563eb;
+    --indented-bg: #111827;
+    --indented-border: #4b5563;
+    --disabled-bg: #4b5563;
+    --disabled-text: #9ca3af;
+    --checkbox-unchecked: #4b5563;
+    --checkbox-checked: #3b82f6;
+    --checkbox-hover: #6b7280;
+}
+
+[data-theme="light"] {
+    --primary-bg: #f3f4f6;
+    --secondary-bg: #e5e7eb;
+    --tertiary-bg: #d1d5db;
+    --text-color: #1f2937;
+    --input-bg: #ffffff;
+    --border-color: #9ca3af;
+    --button-bg: #3b82f6;
+    --button-hover: #2563eb;
+    --indented-bg: #e5e7eb;
+    --indented-border: #9ca3af;
+    --disabled-bg: #d1d5db;
+    --disabled-text: #6b7280;
+    --checkbox-unchecked: #9ca3af;
+    --checkbox-checked: #3b82f6;
+    --checkbox-hover: #6b7280;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.title-container h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.header-controls {
+    display: flex;
+    gap: 15px;
+}
+
+.browser-support {
+    margin-top: 10px;
+    font-size: 12px;
+    padding: 8px;
+    background-color: var(--indented-bg);
+    border: 1px solid var(--indented-border);
+    border-radius: 4px;
+    max-width: 300px;
+}
+
+button {
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: var(--button-hover);
+}
+
+.theme-toggle, .lang-selector {
+    position: relative;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px 0;
+    z-index: 100;
+    min-width: 150px;
+    display: none;
+}
+
+.dropdown.show {
+    display: block;
+}
+
+.dropdown button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    color: var(--text-color);
+    padding: 8px 16px;
+}
+
+.dropdown button:hover {
+    background-color: var(--tertiary-bg);
+}
+
+.editor-container {
+    background-color: var(--secondary-bg);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.field-group {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 6px;
+    background-color: var(--indented-bg);
+    border: 1px solid var(--indented-border);
+}
+
+.field-row {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.field-label {
+    flex: 0 0 200px;
+    display: flex;
+    align-items: center;
+}
+
+.field-label-small {
+    flex: 0 0 100px;
+    display: flex;
+    align-items: center;
+}
+
+.help-icon {
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--button-bg);
+    position: relative;
+}
+
+.tooltip {
+    position: absolute;
+    top: -10px;
+    left: 25px;
+    background-color: var(--tertiary-bg);
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 250px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    display: none;
+}
+
+.help-icon:hover .tooltip {
+    display: block;
+}
+
+.field-input {
+    flex: 1;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--checkbox-unchecked);
+    background-color: transparent;
+    margin-right: 10px;
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: all 0.2s ease;
+}
+
+input[type="checkbox"]:hover {
+    border-color: var(--checkbox-hover);
+    background-color: rgba(107, 114, 128, 0.1);
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--checkbox-checked);
+    border-color: var(--checkbox-checked);
+}
+
+input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.array-field {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.array-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.remove-spell {
+    min-width: 50px;
+    margin-left: 10px;
+}
+
+.add-spell {
+    min-width: 150px;
+}
+
+.remove-state {
+    min-width: 150px;
+}
+
+.add-item {
+    min-width: 150px;
+    margin-top: 10px;
+}
+
+.bottom-controls {
+    margin-top: 20px;
+}
+
+.save-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.save-button:disabled {
+    background-color: var(--disabled-bg);
+    color: var (--disabled-text);
+    cursor: not-allowed;
+}
+
+.json-preview-toggle {
+    margin-bottom: 10px;
+}
+
+.json-preview {
+    background-color: var(--indented-bg);
+    padding: 15px;
+    border-radius: 6px;
+    display: none;
+    white-space: pre-wrap;
+    font-family: monospace;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--indented-border);
+}
+
+.json-preview.show {
+    display: block;
+}
+
+.install-pwa {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+    }
+    
+    .header-controls {
+        margin-top: 15px;
+    }
+    
+    .field-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .field-label {
+        margin-bottom: 5px;
+    }
+}
+
+.margin-left-10 {
+    margin-left: 10px;
+}
