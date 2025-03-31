@@ -198,6 +198,61 @@ document.addEventListener('DOMContentLoaded', () => {
         setPlaceholder(dom.textVisitTextarea, translations.textVisitPlaceholder || 'Welcome message...');
         // Placeholders inside dynamic elements are set during cloning
 
+        // Update spellFlags dropdown options
+        document.querySelectorAll('.flags-checkbox-container').forEach(container => {
+            // Clear existing checkboxes
+            container.innerHTML = '';
+            
+            // Add checkboxes from translations
+            if (translations.spellFlags) {
+                Object.keys(translations.spellFlags).forEach(key => {
+                    const checkboxItem = document.createElement('div');
+                    checkboxItem.className = 'flag-checkbox-item';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = key;
+                    checkbox.className = 'spell-flag-checkbox';
+                    checkbox.id = `flag-${key}-${Date.now()}-${Math.floor(Math.random() * 1000)}`; // Unique ID
+                    
+                    const label = document.createElement('label');
+                    label.setAttribute('for', checkbox.id);
+                    label.textContent = translations.spellFlags[key];
+                    
+                    checkboxItem.appendChild(checkbox);
+                    checkboxItem.appendChild(label);
+                    container.appendChild(checkboxItem);
+                    
+                    // Add event listener for each checkbox
+                    checkbox.addEventListener('change', function() {
+                        updateFlagsValue(this.closest('.array-item'));
+                    });
+                });
+            }
+        });
+
+        // Update primary skills labels
+        setText(document.getElementById('primary-attack-label'), translations.primarySkills?.attack || 'Attack');
+        setText(document.getElementById('primary-defense-label'), translations.primarySkills?.defense || 'Defense');
+        setText(document.getElementById('primary-power-label'), translations.primarySkills?.power || 'Power');
+        setText(document.getElementById('primary-knowledge-label'), translations.primarySkills?.knowledge || 'Knowledge');
+
+        // Update the translations for artifact type labels
+        setText(document.getElementById('artifact-valuable-label'), translations.artifactTypes?.valuable || 'Valuable');
+        setText(document.getElementById('artifact-minor-label'), translations.artifactTypes?.minor || 'Minor');
+        setText(document.getElementById('artifact-major-label'), translations.artifactTypes?.major || 'Major');
+        setText(document.getElementById('artifact-relic-label'), translations.artifactTypes?.relic || 'Relic');
+
+        // Update resource fields translations
+        setText(document.getElementById('resource-wood-label'), translations.resourceTypes?.wood || 'Wood');
+        setText(document.getElementById('resource-ore-label'), translations.resourceTypes?.ore || 'Ore');
+        setText(document.getElementById('resource-mercury-label'), translations.resourceTypes?.mercury || 'Mercury');
+        setText(document.getElementById('resource-sulfur-label'), translations.resourceTypes?.sulfur || 'Sulfur');
+        setText(document.getElementById('resource-crystal-label'), translations.resourceTypes?.crystal || 'Crystal');
+        setText(document.getElementById('resource-gems-label'), translations.resourceTypes?.gems || 'Gems');
+        setText(document.getElementById('resource-gold-label'), translations.resourceTypes?.gold || 'Gold');
+        setText(document.getElementById('resource-mithril-label'), translations.resourceTypes?.mithril || 'Mithril');
+
         // Re-evaluate save button state as language might affect validation perception
         updateSaveButtonState();
     };
@@ -291,6 +346,316 @@ document.addEventListener('DOMContentLoaded', () => {
         // Make sure we update property warnings when subtype changes
         dom.objectSubtypeInput.addEventListener('input', () => {
             updatePropertyWarnings();
+        });
+
+        // Add validation for morale and luck inputs
+        dom.statesItemsContainer.addEventListener('input', (event) => {
+            const target = event.target;
+            if (target.classList.contains('state-morale-input') || 
+                target.classList.contains('state-luck-input')) {
+                
+                // Ensure value is within -3 to 3 range
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < -3) target.value = -3;
+                        if (value > 3) target.value = 3;
+                    }
+                }
+            }
+        });
+
+        // Add validation for spellPoints and experience inputs
+        dom.statesItemsContainer.addEventListener('input', (event) => {
+            const target = event.target;
+
+            if (target.classList.contains('state-spellPoints-input')) {
+                // Ensure value is within 0 to 999 range
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < 0) target.value = 0;
+                        if (value > 999) target.value = 999;
+                    }
+                }
+            }
+
+            if (target.classList.contains('state-experience-input')) {
+                // Ensure value is within 0 to 2,147,483,647 range
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < 0) target.value = 0;
+                        if (value > 2147483647) target.value = 2147483647;
+                    }
+                }
+            }
+        });
+
+        // Handle spell type radio button changes
+        dom.statesItemsContainer.addEventListener('change', (event) => {
+            const target = event.target;
+            if (target.classList.contains('spell-type-radio')) {
+                const spellItem = target.closest('.array-item');
+                if (!spellItem) return;
+
+                const selectedType = target.value;
+                const idContainer = spellItem.querySelector('.spell-id-container');
+                const bitsContainer = spellItem.querySelector('.spell-bits-container');
+                const bitsSubContainers = spellItem.querySelectorAll('.spell-bits-flags-container, .spell-bits-levels-container, .spell-bits-schools-container');
+
+                // Enable/disable containers based on selection
+                if (selectedType === 'id') {
+                    idContainer.classList.remove('disabled');
+                    bitsContainer.classList.add('disabled');
+                    bitsSubContainers.forEach(container => container.classList.add('disabled'));
+                } else { // bits selected
+                    idContainer.classList.add('disabled');
+                    bitsContainer.classList.remove('disabled');
+                    bitsSubContainers.forEach(container => container.classList.remove('disabled'));
+                }
+                
+                updateJsonPreview();
+            }
+        });
+
+        // Add delegation for flag checkbox changes
+        dom.statesItemsContainer.addEventListener('change', (event) => {
+            const target = event.target;
+            if (target.classList.contains('spell-flag-checkbox')) {
+                const spellItem = target.closest('.array-item');
+                if (spellItem) {
+                    updateFlagsValue(spellItem);
+                }
+            }
+        });
+
+        // Add event listener for level checkboxes
+        dom.statesItemsContainer.addEventListener('change', (event) => {
+            if (event.target.classList.contains('spell-level-checkbox')) {
+                const spellItem = event.target.closest('.array-item');
+                if (spellItem) {
+                    updateLevelsValue(spellItem);
+                }
+            }
+        });
+
+        // Add event listener for school checkboxes
+        dom.statesItemsContainer.addEventListener('change', (event) => {
+            if (event.target.classList.contains('spell-school-checkbox')) {
+                const spellItem = event.target.closest('.array-item');
+                if (spellItem) {
+                    updateSchoolsValue(spellItem);
+                }
+            }
+        });
+
+        // Add validation for primary skills inputs
+        dom.statesItemsContainer.addEventListener('input', (event) => {
+            const target = event.target;
+            if (target.classList.contains('state-skills-primary-attack') || 
+                target.classList.contains('state-skills-primary-defense') || 
+                target.classList.contains('state-skills-primary-power') || 
+                target.classList.contains('state-skills-primary-knowledge')) {
+                
+                // Ensure value is within 0 to 127 range
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < 0) target.value = 0;
+                        if (value > 127) target.value = 127;
+                    }
+                }
+            }
+        });
+
+        // Add validation for artifact type counts inputs
+        dom.statesItemsContainer.addEventListener('input', (event) => {
+            const target = event.target;
+            if (target.classList.contains('state-artifactTypeCounts-valuable') || 
+                target.classList.contains('state-artifactTypeCounts-minor') || 
+                target.classList.contains('state-artifactTypeCounts-major') || 
+                target.classList.contains('state-artifactTypeCounts-relic')) {
+                
+                // Ensure value is within 0 to 127 range
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < 0) target.value = 0;
+                        if (value > 127) target.value = 127;
+                    }
+                }
+            }
+        });
+
+        // Add validation for resource inputs
+        dom.statesItemsContainer.addEventListener('input', (event) => {
+            const target = event.target;
+            if (target.classList.contains('state-resources-wood') || 
+                target.classList.contains('state-resources-ore') || 
+                target.classList.contains('state-resources-mercury') || 
+                target.classList.contains('state-resources-sulfur') || 
+                target.classList.contains('state-resources-crystal') || 
+                target.classList.contains('state-resources-gems') || 
+                target.classList.contains('state-resources-gold') || 
+                target.classList.contains('state-resources-mithril')) {
+                
+                // Ensure value is within 0 to 2,147,483,647 range
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < 0) target.value = 0;
+                        if (value > 2147483647) target.value = 2147483647;
+                    }
+                }
+            }
+        });
+
+        // Add validation for upgrade and chance inputs (percentage values)
+        dom.statesItemsContainer.addEventListener('input', (event) => {
+            const target = event.target;
+            if (target.classList.contains('state-upgrade-input') || 
+                target.classList.contains('state-chance-input')) {
+                
+                // Ensure value is within 0 to 100 range (percentage)
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < 0) target.value = 0;
+                        if (value > 100) target.value = 100;
+                    }
+                }
+            }
+        });
+
+        // Add validation for creature reward inputs
+        dom.statesItemsContainer.addEventListener('input', (event) => {
+            const target = event.target;
+            
+            // Handle creatureRewardType validation and dependency
+            if (target.classList.contains('state-creatureRewardType-input')) {
+                // Ensure value is within -1 to 999 range
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < -1) target.value = -1;
+                        if (value > 999) target.value = 999;
+                        
+                        // Find the related count input and container
+                        const stateItem = target.closest('.state-item');
+                        const countContainer = stateItem.querySelector('.creature-reward-count');
+                        const countInput = stateItem.querySelector('.state-creatureRewardCount-input');
+                        
+                        if (countContainer && countInput) {
+                            if (value === -1) {
+                                // When type is -1, count must be 0 and disabled
+                                countInput.value = '0';
+                                countInput.disabled = true;
+                                countContainer.classList.add('disabled');
+                            } else {
+                                // Enable count input for any other type value
+                                countInput.disabled = false;
+                                countContainer.classList.remove('disabled');
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Handle creatureRewardCount validation
+            if (target.classList.contains('state-creatureRewardCount-input')) {
+                // Ensure value is within 0 to 127 range
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < 0) target.value = 0;
+                        if (value > 127) target.value = 127;
+                        
+                        // Check if type is -1, enforce count = 0
+                        const stateItem = target.closest('.state-item');
+                        const typeInput = stateItem.querySelector('.state-creatureRewardType-input');
+                        if (typeInput && typeInput.value === '-1') {
+                            target.value = '0';
+                        }
+                    }
+                }
+            }
+        });
+
+        // Add validation and dependencies for guardian fields
+        dom.statesItemsContainer.addEventListener('input', (event) => {
+            const target = event.target;
+            
+            // Handle guardian type validation and dependency logic
+            if (target.classList.contains('state-guardians-type-1') || 
+                target.classList.contains('state-guardians-type-2') || 
+                target.classList.contains('state-guardians-type-3') || 
+                target.classList.contains('state-guardians-type-4') || 
+                target.classList.contains('state-guardians-type-5') || 
+                target.classList.contains('state-guardians-type-6') || 
+                target.classList.contains('state-guardians-type-7')) {
+                
+                // Extract slot number from class name
+                const slotMatch = target.className.match(/state-guardians-type-(\d+)/);
+                if (!slotMatch) return;
+                
+                const slotNum = slotMatch[1];
+                const stateItem = target.closest('.state-item');
+                const countInput = stateItem.querySelector(`.state-guardians-count-${slotNum}`);
+                
+                if (!countInput) return;
+                
+                // Ensure value is within -1 to 999 range
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < -1) target.value = -1;
+                        if (value > 999) target.value = 999;
+                        
+                        // If type is -1, count must be 0
+                        if (value === -1) {
+                            countInput.value = '0';
+                            countInput.disabled = true;
+                        } else {
+                            countInput.disabled = false;
+                        }
+                    }
+                }
+            }
+            
+            // Handle guardian count validation
+            if (target.classList.contains('state-guardians-count-1') || 
+                target.classList.contains('state-guardians-count-2') || 
+                target.classList.contains('state-guardians-count-3') || 
+                target.classList.contains('state-guardians-count-4') || 
+                target.classList.contains('state-guardians-count-5') || 
+                target.classList.contains('state-guardians-count-6') || 
+                target.classList.contains('state-guardians-count-7')) {
+                
+                // Extract slot number from class name
+                const slotMatch = target.className.match(/state-guardians-count-(\d+)/);
+                if (!slotMatch) return;
+                
+                const slotNum = slotMatch[1];
+                const stateItem = target.closest('.state-item');
+                const typeInput = stateItem.querySelector(`.state-guardians-type-${slotNum}`);
+                
+                if (!typeInput) return;
+                
+                // Ensure value is within 0 to 2,147,483,647 range
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < 0) target.value = 0;
+                        if (value > 2147483647) target.value = 2147483647;
+                        
+                        // If type is -1, force count to be 0
+                        if (typeInput.value === '-1') {
+                            target.value = '0';
+                        }
+                    }
+                }
+            }
         });
 
     };
@@ -469,6 +834,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Only add if no states exist
         if (dom.statesItemsContainer.children.length === 0) {
             addState();
+        } else {
+            // Initialize dependencies for existing states
+            dom.statesItemsContainer.querySelectorAll('.state-item').forEach(stateItem => {
+                initCreatureRewardDependencies(stateItem);
+                initGuardianFieldDependencies(stateItem); // Add this line
+            });
         }
     }
 
@@ -501,6 +872,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Disable add button if max reached
         dom.addStateButton.disabled = dom.statesItemsContainer.children.length >= 4;
 
+        // Initialize dependencies after adding to DOM
+        initCreatureRewardDependencies(newStateItem);
+        initGuardianFieldDependencies(newStateItem); // Add this line
+
         updateJsonPreview(); // Update JSON after adding
     };
 
@@ -525,13 +900,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const template = dom.spellItemTemplate.content.cloneNode(true);
         const newSpellItem = template.querySelector('.array-item');
 
-         // Set translated text for tooltips within the template
-         newSpellItem.querySelectorAll('[data-translate-id]').forEach(el => {
+        // Generate a unique ID for this spell instance
+        const spellUniqueId = `spell-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        
+        // Update radio button names to be unique per spell
+        const radioButtons = newSpellItem.querySelectorAll('.spell-type-radio');
+        radioButtons.forEach(radio => {
+            radio.name = `spell-type-${spellUniqueId}`;
+        });
+
+        // Set translated text for tooltips within the template
+        newSpellItem.querySelectorAll('[data-translate-id]').forEach(el => {
             const key = el.getAttribute('data-translate-id');
             if (translations.helpTexts?.[key]) {
                 el.textContent = translations.helpTexts[key];
             }
         });
+
+        // Make sure radio buttons are initialized correctly (ID selected by default)
+        const idRadio = newSpellItem.querySelector('.spell-type-radio[value="id"]');
+        if (idRadio) {
+            idRadio.checked = true;
+            // Make sure the correct container is enabled
+            const idContainer = newSpellItem.querySelector('.spell-id-container');
+            const bitsContainer = newSpellItem.querySelector('.spell-bits-container');
+            const bitsSubContainers = newSpellItem.querySelectorAll('.spell-bits-flags-container, .spell-bits-levels-container, .spell-bits-schools-container');
+            
+            if (idContainer) idContainer.classList.remove('disabled');
+            if (bitsContainer) bitsContainer.classList.add('disabled');
+            if (bitsSubContainers.length > 0) {
+                bitsSubContainers.forEach(container => container.classList.add('disabled'));
+            }
+        }
 
         spellsContainer.appendChild(newSpellItem);
 
@@ -539,6 +939,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const addSpellButton = stateItemElement.querySelector('.add-spell');
         if (addSpellButton) {
             addSpellButton.disabled = spellsContainer.querySelectorAll('.array-item').length >= 4;
+        }
+
+        // After adding the new spell item to the DOM, populate flags checkboxes
+        if (translations && translations.spellFlags) {
+            const flagsContainer = newSpellItem.querySelector('.flags-checkbox-container');
+            if (flagsContainer) {
+                // Clear container
+                flagsContainer.innerHTML = '';
+                
+                // Add checkboxes from translations
+                Object.keys(translations.spellFlags).forEach(key => {
+                    const checkboxItem = document.createElement('div');
+                    checkboxItem.className = 'flag-checkbox-item';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = key;
+                    checkbox.className = 'spell-flag-checkbox';
+                    checkbox.id = `flag-${key}-${Date.now()}-${Math.floor(Math.random() * 1000)}`; // Unique ID
+                    
+                    const label = document.createElement('label');
+                    label.setAttribute('for', checkbox.id);
+                    label.textContent = translations.spellFlags[key];
+                    
+                    checkboxItem.appendChild(checkbox);
+                    checkboxItem.appendChild(label);
+                    flagsContainer.appendChild(checkboxItem);
+                    
+                    // Add event listener for each checkbox
+                    checkbox.addEventListener('change', function() {
+                        updateFlagsValue(this.closest('.array-item'));
+                    });
+                });
+            }
         }
 
         if (triggerJsonUpdate) {
@@ -789,13 +1223,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Process each field within the state
                     if (getCheckbox('state-morale-checkbox').checked) {
                         const morale = getParsedInt('state-morale-container');
-                        if (morale !== undefined) stateObj.morale = morale;
+                        if (morale !== undefined) {
+                            // Ensure morale is within -3 to 3 range
+                            stateObj.morale = Math.max(-3, Math.min(3, morale));
+                        }
                     }
+                    
                     if (getCheckbox('state-luck-checkbox').checked) {
                         const luck = getParsedInt('state-luck-container');
-                         if (luck !== undefined) stateObj.luck = luck;
+                        if (luck !== undefined) {
+                            // Ensure luck is within -3 to 3 range
+                            stateObj.luck = Math.max(-3, Math.min(3, luck));
+                        }
                     }
-                     if (getCheckbox('state-spellPoints-checkbox').checked) {
+
+                    if (getCheckbox('state-spellPoints-checkbox').checked) {
                         const sp = getParsedInt('state-spellPoints-container');
                          if (sp !== undefined && sp >= 0) stateObj.spellPoints = sp;
                     }
@@ -804,46 +1246,119 @@ document.addEventListener('DOMContentLoaded', () => {
                          if (exp !== undefined && exp >= 0) stateObj.experience = exp;
                     }
                     if (getCheckbox('state-artifactTypeCounts-checkbox').checked) {
-                         const counts = getParsedCommaIntArray('state-artifactTypeCounts-container');
-                         if (counts) stateObj.artifactTypeCounts = counts;
-                    }
-                    if (getCheckbox('state-creatureRewardCount-checkbox').checked) {
-                         const count = getParsedInt('state-creatureRewardCount-container');
-                         if (count !== undefined && count >= 0) stateObj.creatureRewardCount = count;
-                    }
-                    if (getCheckbox('state-creatureRewardType-checkbox').checked) {
-                         const type = getParsedInt('state-creatureRewardType-container');
-                         if (type !== undefined) stateObj.creatureRewardType = type; // Can be -1
+                        // Get values from individual artifact type fields
+                        const valuableInput = stateElement.querySelector('.state-artifactTypeCounts-valuable');
+                        const minorInput = stateElement.querySelector('.state-artifactTypeCounts-minor');
+                        const majorInput = stateElement.querySelector('.state-artifactTypeCounts-major');
+                        const relicInput = stateElement.querySelector('.state-artifactTypeCounts-relic');
+                        
+                        const valuable = valuableInput && valuableInput.value !== '' ? parseInt(valuableInput.value) : 0;
+                        const minor = minorInput && minorInput.value !== '' ? parseInt(minorInput.value) : 0;
+                        const major = majorInput && majorInput.value !== '' ? parseInt(majorInput.value) : 0;
+                        const relic = relicInput && relicInput.value !== '' ? parseInt(relicInput.value) : 0;
+                        
+                        // Create artifact type counts array
+                        stateObj.artifactTypeCounts = [
+                            isNaN(valuable) ? 0 : valuable,
+                            isNaN(minor) ? 0 : minor,
+                            isNaN(major) ? 0 : major,
+                            isNaN(relic) ? 0 : relic
+                        ];
                     }
                     if (getCheckbox('state-resources-checkbox').checked) {
-                         const res = getParsedCommaIntArray('state-resources-container');
-                         if (res) stateObj.resources = res;
+                        // Get values from individual resource fields
+                        const woodInput = stateElement.querySelector('.state-resources-wood');
+                        const oreInput = stateElement.querySelector('.state-resources-ore');
+                        const mercuryInput = stateElement.querySelector('.state-resources-mercury');
+                        const sulfurInput = stateElement.querySelector('.state-resources-sulfur');
+                        const crystalInput = stateElement.querySelector('.state-resources-crystal');
+                        const gemsInput = stateElement.querySelector('.state-resources-gems');
+                        const goldInput = stateElement.querySelector('.state-resources-gold');
+                        const mithrilInput = stateElement.querySelector('.state-resources-mithril');
+                        
+                        const wood = woodInput && woodInput.value !== '' ? parseInt(woodInput.value) : 0;
+                        const ore = oreInput && oreInput.value !== '' ? parseInt(oreInput.value) : 0;
+                        const mercury = mercuryInput && mercuryInput.value !== '' ? parseInt(mercuryInput.value) : 0;
+                        const sulfur = sulfurInput && sulfurInput.value !== '' ? parseInt(sulfurInput.value) : 0;
+                        const crystal = crystalInput && crystalInput.value !== '' ? parseInt(crystalInput.value) : 0;
+                        const gems = gemsInput && gemsInput.value !== '' ? parseInt(gemsInput.value) : 0;
+                        const gold = goldInput && goldInput.value !== '' ? parseInt(goldInput.value) : 0;
+                        const mithril = mithrilInput && mithrilInput.value !== '' ? parseInt(mithrilInput.value) : 0;
+                        
+                        // Create resources array
+                        stateObj.resources = [
+                            isNaN(wood) ? 0 : wood,
+                            isNaN(mercury) ? 0 : mercury,
+                            isNaN(ore) ? 0 : ore,
+                            isNaN(sulfur) ? 0 : sulfur,
+                            isNaN(crystal) ? 0 : crystal,
+                            isNaN(gems) ? 0 : gems,
+                            isNaN(gold) ? 0 : gold,
+                            isNaN(mithril) ? 0 : mithril
+                        ];
                     }
                     if (getCheckbox('state-upgrade-checkbox').checked) {
                          const upg = getParsedInt('state-upgrade-container');
-                         if (upg !== undefined && upg >= 0) stateObj.upgrade = upg;
+                         if (upg !== undefined && upg >= 0) stateObj.upgrade = Math.min(100, upg);
                     }
                     if (getCheckbox('state-chance-checkbox').checked) {
                          const chance = getParsedInt('state-chance-container');
-                         if (chance !== undefined && chance >= 0 && chance <= 100) stateObj.chance = chance;
+                         if (chance !== undefined && chance >= 0) stateObj.chance = Math.min(100, chance);
                     }
 
                     // Skills
                     if (getCheckbox('state-skills-checkbox').checked) {
-                        const primary = getParsedCommaIntArray('state-skills-primary-container');
-                        if (primary) stateObj.skills = { primary };
+                        // Get values from individual skill fields
+                        const attackInput = stateElement.querySelector('.state-skills-primary-attack');
+                        const defenseInput = stateElement.querySelector('.state-skills-primary-defense');
+                        const powerInput = stateElement.querySelector('.state-skills-primary-power');
+                        const knowledgeInput = stateElement.querySelector('.state-skills-primary-knowledge');
+                        
+                        const attack = attackInput && attackInput.value !== '' ? parseInt(attackInput.value) : 0;
+                        const defense = defenseInput && defenseInput.value !== '' ? parseInt(defenseInput.value) : 0;
+                        const power = powerInput && powerInput.value !== '' ? parseInt(powerInput.value) : 0;
+                        const knowledge = knowledgeInput && knowledgeInput.value !== '' ? parseInt(knowledgeInput.value) : 0;
+                        
+                        // Create primary skills array only if at least one value is non-zero
+                        if (attack > 0 || defense > 0 || power > 0 || knowledge > 0) {
+                            stateObj.skills = { 
+                                primary: [
+                                    isNaN(attack) ? 0 : attack,
+                                    isNaN(defense) ? 0 : defense,
+                                    isNaN(power) ? 0 : power,
+                                    isNaN(knowledge) ? 0 : knowledge
+                                ] 
+                            };
+                        }
                     }
 
                     // Guardians
                     if (getCheckbox('state-guardians-checkbox').checked) {
-                         const count = getParsedCommaIntArray('state-guardians-count-container');
-                         const type = getParsedCommaIntArray('state-guardians-type-container');
-                         if (count || type) {
-                             stateObj.guardians = {};
-                             if (count) stateObj.guardians.count = count;
-                             if (type) stateObj.guardians.type = type;
-                         }
-                     }
+                        // Create arrays for guardian counts and types
+                        const guardianCounts = [];
+                        const guardianTypes = [];
+                        
+                        // Collect values from individual guardian fields
+                        for (let i = 1; i <= 7; i++) {
+                            const countInput = stateElement.querySelector(`.state-guardians-count-${i}`);
+                            const typeInput = stateElement.querySelector(`.state-guardians-type-${i}`);
+                            
+                            if (countInput && typeInput) {
+                                const count = parseInt(countInput.value) || 0;
+                                const type = parseInt(typeInput.value) || -1;
+                                
+                                guardianCounts.push(count);
+                                guardianTypes.push(type);
+                            }
+                        }
+                        
+                        // Add to state object if arrays have values
+                        if (guardianCounts.length > 0 || guardianTypes.length > 0) {
+                            stateObj.guardians = {};
+                            if (guardianCounts.length > 0) stateObj.guardians.count = guardianCounts;
+                            if (guardianTypes.length > 0) stateObj.guardians.type = guardianTypes;
+                        }
+                    }
 
                     // Spells (nested array)
                     if (getCheckbox('state-spells-checkbox').checked) {
@@ -852,29 +1367,40 @@ document.addEventListener('DOMContentLoaded', () => {
                             stateObj.spells = [];
                             spellItems.forEach(spellElement => {
                                 const spellObj = {};
-                                const getSpellCheckbox = (cls) => spellElement.querySelector(`.${cls}`);
-                                const getSpellInputValue = (cls) => spellElement.querySelector(`.${cls}-input`)?.value.trim();
-                                const getSpellParsedInt = (cls, defaultValue = undefined) => {
-                                    const val = getSpellInputValue(cls);
-                                    const parsed = parseInt(val);
-                                    return (val !== '' && !isNaN(parsed)) ? parsed : defaultValue;
-                                };
-
-                                // Spell ID
-                                if (getSpellCheckbox('spell-id-checkbox').checked) {
-                                    const id = getSpellParsedInt('spell-id');
-                                    if (id !== undefined && id >= 0) spellObj.id = id;
-                                }
-
-                                // Spell Bits
-                                if (getSpellCheckbox('spell-bits-checkbox').checked) {
+                                
+                                // Check which radio is selected - FIX: Add null check
+                                const idRadioElement = spellElement.querySelector('.spell-type-radio[value="id"]');
+                                const idRadioSelected = idRadioElement ? idRadioElement.checked : false;
+                                
+                                if (idRadioSelected) {
+                                    // Process ID - FIX: Define idInput before use
+                                    const idInput = spellElement.querySelector('.spell-id-input');
+                                    if (idInput && idInput.value.trim() !== '') {
+                                        const id = parseInt(idInput.value.trim());
+                                        if (!isNaN(id) && id >= 0 && id <= 70) spellObj.id = id;
+                                    }
+                                } else {
+                                    // Process Bits
                                     const bits = {};
-                                    const flags = getSpellParsedInt('spell-bits-flags');
-                                    const levels = getSpellParsedInt('spell-bits-levels');
-                                    const schools = getSpellParsedInt('spell-bits-schools');
-                                    if (flags !== undefined && flags >= 0) bits.flags = flags;
-                                    if (levels !== undefined && levels >= 0) bits.levels = levels;
-                                    if (schools !== undefined && schools >= 0) bits.schools = schools;
+                                    const flagsValueInput = spellElement.querySelector('.spell-bits-flags-value');
+                                    const levelsInput = spellElement.querySelector('.spell-bits-levels-value');
+                                    const schoolsInput = spellElement.querySelector('.spell-bits-schools-value');
+                                    
+                                    if (flagsValueInput && flagsValueInput.value.trim() !== '') {
+                                        const flags = parseInt(flagsValueInput.value.trim());
+                                        if (!isNaN(flags) && flags >= 0) bits.flags = flags;
+                                    }
+                                    
+                                    if (levelsInput && levelsInput.value.trim() !== '') {
+                                        const levels = parseInt(levelsInput.value.trim());
+                                        if (!isNaN(levels) && levels >= 0) bits.levels = levels;
+                                    }
+                                    
+                                    if (schoolsInput && schoolsInput.value.trim() !== '') {
+                                        const schools = parseInt(schoolsInput.value.trim());
+                                        if (!isNaN(schools) && schools >= 0) bits.schools = schools;
+                                    }
+                                    
                                     if (Object.keys(bits).length > 0) spellObj.bits = bits;
                                 }
 
@@ -886,6 +1412,26 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Remove spells array if it ended up empty
                             if (stateObj.spells.length === 0) {
                                 delete stateObj.spells;
+                            }
+                        }
+                    }
+
+                    // Handle creature reward type and count dependency
+                    if (getCheckbox('state-creatureReward-checkbox').checked) {
+                        const type = getParsedInt('state-creatureRewardType-container');
+                        if (type !== undefined) {
+                            stateObj.creatureRewardType = type; // Can be -1
+                            
+                            // Only add count if type is not -1
+                            if (type !== -1) {
+                                const count = getParsedInt('state-creatureRewardCount-container');
+                                if (count !== undefined && count >= 0) {
+                                    stateObj.creatureRewardCount = Math.min(127, count);
+                                } else {
+                                    stateObj.creatureRewardCount = 0; // Default to 0
+                                }
+                            } else {
+                                stateObj.creatureRewardCount = 0; // Force 0 when type is -1
                             }
                         }
                     }
@@ -1123,6 +1669,127 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.resizable-textarea').forEach(updateLineBreakIndicators);
      };
 
+    // Function to update flags value based on selected checkboxes
+    const updateFlagsValue = (spellItem) => {
+        if (!spellItem) return;
+        
+        const checkboxes = spellItem.querySelectorAll('.spell-flag-checkbox:checked');
+        const flagsValueInput = spellItem.querySelector('.spell-bits-flags-value');
+        const flagsSelectedValues = spellItem.querySelector('.flags-selected-values');
+        
+        // Calculate the sum of selected values
+        let sum = 0;
+        const selectedValues = [];
+        
+        checkboxes.forEach(checkbox => {
+            const value = parseInt(checkbox.value);
+            if (!isNaN(value)) {
+                sum += value;
+                selectedValues.push(value);
+            }
+        });
+        
+        // Update the hidden input value
+        if (flagsValueInput) {
+            flagsValueInput.value = sum;
+        }
+        
+        // Update the display of selected values
+        if (flagsSelectedValues) {
+            if (selectedValues.length > 1) {
+                flagsSelectedValues.textContent = selectedValues.join(', ') + ` (Sum: ${sum})`;
+            } else if (selectedValues.length === 1) {
+                flagsSelectedValues.textContent = sum;
+            } else {
+                flagsSelectedValues.textContent = '0';
+            }
+        }
+        
+        // Update JSON preview
+        updateJsonPreview();
+    };
+
+    const updateLevelsValue = (spellItem) => {
+        const checkboxes = spellItem.querySelectorAll('.spell-level-checkbox:checked');
+        const levelsValueInput = spellItem.querySelector('.spell-bits-levels-value');
+        let sum = 0;
+
+        checkboxes.forEach(checkbox => {
+            const value = parseInt(checkbox.value);
+            if (!isNaN(value)) {
+                sum += value;
+            }
+        });
+
+        if (levelsValueInput) {
+            levelsValueInput.value = sum;
+        }
+
+        updateJsonPreview();
+    };
+
+    const updateSchoolsValue = (spellItem) => {
+        const checkboxes = spellItem.querySelectorAll('.spell-school-checkbox:checked');
+        const schoolsValueInput = spellItem.querySelector('.spell-bits-schools-value');
+        let sum = 0;
+
+        checkboxes.forEach(checkbox => {
+            const value = parseInt(checkbox.value);
+            if (!isNaN(value)) {
+                sum += value;
+            }
+        });
+
+        if (schoolsValueInput) {
+            schoolsValueInput.value = sum;
+        }
+
+        updateJsonPreview();
+    };
+
+    // Add a function to initialize the creature reward dependencies when states are added
+    const initCreatureRewardDependencies = (stateItem) => {
+        const typeInput = stateItem.querySelector('.state-creatureRewardType-input');
+        const countInput = stateItem.querySelector('.state-creatureRewardCount-input');
+        const countContainer = stateItem.querySelector('.creature-reward-count');
+        
+        if (typeInput && countInput && countContainer) {
+            // Set initial state based on type value
+            if (typeInput.value === '-1') {
+                countInput.value = '0';
+                countInput.disabled = true;
+                countContainer.classList.add('disabled');
+            }
+            
+            // Add event listener to typeInput
+            typeInput.addEventListener('change', () => {
+                if (typeInput.value === '-1') {
+                    countInput.value = '0';
+                    countInput.disabled = true;
+                    countContainer.classList.add('disabled');
+                } else {
+                    countInput.disabled = false;
+                    countContainer.classList.remove('disabled');
+                }
+            });
+        }
+    };
+
+    // Add a function to initialize the guardian field dependencies
+    const initGuardianFieldDependencies = (stateItem) => {
+        for (let i = 1; i <= 7; i++) {
+            const typeInput = stateItem.querySelector(`.state-guardians-type-${i}`);
+            const countInput = stateItem.querySelector(`.state-guardians-count-${i}`);
+            
+            if (typeInput && countInput) {
+                // Set initial state based on type value
+                if (typeInput.value === '-1') {
+                    countInput.value = '0';
+                    countInput.disabled = true;
+                }
+            }
+        }
+    };
 
     // --- Start the Application ---
     init();

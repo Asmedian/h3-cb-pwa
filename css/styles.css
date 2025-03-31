@@ -314,10 +314,78 @@ input[type="checkbox"]:checked::after {
     background-color: white;
 }
 
+/* Add these styles for the radio buttons */
+.radio-group {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+/* Styling for radio buttons */
+input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--checkbox-unchecked);
+    background-color: transparent;
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+input[type="radio"]:hover {
+    border-color: var(--checkbox-hover);
+    background-color: rgba(107, 114, 128, 0.1);
+}
+
+input[type="radio"]:checked {
+    background-color: var(--checkbox-checked);
+    border-color: var(--checkbox-checked);
+}
+
+input[type="radio"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.spell-type-selection {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
 /* --- Disabled State --- */
 .disabled {
     opacity: 0.6;
     pointer-events: none;
+}
+
+/* Prevent disabled effect from being applied multiple times */
+.disabled .disabled {
+    opacity: 1; /* Reset opacity for nested disabled elements */
+    /* Keep pointer-events none, but don't compound the opacity effect */
 }
 
 /* Allow help icons within disabled sections to remain interactive */
@@ -450,6 +518,7 @@ input[type="checkbox"]:checked::after {
     margin-top: 8px; /* More space above hint */
     display: block;
     line-height: 1.4;
+    text-wrap: auto;
 }
 
 /* --- Resizable Textarea --- */
@@ -479,6 +548,115 @@ textarea.resizable-textarea {
 /* --- Utility Classes --- */
 .margin-left-10 {
     margin-left: 10px; /* Keep if specifically needed, but prefer gap */
+}
+
+/* Spell Flags Checkboxes */
+.flags-checkbox-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.flag-checkbox-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.flag-checkbox-item label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+}
+
+.flags-summary {
+    font-size: 0.85em;
+    color: var(--hint-color);
+}
+
+.flags-selected-values {
+    font-weight: bold;
+}
+
+/* Make sure checkboxes stay aligned */
+.flag-checkbox-item input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 10px; /* Space between checkboxes */
+}
+
+.checkbox-group label {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2px; /* Space between checkboxes */
+}
+
+.checkbox-group label input[type="checkbox"] {
+    align-self: center; /* Center checkbox label */
+    margin: 0; /* Reset margin */
+}
+
+/* --- Primary Skills & Artifact Type Fields --- */
+.skills-primary-fields,
+.artifact-type-fields,
+.resources-fields,
+.guardians-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+}
+
+.skill-field,
+.artifact-field,
+.resource-field,
+.guardian-field {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 80px;
+}
+
+.skill-field label,
+.artifact-field label,
+.resource-field label,
+.guardian-field label {
+    font-size: 14px;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.skill-field input,
+.artifact-field input,
+.resource-field input,
+.guardian-field input {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .skills-primary-fields,
+    .artifact-type-fields,
+    .resources-fields,
+    .guardians-fields {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .skill-field,
+    .artifact-field,
+    .resource-field,
+    .guardian-field {
+        width: 100%;
+    }
 }
 
 /* --- Responsive Design --- */
