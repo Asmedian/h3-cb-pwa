@@ -1,0 +1,556 @@
+/* --- Root Variables and Theming --- */
+:root {
+    --primary-bg: #1f2937;
+    --secondary-bg: #111827;
+    --tertiary-bg: #374151;
+    --text-color: #f3f4f6;
+    --hint-color: #666;
+    --input-bg: #111827;
+    --border-color: #4b5563;
+    --button-bg: #3b82f6;
+    --button-hover: #2563eb;
+    --indented-bg: #111827;
+    --indented-border: #4b5563;
+    --disabled-bg: #4b5563;
+    --disabled-text: #9ca3af;
+    --checkbox-unchecked: #4b5563;
+    --checkbox-checked: #3b82f6;
+    --checkbox-hover: #6b7280;
+    --error-border: #ff5252;
+    --error-bg: rgba(255, 82, 82, 0.1);
+    --warning-color: #f59e0b; /* Use a consistent warning color */
+}
+
+[data-theme="light"] {
+    --primary-bg: #f3f4f6;
+    --secondary-bg: #e5e7eb;
+    --tertiary-bg: #d1d5db;
+    --text-color: #666;
+    --hint-color: #374151;
+    --input-bg: #ffffff;
+    --border-color: #9ca3af;
+    /* button-bg, button-hover remain the same blue */
+    --indented-bg: #e5e7eb;
+    --indented-border: #9ca3af;
+    --disabled-bg: #d1d5db;
+    --disabled-text: #6b7280;
+    --checkbox-unchecked: #9ca3af;
+    /* checkbox-checked remains blue */
+    /* checkbox-hover remains gray */
+}
+
+/* --- Global Styles --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    line-height: 1.6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* --- Header --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.title-container h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.header-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center; /* Align buttons vertically */
+}
+
+.browser-support {
+    margin-top: 10px;
+    font-size: 12px;
+    padding: 8px;
+    background-color: var(--indented-bg);
+    border: 1px solid var(--indented-border);
+    border-radius: 4px;
+    max-width: 300px;
+}
+
+/* --- Buttons & Controls --- */
+button {
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    white-space: nowrap; /* Prevent button text wrapping */
+}
+
+button:hover:not(:disabled) {
+    background-color: var(--button-hover);
+}
+
+button:disabled {
+    background-color: var(--disabled-bg);
+    color: var(--disabled-text);
+    cursor: not-allowed;
+}
+
+.theme-toggle, .lang-selector {
+    position: relative;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px 0;
+    z-index: 100;
+    min-width: 150px;
+    display: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown.show {
+    display: block;
+}
+
+.dropdown button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    color: var(--text-color);
+    padding: 8px 16px;
+    border: none; /* Ensure dropdown buttons have no border */
+    border-radius: 0; /* No border radius inside dropdown */
+}
+
+.dropdown button:hover {
+    background-color: var(--tertiary-bg);
+}
+
+/* --- Editor Layout --- */
+.editor-container {
+    background-color: var(--secondary-bg);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Field Groups & Rows --- */
+.field-group {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 15px; /* Increased padding */
+    border-radius: 6px;
+    background-color: var(--indented-bg);
+    border: 1px solid var(--indented-border);
+}
+.field-group h3, .field-group h4 {
+    margin-bottom: 15px; /* Space below headings */
+    font-weight: 600;
+}
+
+/* Nested field groups */
+.field-group .field-group {
+    margin-top: 15px;
+    background-color: var(--secondary-bg); /* Slightly different bg for nesting */
+}
+
+.field-row {
+    display: flex;
+    margin-bottom: 12px; /* Increased space */
+    align-items: center;
+    gap: 15px; /* Gap between label and input */
+}
+
+/* --- Labels & Help Icons --- */
+.field-label, .field-label-small {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* Prevent label shrinking */
+}
+.field-label {
+    flex-basis: 200px; /* Use flex-basis */
+}
+.field-label-small {
+    flex-basis: 120px; /* Adjusted small label */
+}
+
+.field-label .help-icon, .field-label-small .help-icon {
+    margin-left: 8px;
+}
+
+.help-icon {
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--button-bg); /* Use theme color */
+    position: relative;
+    display: inline-flex; /* Align icon better */
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+.tooltip {
+    position: absolute;
+    bottom: 100%;
+    /* Changed positioning strategy to prevent overflow */
+    left: 0; /* Default alignment to left edge */
+    transform: translateY(-5px);
+    background-color: var(--tertiary-bg);
+    color: var(--text-color);
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    width: 250px;
+    max-width: calc(100vw - 30px); /* Prevent exceeding viewport width */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    z-index: 110;
+    display: none;
+    pointer-events: none;
+    text-align: left;
+    line-height: 1.4;
+}
+
+.help-icon:hover .tooltip {
+    display: block;
+}
+
+/* Right-align tooltip when help icon is near right edge */
+@media (min-width: 768px) {
+    .field-label:last-child .help-icon .tooltip,
+    .field-row:last-child .help-icon .tooltip,
+    .field-input .help-icon .tooltip {
+        left: auto;
+        /* right: 0; */
+    }
+}
+
+/* --- Inputs --- */
+.field-input {
+    flex: 1; /* Allow input to grow */
+    min-width: 150px; /* Minimum width for inputs */
+}
+
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 14px; /* Consistent font size */
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--button-bg); /* Highlight focus */
+}
+
+/* --- Checkboxes --- */
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%; /* Circular checkbox */
+    border: 2px solid var(--checkbox-unchecked);
+    background-color: transparent;
+    margin-right: 10px;
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle; /* Align checkbox with text */
+    transition: all 0.2s ease;
+    flex-shrink: 0; /* Prevent checkbox shrinking */
+}
+
+input[type="checkbox"]:hover {
+    border-color: var(--checkbox-hover);
+    background-color: rgba(107, 114, 128, 0.1); /* Subtle hover background */
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--checkbox-checked);
+    border-color: var(--checkbox-checked);
+}
+
+input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    /* Centered inner circle */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+/* --- Disabled State --- */
+.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Allow help icons within disabled sections to remain interactive */
+.disabled .help-icon {
+    opacity: 1;
+    pointer-events: auto;
+    position: relative; /* Needed for tooltip positioning */
+    z-index: 101; /* Ensure it's above the disabled overlay */
+}
+.disabled .help-icon .tooltip {
+     pointer-events: auto; /* Tooltip content should be selectable */
+}
+
+/* --- Dynamic Lists (Properties, Spells, States) --- */
+.property-item, .array-item, .state-item {
+    display: flex;
+    margin-bottom: 10px; /* Consistent spacing */
+    align-items: flex-start; /* Align items to the top */
+    gap: 10px; /* Gap between input/group and button */
+    align-items: flex-start;
+    flex-direction: column; /* Place the "remove" button at the bottom */
+}
+.state-item > .field-group {
+    flex-grow: 1; /* Allow state field group to take available space */
+}
+
+.property-input {
+    flex-grow: 1; /* Allow property input to take space */
+}
+
+.remove-property, .remove-spell, .remove-state {
+    background-color: #ef4444; /* Red for remove buttons */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px; /* Slightly adjusted padding */
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    height: fit-content; /* Fit button height to content */
+    margin-top: 5px; /* Align better with inputs */
+    flex-shrink: 0; /* Prevent button shrinking */
+}
+.remove-property:hover, .remove-spell:hover, .remove-state:hover {
+    background-color: #dc2626; /* Darker red on hover */
+}
+/* Specific widths if needed, but flexbox handles it well */
+/* .remove-spell { min-width: 50px; } */
+/* .remove-state { min-width: 150px; } */
+
+.add-item, .add-spell, .add-state {
+    margin-top: 10px;
+    min-width: 130px; /* Slightly smaller min-width */
+    background-color: #22c55e; /* Green for add buttons */
+}
+.add-item:hover, .add-spell:hover, .add-state:hover {
+    background-color: #16a34a; /* Darker green on hover */
+}
+
+/* --- Bottom Controls & JSON Preview --- */
+.bottom-controls {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color); /* Separator */
+    display: flex; /* Align buttons */
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.save-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    /* :disabled styles handled globally */
+}
+
+.json-preview-toggle {
+    margin-bottom: 0; /* Remove margin as flex gap handles spacing */
+}
+
+.json-preview {
+    background-color: var(--indented-bg);
+    padding: 15px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    word-wrap: break-word; /* Ensure long lines break */
+    font-family: 'Courier New', Courier, monospace; /* Monospace font */
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--indented-border);
+    display: none; /* Initially hidden */
+    width: 100%; /* Take full width when shown */
+    margin-top: 15px; /* Space above preview */
+    color: var(--text-color); /* Ensure text color matches theme */
+}
+
+.json-preview.show {
+    display: block;
+}
+
+/* --- PWA Install Button --- */
+.install-pwa {
+    display: none; /* Hidden by default, shown via JS */
+    background-color: #6366f1; /* Indigo color */
+}
+.install-pwa:hover {
+    background-color: #4f46e5; /* Darker indigo */
+}
+
+/* --- Validation & Hints --- */
+.invalid-input {
+    border: 2px solid var(--error-border) !important; /* Use important to override focus */
+    background-color: var(--error-bg);
+}
+
+.property-warning {
+    color: var(--warning-color);
+    margin-right: 8px;
+    cursor: help;
+    font-size: 16px;
+    display: inline-flex; /* Align icon */
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.property-hint {
+    font-size: 0.85em; /* Slightly larger hint */
+    color: var(--hint-color);
+    opacity: 0.7;
+    margin-top: 8px; /* More space above hint */
+    display: block;
+    line-height: 1.4;
+}
+
+/* --- Resizable Textarea --- */
+.textarea-container {
+    position: relative;
+    width: 100%;
+}
+
+textarea.resizable-textarea {
+    min-height: 80px;
+    resize: vertical; /* Allow only vertical resize */
+    line-height: 1.5; /* Match base line-height */
+    overflow: auto; /* Ensure scrollbars appear if needed */
+}
+
+.line-break-indicator {
+    position: absolute;
+    color: var(--border-color);
+    font-size: 12px;
+    user-select: none;
+    pointer-events: none;
+    opacity: 0.7;
+    font-family: monospace; /* Use monospace for consistency */
+    line-height: 1; /* Prevent interference with layout */
+}
+
+/* --- Utility Classes --- */
+.margin-left-10 {
+    margin-left: 10px; /* Keep if specifically needed, but prefer gap */
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start; /* Align items left */
+    }
+
+    .header-controls {
+        margin-top: 15px;
+        width: 100%; /* Take full width */
+        justify-content: flex-start; /* Align controls left */
+    }
+
+    .field-row {
+        flex-direction: column;
+        align-items: flex-start; /* Align labels and inputs top-left */
+        gap: 8px; /* Reduce gap for column layout */
+    }
+
+    .field-label, .field-label-small {
+        flex-basis: auto; /* Reset flex-basis */
+        width: 100%; /* Take full width */
+        margin-bottom: 5px; /* Add space below label */
+    }
+    .field-input {
+        width: 100%; /* Ensure input takes full width */
+    }
+
+    .property-item, .array-item, .state-item {
+        flex-direction: column; /* Stack items vertically */
+        align-items: stretch; /* Stretch items */
+    }
+    .remove-property, .remove-spell, .remove-state {
+        margin-top: 5px;
+        align-self: flex-end; /* Align remove button right */
+        width: auto; /* Let button size naturally */
+        padding: 6px 12px;
+    }
+    .state-item > .field-group {
+        width: 100%; /* Ensure field group takes full width */
+    }
+
+    .bottom-controls {
+        flex-direction: column;
+        align-items: stretch; /* Stretch buttons */
+    }
+    .save-button, .json-preview-toggle {
+        width: 100%; /* Full width buttons */
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 15px;
+    }
+    .editor-container {
+        padding: 15px;
+    }
+    .field-group {
+        padding: 10px;
+    }
+    button {
+        padding: 10px 15px; /* Larger tap targets */
+        font-size: 15px;
+    }
+    .dropdown {
+        min-width: 120px;
+    }
+    .tooltip {
+        width: 200px;
+        font-size: 12px;
+    }
+}

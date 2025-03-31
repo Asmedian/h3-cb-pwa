@@ -3,17 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#1f2937">
-    <title>Creature Bank Editor for Heroes 3: ERA</title>
+    <!-- Theme color for PWA -->
+    <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f3f4f6" media="(prefers-color-scheme: light)">
+    <title>Heroes 3: ERA Objects Editor</title>
+    <!-- Dynamic Manifest -->
     <link rel="manifest" href="#" id="manifestPlaceholder">
-    <link rel="icon" href="./icon-64.png" type="image/png">
-    <link rel="stylesheet" href="./styles.css">
+    <!-- Favicons -->
+    <link rel="icon" href="./icon-64.png" type="image/png" sizes="64x64">
+    <link rel="icon" href="./icon-192.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="./icon-192.png"> <!-- iOS icon -->
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
 
 <body>
 <header>
     <div class="title-container">
-        <h1 id="app-title">Creature Bank Editor for Heroes 3: ERA</h1>
+        <h1 id="app-title">Heroes 3: ERA Objects Editor</h1>
     </div>
     <div>
         <div class="header-controls">
@@ -24,39 +31,41 @@
             <div class="lang-selector">
                 <button id="lang-selector-btn">English</button>
                 <div class="dropdown" id="lang-dropdown">
+                    <!-- Language options will be populated by JS if needed, or keep static -->
                     <button data-lang="en">English</button>
                     <button data-lang="ru">Русский</button>
                 </div>
             </div>
         </div>
         <div class="browser-support" id="browser-support">
-            Primarily supported in Chromium-based browsers (Chrome, Edge, Opera, etc.). Firefox, Safari, and others work with limitations.
+            <!-- Content populated by JS -->
         </div>
     </div>
 </header>
 
-<div class="editor-container">
+<main class="editor-container">
     <!-- Object Subtype -->
     <div class="field-group">
         <h3 id="object-subtype-title">Object parameters</h3>
-        
+
         <div class="field-row">
-            <div class="field-label margin-left-10">
+            <span class="field-label"> <!-- Changed div to span for inline-flex nature -->
                 type <span class="help-icon">?
-                    <div class="tooltip" id="help-objectType">Loading help text...</div>
+                    <span class="tooltip" id="help-objectType">Loading help text...</span>
                 </span>
-            </div>
-            <div class="field-input margin-left-10">
-                16
+            </span>
+            <div class="field-input">
+                <!-- Displaying as text, not editable -->
+                <span>16</span>
             </div>
         </div>
-        
+
         <div class="field-row">
-            <div class="field-label margin-left-10">
+            <label class="field-label" for="object-subtype"> <!-- Use label for accessibility -->
                 subtype <span class="help-icon">?
-                    <div class="tooltip" id="help-objectSubtype">Loading help text...</div>
+                    <span class="tooltip" id="help-objectSubtype">Loading help text...</span>
                 </span>
-            </div>
+            </label>
             <div class="field-input">
                 <input type="number" id="object-subtype" min="0" value="13">
             </div>
@@ -66,36 +75,42 @@
     <!-- Required Fields -->
     <div class="field-group">
         <h3 id="required-fields-title">Required Fields</h3>
-        
+
         <div class="field-row">
-            <div class="field-label margin-left-10">
+            <span class="field-label"> <!-- Changed div to span -->
                 properties <span class="help-icon">?
-                    <div class="tooltip" id="help-properties">Loading help text...</div>
+                    <span class="tooltip" id="help-properties">Loading help text...</span>
                 </span>
-            </div>
+            </span>
             <div class="field-input">
                 <div id="properties-container">
+                    <!-- Property items template/initial item -->
                     <div class="property-item">
+                         <!-- Warning icon placeholder -->
                         <input type="text" class="property-input" id="property-0">
-                        <button class="remove-property">-</button>
+                        <button class="remove-property" data-remove-target="property-item">-</button>
                     </div>
+                    <!-- More properties added dynamically -->
                 </div>
+                <pre class="property-hint" id="property-hint-text">
+                    <!-- Hint text populated by JS -->
+                </pre>
                 <button class="add-item" id="add-property">Add Property</button>
             </div>
         </div>
     </div>
-    
+
     <!-- Object Generation -->
     <div class="field-group">
         <h3 id="object-generation-title">Object Generation</h3>
-        
+
         <div class="field-row">
-            <div class="field-label margin-left-10">
-                <input type="checkbox" id="enabled-checkbox">
+             <label class="field-label" for="enabled-checkbox"> <!-- Label points to checkbox -->
+                <input type="checkbox" id="enabled-checkbox" data-controls="enabled-container value-container density-container">
                 enabled <span class="help-icon">?
-                    <div class="tooltip" id="help-enabled">Loading help text...</div>
+                    <span class="tooltip" id="help-enabled">Loading help text...</span>
                 </span>
-            </div>
+            </label>
             <div class="field-input disabled" id="enabled-container">
                 <select id="enabled">
                     <option value="true">true</option>
@@ -103,70 +118,74 @@
                 </select>
             </div>
         </div>
-        
+
         <div class="field-row">
-            <div class="field-label margin-left-10">
+            <label class="field-label" for="value">
                 value <span class="help-icon">?
-                    <div class="tooltip" id="help-value">Loading help text...</div>
+                    <span class="tooltip" id="help-value">Loading help text...</span>
                 </span>
-            </div>
+            </label>
             <div class="field-input disabled" id="value-container">
                 <input type="number" id="value" min="0">
             </div>
         </div>
-        
+
         <div class="field-row">
-            <div class="field-label margin-left-10">
+            <label class="field-label" for="density">
                 density <span class="help-icon">?
-                    <div class="tooltip" id="help-density">Loading help text...</div>
+                    <span class="tooltip" id="help-density">Loading help text...</span>
                 </span>
-            </div>
+            </label>
             <div class="field-input disabled" id="density-container">
                 <input type="number" id="density" min="0">
             </div>
         </div>
     </div>
-    
+
     <!-- Optional Fields -->
     <div class="field-group">
         <h3 id="optional-fields-title">Optional Fields</h3>
-        
+
+        <!-- Name -->
         <div class="field-row">
-            <div class="field-label margin-left-10">
-                <input type="checkbox" id="name-checkbox">
+            <label class="field-label" for="name-checkbox">
+                <input type="checkbox" id="name-checkbox" data-controls="name-container">
                 name <span class="help-icon">?
-                    <div class="tooltip" id="help-name">Loading help text...</div>
+                    <span class="tooltip" id="help-name">Loading help text...</span>
                 </span>
-            </div>
+            </label>
             <div class="field-input disabled" id="name-container">
                 <input type="text" id="name">
             </div>
         </div>
-        
-        <div class="field-group">
+
+        <!-- Sound -->
+        <div class="field-group"> <!-- Wrap complex optional fields in their own group for clarity -->
             <div class="field-row">
-                <div class="field-label">
-                    <input type="checkbox" id="sound-checkbox">
+                <label class="field-label" for="sound-checkbox">
+                    <input type="checkbox" id="sound-checkbox" data-controls="sound-container">
                     sound <span class="help-icon">?
-                        <div class="tooltip" id="help-sound">Loading help text...</div>
+                        <span class="tooltip" id="help-sound">Loading help text...</span>
                     </span>
-                </div>
-                <div class="field-input disabled" id="sound-container">
-                    <div class="field-group">
+                </label>
+                 <div class="field-input disabled" id="sound-container">
+                    <div class="field-group"> <!-- Inner group for sound properties -->
                         <div class="field-row">
-                            <div class="field-label margin-left-10">
+                            <label class="field-label margin-left-10" for="sound-enter"> <!-- margin-left-10 kept for visual indent -->
                                 enter <span class="help-icon">?
-                                    <div class="tooltip" id="help-soundEnter">Loading help text...</div>
-                            </div>
+                                    <span class="tooltip" id="help-soundEnter">Loading help text...</span>
+                                </span>
+                            </label>
                             <div class="field-input">
                                 <input type="text" id="sound-enter" placeholder="filename.wav">
                             </div>
                         </div>
                         <div class="field-row">
-                            <div class="field-label margin-left-10">
+                            <label class="field-label margin-left-10" for="sound-loop">
                                 loop <span class="help-icon">?
-                                    <div class="tooltip" id="help-soundLoop">Loading help text...</div>
-                            </div>
+                                    <span class="tooltip" id="help-soundLoop">Loading help text...</span>
+                                </span>
+                             </label>
                             <div class="field-input">
                                 <input type="text" id="sound-loop" placeholder="filename.wav">
                             </div>
@@ -175,25 +194,28 @@
                 </div>
             </div>
         </div>
-        
+
+        <!-- Text -->
         <div class="field-group">
             <div class="field-row">
-                <div class="field-label">
-                    <input type="checkbox" id="text-checkbox">
+                <label class="field-label" for="text-checkbox">
+                    <input type="checkbox" id="text-checkbox" data-controls="text-container">
                     text <span class="help-icon">?
-                        <div class="tooltip" id="help-text">Loading help text...</div>
+                        <span class="tooltip" id="help-text">Loading help text...</span>
                     </span>
-                </div>
+                </label>
                 <div class="field-input disabled" id="text-container">
-                    <div class="field-group">
+                     <div class="field-group">
                         <div class="field-row">
-                            <div class="field-label margin-left-10">
+                            <label class="field-label margin-left-10" for="text-visit">
                                 visit <span class="help-icon">?
-                                    <div class="tooltip" id="help-textVisit">Loading help text...</div>
-                            </div>
+                                    <span class="tooltip" id="help-textVisit">Loading help text...</span>
+                                </span>
+                            </label>
                             <div class="field-input">
                                 <div class="textarea-container">
-                                    <textarea id="text-visit" class="resizable-textarea" placeholder="Welcome to the new creature bank."></textarea>
+                                    <textarea id="text-visit" class="resizable-textarea" placeholder="Welcome message..."></textarea>
+                                    <!-- Line break indicators added by JS -->
                                 </div>
                             </div>
                         </div>
@@ -201,1509 +223,297 @@
                 </div>
             </div>
         </div>
-        
+
+        <!-- States -->
         <div class="field-group">
-            <div class="field-row">
-                <div class="field-label-small">
-                    <input type="checkbox" id="states-checkbox">
+             <div class="field-row">
+                <label class="field-label-small" for="states-checkbox">
+                    <input type="checkbox" id="states-checkbox" data-controls="states-container">
                     states <span class="help-icon">?
-                        <div class="tooltip" id="help-states">Loading help text...</div>
+                        <span class="tooltip" id="help-states">Loading help text...</span>
                     </span>
-                </div>
-                <div class="field-input disabled" id="states-container">
+                </label>
+                 <div class="field-input disabled" id="states-container">
                     <div id="states-items">
-                        <!-- State item template -->
-                        <div class="state-item">
-                            <div class="field-group">
-                                <h4>State #1</h4>
-                                
-                                <!-- Optional fields within state -->
-                                <div class="field-row">
-                                    <div class="field-label margin-left-10">
-                                        <input type="checkbox" id="state-morale-checkbox-0">
-                                        morale <span class="help-icon">?
-                                            <div class="tooltip" id="help-moral">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-morale-container-0">
-                                        <input type="number" id="state-morale-0">
-                                    </div>
-                                </div>
-
-                                <div class="field-row">
-                                    <div class="field-label margin-left-10">
-                                        <input type="checkbox" id="state-luck-checkbox-0">
-                                        luck <span class="help-icon">?
-                                            <div class="tooltip" id="help-luck">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-luck-container-0">
-                                        <input type="number" id="state-luck-0">
-                                    </div>
-                                </div>
-
-                                <div class="field-group">
-                                    <div class="field-row">
-                                        <div class="field-label">
-                                            <input type="checkbox" id="state-spells-checkbox-0">
-                                            spells <span class="help-icon">?
-                                                <div class="tooltip" id="help-spells">Loading help text...</div>
-                                        </div>
-                                        <div class="field-input disabled" id="state-spells-container-0">
-                                            <div id="state-spells-items-0">
-                                                <div class="array-item">
-                                                    <div class="field-group">
-                                                        <div class="field-row">
-                                                            <div class="field-label">
-                                                                <input type="checkbox" id="state-spell-id-checkbox-0-0">
-                                                                id <span class="help-icon">?
-                                                                    <div class="tooltip" id="help-spellsId">Loading help text...</div>
-                                                            </div>
-                                                            <div class="field-input disabled" id="state-spell-id-container-0-0">
-                                                                <input type="number" id="state-spell-id-0-0" min="0">
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <div class="field-row">
-                                                            <div class="field-label">
-                                                                <input type="checkbox" id="state-spell-bits-checkbox-0-0">
-                                                                bits <span class="help-icon">?
-                                                                    <div class="tooltip" id="help-spellsBits">Loading help text...</div>
-                                                            </div>
-                                                            <div class="field-input disabled" id="state-spell-bits-container-0-0">
-                                                                <div class="field-group">
-                                                                    <div class="field-row">
-                                                                        <div class="field-label">
-                                                                            flags <span class="help-icon">?
-                                                                                <div class="tooltip" id="help-bitsFlags">Loading help text...</div>
-                                                                        </div>
-                                                                        <div class="field-input">
-                                                                            <input type="number" id="state-spell-bits-flags-0-0" min="0">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="field-row">
-                                                                        <div class="field-label">
-                                                                            levels <span class="help-icon">?
-                                                                                <div class="tooltip" id="help-bitsLevels">Loading help text...</div>
-                                                                        </div>
-                                                                        <div class="field-input">
-                                                                            <input type="number" id="state-spell-bits-levels-0-0" min="0">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="field-row">
-                                                                        <div class="field-label">
-                                                                            schools <span class="help-icon">?
-                                                                                <div class="tooltip" id="help-bitsSchools">Loading help text...</div>
-                                                                        </div>
-                                                                        <div class="field-input">
-                                                                            <input type="number" id="state-spell-bits-schools-0-0" min="0">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <button class="remove-spell">-</button>
-                                                </div>
-                                            </div>
-                                            <button id="add-spell" class="add-spell" data-state-index="0">+</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="field-row">
-                                    <div class="field-label margin-left-10">
-                                        <input type="checkbox" id="state-spellPoints-checkbox-0">
-                                        spellPoints <span class="help-icon">?
-                                            <div class="tooltip" id="help-spellPoints">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-spellPoints-container-0">
-                                        <input type="number" id="state-spellPoints-0" min="0">
-                                    </div>
-                                </div>
-
-                                <div class="field-row">
-                                    <div class="field-label margin-left-10">
-                                        <input type="checkbox" id="state-experience-checkbox-0">
-                                        experience <span class="help-icon">?
-                                            <div class="tooltip" id="help-experience">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-experience-container-0">
-                                        <input type="number" id="state-experience-0" min="0">
-                                    </div>
-                                </div>
-
-                                <div class="field-group">
-                                    <div class="field-row">
-                                        <div class="field-label">
-                                            <input type="checkbox" id="state-skills-checkbox-0">
-                                            skills <span class="help-icon">?
-                                                <div class="tooltip" id="help-skills">Loading help text...</div>
-                                        </div>
-                                        <div class="field-input disabled" id="state-skills-container-0">
-                                            <div class="field-row">
-                                                <div class="field-label">
-                                                    primary<br>(comma-separated) <span class="help-icon">?
-                                                        <div class="tooltip" id="help-skillsPrimary">Loading help text...</div>
-                                                </div>
-                                                <div class="field-input">
-                                                    <input type="text" id="state-skills-primary-0" placeholder="0,1,2,3">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="field-row">
-                                    <div class="field-label margin-left-10">
-                                        <input type="checkbox" id="state-artifactTypeCounts-checkbox-0">
-                                        artifactTypeCounts <span class="help-icon">?
-                                            <div class="tooltip" id="help-artifactTypeCounts">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-artifactTypeCounts-container-0">
-                                        <input type="text" id="state-artifactTypeCounts-0" placeholder="0,1,0,0">
-                                    </div>
-                                </div>
-
-                                <div class="field-row">
-                                    <div class="field-label margin-left-10">
-                                        <input type="checkbox" id="state-creatureRewardCount-checkbox-0">
-                                        creatureRewardCount <span class="help-icon">?
-                                            <div class="tooltip" id="help-creatureRewardCount">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-creatureRewardCount-container-0">
-                                        <input type="number" id="state-creatureRewardCount-0" min="0">
-                                    </div>
-                                </div>
-
-                                <div class="field-row">
-                                    <div class="field-label margin-left-10">
-                                        <input type="checkbox" id="state-creatureRewardType-checkbox-0">
-                                        creatureRewardType <span class="help-icon">?
-                                            <div class="tooltip" id="help-creatureRewardType">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-creatureRewardType-container-0">
-                                        <input type="number" id="state-creatureRewardType-0">
-                                    </div>
-                                </div>
-
-                                <div class="field-group">
-                                    <div class="field-row">
-                                        <div class="field-label">
-                                            <input type="checkbox" id="state-guardians-checkbox-0">
-                                            guardians <span class="help-icon">?
-                                                <div class="tooltip" id="help-guardians">Loading help text...</div>
-                                        </div>
-                                        <div class="field-input disabled" id="state-guardians-container-0">
-                                            <div class="field-row">
-                                                <div class="field-label">
-                                                    count<br>(comma-separated) <span class="help-icon">?
-                                                        <div class="tooltip" id="help-guardiansCount">Loading help text...</div>
-                                                </div>
-                                                <div class="field-input disabled" id="state-guardians-count-container-0">
-                                                    <input type="text" id="state-guardians-count-0" placeholder="15,15,15,0,0,0,0">
-                                                </div>
-                                            </div>
-                                            <div class="field-row">
-                                                <div class="field-label">
-                                                    type<br>(comma-separated) <span class="help-icon">?
-                                                        <div class="tooltip" id="help-guardiansType">Loading help text...</div>
-                                                </div>
-                                                <div class="field-input disabled" id="state-guardians-type-container-0">
-                                                    <input type="text" id="state-guardians-type-0" placeholder="59,59,59,-1,-1,-1,-1">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="field-row">
-                                    <div class="field-label margin-left-10">
-                                        <input type="checkbox" id="state-resources-checkbox-0">
-                                        resources <span class="help-icon">?
-                                            <div class="tooltip" id="help-resources">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-resources-container-0">
-                                        <input type="text" id="state-resources-0" placeholder="0,0,0,0,0,0,2500,12">
-                                    </div>
-                                </div>
-
-                                <div class="field-row">
-                                    <div class="field-label margin-left-10">
-                                        <input type="checkbox" id="state-upgrade-checkbox-0">
-                                        upgrade <span class="help-icon">?
-                                            <div class="tooltip" id="help-upgrade">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-upgrade-container-0">
-                                        <input type="number" id="state-upgrade-0" min="0" value="0">
-                                    </div>
-                                </div>
-
-                                <div class="field-row">
-                                    <div class="field-label margin-left-10">
-                                        <input type="checkbox" id="state-chance-checkbox-0">
-                                        chance <span class="help-icon">?
-                                            <div class="tooltip" id="help-stateChance">Loading help text...</div>
-                                    </div>
-                                    <div class="field-input disabled" id="state-chance-container-0">
-                                        <input type="number" id="state-chance-0" min="0" max="100">
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="remove-state">Remove State</button>
-                        </div>
+                        <!-- State item template/initial item will be here or loaded -->
+                         <!-- JS will populate the first state here -->
                     </div>
-                    <button class="add-item" id="add-state">Add State</button>
+                    <button class="add-item add-state" id="add-state">Add State</button>
                 </div>
             </div>
         </div>
 
-        
-        <!-- Remove the spells field that was here as it's now inside the states structure -->
-    </div>
-</div>
+    </div> <!-- End Optional Fields Group -->
+</main>
 
-<div class="bottom-controls">
+<footer class="bottom-controls">
     <button class="save-button" id="save-file" disabled>Save File</button>
-    
     <button class="json-preview-toggle" id="toggle-json">Show JSON Code</button>
-    <div class="json-preview" id="json-preview"></div>
-</div>
+    <pre class="json-preview" id="json-preview"></pre> <!-- Use <pre> for formatted code -->
+</footer>
 
-<script>
-    // Localization setup
-    let translations = {};
-    let currentLang = 'en';
-    let isDarkTheme = true;
+<!-- Templates (Hidden) -->
+<template id="state-item-template">
+    <div class="state-item">
+        <div class="field-group">
+            <h4>State #<span class="state-number">1</span></h4>
 
-    // Function to load language file
-    async function loadLanguage(lang) {
-        try {
-            const response = await fetch(`./lang/${lang}.json`);
-            if (!response.ok) {
-                throw new Error(`Failed to load language file: ${response.status}`);
-            }
-            translations = await response.json();
-            currentLang = lang;
-            updateUILanguage();
-        } catch (error) {
-            console.error('Error loading language file:', error);
-            // Fallback to English if there's an error
-            if (lang !== 'en') {
-                loadLanguage('en');
-            }
-        }
-    }
+            <!-- Morale -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-morale-checkbox" data-controls="state-morale-container">
+                    morale <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="statesMorale">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-morale-container">
+                    <input type="number" class="state-morale-input">
+                </div>
+            </div>
 
-    // Function to update the UI language
-    function updateUILanguage() {
-        document.getElementById('app-title').textContent = translations.appTitle;
-        document.getElementById('install-pwa').textContent = translations.installPwa;
-        document.getElementById('theme-toggle-btn').textContent = isDarkTheme ? 
-            translations.darkTheme : translations.lightTheme;
-        document.getElementById('lang-selector-btn').textContent = translations.currentLanguage;
-        document.getElementById('browser-support').textContent = translations.browserSupport;
-        document.getElementById('object-subtype-title').textContent = translations.objectParameters;
-        document.getElementById('required-fields-title').textContent = translations.requiredFields;
-        document.getElementById('optional-fields-title').textContent = translations.optionalFields;
-        document.getElementById('add-spell').textContent = translations.addSpell;
-        document.getElementById('save-file').textContent = translations.saveFile;
-        
-        const jsonToggleBtn = document.getElementById('toggle-json');
-        const isShowingJson = document.getElementById('json-preview').classList.contains('show');
-        jsonToggleBtn.textContent = isShowingJson ? 
-            translations.hideJsonCode : translations.showJsonCode;
-        
-        // label texts
-        // document.getElementById('help-text').textContent = translations.fieldLabels.text;
+            <!-- Luck -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-luck-checkbox" data-controls="state-luck-container">
+                    luck <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="statesLuck">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-luck-container">
+                    <input type="number" class="state-luck-input">
+                </div>
+            </div>
 
-        // help texts
-        document.getElementById('help-objectType').textContent = translations.helpTexts.objectType;
-        document.getElementById('help-objectSubtype').textContent = translations.helpTexts.objectSubtype;
-        document.getElementById('help-value').textContent = translations.helpTexts.value;
-        document.getElementById('help-density').textContent = translations.helpTexts.density;
-        document.getElementById('help-properties').textContent = translations.helpTexts.properties;
-        document.getElementById('help-enabled').textContent = translations.helpTexts.enabled;
-        document.getElementById('help-name').textContent = translations.helpTexts.name;
-        document.getElementById('help-sound').textContent = translations.helpTexts.sound;
-        document.getElementById('help-soundEnter').textContent = translations.helpTexts.soundEnter;
-        document.getElementById('help-soundLoop').textContent = translations.helpTexts.soundLoop;
-        document.getElementById('help-text').textContent = translations.helpTexts.text;
-        document.getElementById('help-textVisit').textContent = translations.helpTexts.textVisit;
-        document.getElementById('help-states').textContent = translations.helpTexts.states;
-        document.getElementById('help-moral').textContent = translations.helpTexts.statesMorale;
-        document.getElementById('help-luck').textContent = translations.helpTexts.statesLuck;
-        document.getElementById('help-spells').textContent = translations.helpTexts.spells;
-        document.getElementById('help-spellsId').textContent = translations.helpTexts.spellsId;
-        document.getElementById('help-spellsBits').textContent = translations.helpTexts.spellsBits;
-        document.getElementById('help-bitsFlags').textContent = translations.helpTexts.bitsFlags;
-        document.getElementById('help-bitsLevels').textContent = translations.helpTexts.bitsLevels;
-        document.getElementById('help-bitsSchools').textContent = translations.helpTexts.bitsSchools;
-        document.getElementById('help-resources').textContent = translations.helpTexts.resources;
-        document.getElementById('help-guardians').textContent = translations.helpTexts.guardians;
-        document.getElementById('help-guardiansCount').textContent = translations.helpTexts.guardiansCount;
-        document.getElementById('help-guardiansType').textContent = translations.helpTexts.guardiansType;
-        document.getElementById('help-experience').textContent = translations.helpTexts.experience;
-        document.getElementById('help-skills').textContent = translations.helpTexts.skills;
-        document.getElementById('help-skillsPrimary').textContent = translations.helpTexts.skillsPrimary;
-        document.getElementById('help-stateChance').textContent = translations.helpTexts.stateChance;
-        document.getElementById('help-spellPoints').textContent = translations.helpTexts.spellPoints;
-        document.getElementById('help-artifactTypeCounts').textContent = translations.helpTexts.artifactTypeCounts;
-        document.getElementById('help-creatureRewardCount').textContent = translations.helpTexts.creatureRewardCount;
-        document.getElementById('help-creatureRewardType').textContent = translations.helpTexts.creatureRewardType;
-        document.getElementById('help-upgrade').textContent = translations.helpTexts.upgrade;
-    }
-
-    // Language selector functionality
-    document.getElementById('lang-selector-btn').addEventListener('click', function() {
-        document.getElementById('lang-dropdown').classList.toggle('show');
-    });
-
-    document.querySelectorAll('#lang-dropdown button').forEach(button => {
-        button.addEventListener('click', function() {
-            const lang = this.getAttribute('data-lang');
-            loadLanguage(lang);
-            document.getElementById('lang-dropdown').classList.remove('show');
-        });
-    });
-
-    // Theme toggle functionality
-    document.getElementById('theme-toggle-btn').addEventListener('click', function() {
-        isDarkTheme = !isDarkTheme;
-        document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
-        this.textContent = isDarkTheme ? 
-            translations.darkTheme : translations.lightTheme;
-    });
-
-    // Close dropdown when clicking outside
-    window.addEventListener('click', function(event) {
-        if (!event.target.matches('#lang-selector-btn')) {
-            const dropdown = document.getElementById('lang-dropdown');
-            if (dropdown.classList.contains('show')) {
-                dropdown.classList.remove('show');
-            }
-        }
-    });
-
-    // Optional fields toggle
-    function setupOptionalField(checkboxId, containerId, callback) {
-        const checkbox = document.getElementById(checkboxId);
-        const container = document.getElementById(containerId);
-        
-        if (!checkbox || !container) return;
-        
-        checkbox.addEventListener('change', function() {
-            if (this.checked) {
-                container.classList.remove('disabled');
-                
-                // Enable any nested field-input elements within this container
-                if (containerId.includes('state-spell-bits-container')) {
-                    // For bits container, explicitly enable all input containers inside
-                    const inputContainers = container.querySelectorAll('.field-input');
-                    inputContainers.forEach(inputContainer => {
-                        inputContainer.classList.remove('disabled');
-                    });
-                } else if (containerId.includes('state-skills-container')) {
-                    // For skills container, explicitly enable the primary input container
-                    const primaryContainer = container.querySelector('.field-input');
-                    if (primaryContainer) {
-                        primaryContainer.classList.remove('disabled');
-                    }
-                }
-            } else {
-                container.classList.add('disabled');
-                
-                // Disable any nested field-input elements within this container
-                if (containerId.includes('state-spell-bits-container')) {
-                    // For bits container, explicitly disable all input containers inside
-                    const inputContainers = container.querySelectorAll('.field-input');
-                    inputContainers.forEach(inputContainer => {
-                        inputContainer.classList.add('disabled');
-                    });
-                } else if (containerId.includes('state-skills-container')) {
-                    // For skills container, explicitly disable the primary input container
-                    const primaryContainer = container.querySelector('.field-input');
-                    if (primaryContainer) {
-                        primaryContainer.classList.add('disabled');
-                    }
-                }
-            }
-            updateJsonPreview();
-            if (callback) callback(this.checked);
-        });
-    }
-
-    // Setup all optional fields
-    setupOptionalField('enabled-checkbox', 'enabled-container', function(isChecked) {
-        // Toggle value and density fields based on enabled checkbox
-        const valueContainer = document.getElementById('value-container');
-        const densityContainer = document.getElementById('density-container');
-        const valueInput = document.getElementById('value');
-        const densityInput = document.getElementById('density');
-        
-        if (isChecked) {
-            valueContainer.classList.remove('disabled');
-            densityContainer.classList.remove('disabled');
-            
-            // Set default values when enabled
-            valueInput.value = 2000;
-            densityInput.value = 100;
-        } else {
-            valueContainer.classList.add('disabled');
-            densityContainer.classList.add('disabled');
-            
-            // Clear values when disabled
-            valueInput.value = '';
-            densityInput.value = '';
-        }
-    });
-    setupOptionalField('name-checkbox', 'name-container');
-    setupOptionalField('sound-checkbox', 'sound-container');
-    setupOptionalField('text-checkbox', 'text-container');
-    setupOptionalField('states-checkbox', 'states-container');
-
-    // Initialize state field handlers for the first state
-    function setupStateFields(stateIndex) {
-        // Set up all optional fields within a state
-        setupOptionalField(`state-morale-checkbox-${stateIndex}`, `state-morale-container-${stateIndex}`);
-        setupOptionalField(`state-luck-checkbox-${stateIndex}`, `state-luck-container-${stateIndex}`);
-        setupOptionalField(`state-spells-checkbox-${stateIndex}`, `state-spells-container-${stateIndex}`);
-        setupOptionalField(`state-spell-id-checkbox-${stateIndex}-0`, `state-spell-id-container-${stateIndex}-0`);
-        setupOptionalField(`state-spell-bits-checkbox-${stateIndex}-0`, `state-spell-bits-container-${stateIndex}-0`);
-        setupOptionalField(`state-spellPoints-checkbox-${stateIndex}`, `state-spellPoints-container-${stateIndex}`);
-        setupOptionalField(`state-experience-checkbox-${stateIndex}`, `state-experience-container-${stateIndex}`);
-        setupOptionalField(`state-skills-checkbox-${stateIndex}`, `state-skills-container-${stateIndex}`);
-        setupOptionalField(`state-artifactTypeCounts-checkbox-${stateIndex}`, `state-artifactTypeCounts-container-${stateIndex}`);
-        setupOptionalField(`state-creatureRewardCount-checkbox-${stateIndex}`, `state-creatureRewardCount-container-${stateIndex}`);
-        setupOptionalField(`state-creatureRewardType-checkbox-${stateIndex}`, `state-creatureRewardType-container-${stateIndex}`);
-        setupOptionalField(`state-guardians-checkbox-${stateIndex}`, `state-guardians-container-${stateIndex}`, function(isChecked) {
-            // Add this callback to handle the inner guardians containers
-            const countContainer = document.getElementById(`state-guardians-count-container-${stateIndex}`);
-            const typeContainer = document.getElementById(`state-guardians-type-container-${stateIndex}`);
-            
-            if (isChecked) {
-                if (countContainer) countContainer.classList.remove('disabled');
-                if (typeContainer) typeContainer.classList.remove('disabled');
-            } else {
-                if (countContainer) countContainer.classList.add('disabled');
-                if (typeContainer) typeContainer.classList.add('disabled');
-            }
-        });
-        setupOptionalField(`state-resources-checkbox-${stateIndex}`, `state-resources-container-${stateIndex}`);
-        setupOptionalField(`state-upgrade-checkbox-${stateIndex}`, `state-upgrade-container-${stateIndex}`);
-        setupOptionalField(`state-chance-checkbox-${stateIndex}`, `state-chance-container-${stateIndex}`);
-        
-        // Fix: Use improved selectors for input field events
-        document.querySelectorAll(`input[id^="state-"][id$="${stateIndex}"]`).forEach(input => {
-            if (!input.id.includes('checkbox')) {
-                input.addEventListener('input', updateJsonPreview);
-            }
-        });
-        
-        // Fix: Use valid CSS selector syntax for spell bits fields
-        document.querySelectorAll(`[id^="state-spell-bits-"][id$="${stateIndex}-0"]`).forEach(input => {
-            if (input.tagName === 'INPUT') {
-                input.addEventListener('input', updateJsonPreview);
-            }
-        });
-        
-        // Setup add/remove spell buttons
-        const addSpellBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
-        if (addSpellBtn) {
-            addSpellBtn.addEventListener('click', function() {
-                addSpellToState(stateIndex);
-            });
-        }
-        
-        // Setup remove spell button
-        const removeSpellBtn = document.querySelector(`#state-spells-items-${stateIndex} .remove-spell`);
-        if (removeSpellBtn) {
-            removeSpellBtn.addEventListener('click', function() {
-                resetSpellFields(stateIndex, 0);
-            });
-        }
-        
-        // Setup remove state button
-        const removeStateBtn = document.querySelectorAll('.remove-state')[stateIndex];
-        if (removeStateBtn) {
-            removeStateBtn.addEventListener('click', function() {
-                if (document.querySelectorAll('.state-item').length > 1) {
-                    this.closest('.state-item').remove();
-                    renumberStates();
-                    updateJsonPreview();
-                    
-                    // Enable add button if we're below the max
-                    if (document.querySelectorAll('.state-item').length < 4) {
-                        document.getElementById('add-state').disabled = false;
-                    }
-                } else {
-                    // If it's the last state, just reset the fields
-                    resetStateFields(0);
-                }
-            });
-        }
-    }
-    
-    // Function to add a new spell to a state
-    function addSpellToState(stateIndex) {
-        const spellsContainer = document.getElementById(`state-spells-items-${stateIndex}`);
-        const spellsCount = spellsContainer.querySelectorAll('.array-item').length;
-        
-        if (spellsCount < 4) {
-            const newSpellIndex = spellsCount;
-            const newSpellHtml = `
-                <div class="array-item">
-                    <div class="field-group">
-                        <div class="field-row">
-                            <div class="field-label">
-                                <input type="checkbox" id="state-spell-id-checkbox-${stateIndex}-${newSpellIndex}">
-                                id
-                            </div>
-                            <div class="field-input disabled" id="state-spell-id-container-${stateIndex}-${newSpellIndex}">
-                                <input type="number" id="state-spell-id-${stateIndex}-${newSpellIndex}" min="0">
-                            </div>
+            <!-- Spells -->
+            <div class="field-group">
+                <div class="field-row">
+                    <label class="field-label">
+                        <input type="checkbox" class="state-spells-checkbox" data-controls="state-spells-container">
+                        spells <span class="help-icon">?
+                            <span class="tooltip" data-translate-id="spells">Loading help text...</span></span>
+                    </label>
+                    <div class="field-input disabled state-spells-container">
+                        <div class="state-spells-items">
+                            <!-- Spell items will be added here -->
                         </div>
-                        
+                        <button class="add-spell" data-translate-id="addSpell">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spell Points -->
+            <div class="field-row">
+                 <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-spellPoints-checkbox" data-controls="state-spellPoints-container">
+                    spellPoints <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="spellPoints">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-spellPoints-container">
+                    <input type="number" class="state-spellPoints-input" min="0">
+                </div>
+            </div>
+
+            <!-- Experience -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-experience-checkbox" data-controls="state-experience-container">
+                    experience <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="experience">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-experience-container">
+                    <input type="number" class="state-experience-input" min="0">
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="field-group">
+                <div class="field-row">
+                    <label class="field-label">
+                        <input type="checkbox" class="state-skills-checkbox" data-controls="state-skills-container state-skills-primary-container">
+                        skills <span class="help-icon">?
+                            <span class="tooltip" data-translate-id="skills">Loading help text...</span></span>
+                    </label>
+                    <div class="field-input disabled state-skills-container">
+                        <!-- Inner row for primary skills -->
                         <div class="field-row">
-                            <div class="field-label">
-                                <input type="checkbox" id="state-spell-bits-checkbox-${stateIndex}-${newSpellIndex}">
-                                bits
-                            </div>
-                            <div class="field-input disabled" id="state-spell-bits-container-${stateIndex}-${newSpellIndex}">
-                                <div class="field-group">
-                                    <div class="field-row">
-                                        <div class="field-label">flags</div>
-                                        <div class="field-input">
-                                            <input type="number" id="state-spell-bits-flags-${stateIndex}-${newSpellIndex}" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="field-row">
-                                        <div class="field-label">levels</div>
-                                        <div class="field-input">
-                                            <input type="number" id="state-spell-bits-levels-${stateIndex}-${newSpellIndex}" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="field-row">
-                                        <div class="field-label">schools</div>
-                                        <div class="field-input">
-                                            <input type="number" id="state-spell-bits-schools-${stateIndex}-${newSpellIndex}" min="0">
-                                        </div>
-                                    </div>
-                                </div>
+                             <label class="field-label">
+                                primary<br>(comma-sep) <span class="help-icon">?
+                                    <span class="tooltip" data-translate-id="skillsPrimary">Loading help text...</span></span>
+                            </label>
+                            <div class="field-input disabled state-skills-primary-container">
+                                <input type="text" class="state-skills-primary-input" placeholder="0,1,2,3">
                             </div>
                         </div>
                     </div>
-                    <button class="remove-spell">-</button>
                 </div>
-            `;
-            
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = newSpellHtml;
-            const newSpellElement = tempDiv.firstElementChild;
-            spellsContainer.appendChild(newSpellElement);
-            
-            // Setup the new spell's fields
-            setupOptionalField(`state-spell-id-checkbox-${stateIndex}-${newSpellIndex}`, `state-spell-id-container-${stateIndex}-${newSpellIndex}`);
-            setupOptionalField(`state-spell-bits-checkbox-${stateIndex}-${newSpellIndex}`, `state-spell-bits-container-${stateIndex}-${newSpellIndex}`);
-            
-            // Fix: Update the selector to properly target all input fields in the new spell
-            newSpellElement.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
-                if (!input.id.includes('checkbox')) {
-                    input.addEventListener('input', updateJsonPreview);
-                }
-            });
-            
-            // Add remove spell button listener
-            const removeBtn = newSpellElement.querySelector('.remove-spell');
-            removeBtn.addEventListener('click', function() {
-                newSpellElement.remove();
-                updateJsonPreview();
-                
-                // Re-enable add button
-                const addBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
-                if (addBtn) {
-                    addBtn.disabled = false;
-                }
-            });
-            
-            // Disable add button if we reached the maximum
-            if (spellsContainer.querySelectorAll('.array-item').length >= 4) {
-                const addBtn = document.querySelector(`.add-spell[data-state-index="${stateIndex}"]`);
-                if (addBtn) {
-                    addBtn.disabled = true;
-                }
-            }
-            
-            updateJsonPreview();
-        }
-    }
-    
-    // Function to reset spell fields
-    function resetSpellFields(stateIndex, spellIndex) {
-        document.getElementById(`state-spell-id-checkbox-${stateIndex}-${spellIndex}`).checked = false;
-        document.getElementById(`state-spell-id-container-${stateIndex}-${spellIndex}`).classList.add('disabled');
-        document.getElementById(`state-spell-id-${stateIndex}-${spellIndex}`).value = '';
-        
-        document.getElementById(`state-spell-bits-checkbox-${stateIndex}-${spellIndex}`).checked = false;
-        document.getElementById(`state-spell-bits-container-${stateIndex}-${spellIndex}`).classList.add('disabled');
-        document.getElementById(`state-spell-bits-flags-${stateIndex}-${spellIndex}`).value = '';
-        document.getElementById(`state-spell-bits-levels-${stateIndex}-${spellIndex}`).value = '';
-        document.getElementById(`state-spell-bits-schools-${stateIndex}-${spellIndex}`).value = '';
-        
-        updateJsonPreview();
-    }
-    
-    // Function to reset state fields
-    function resetStateFields(stateIndex) {
-        // Reset all checkboxes and inputs for the state
-        document.querySelectorAll(`[id^=state-][id$=-checkbox-${stateIndex}]`).forEach(checkbox => {
-            checkbox.checked = false;
-        });
-        
-        document.querySelectorAll(`[id^=state-][id$=-container-${stateIndex}]`).forEach(container => {
-            container.classList.add('disabled');
-        });
-        
-        document.querySelectorAll(`[id^=state-][id$=-${stateIndex}]`).forEach(input => {
-            if (input.tagName === 'INPUT' && !input.id.includes('checkbox')) {
-                input.value = '';
-            }
-        });
-        
-        // Reset spell fields
-        resetSpellFields(stateIndex, 0);
-        
-        updateJsonPreview();
-    }
-    
-    // Function to renumber states after removal
-    function renumberStates() {
-        const states = document.querySelectorAll('.state-item');
-        states.forEach((state, index) => {
-            // Update the heading
-            state.querySelector('h4').textContent = `State #${index + 1}`;
-            
-            // Update all IDs and data attributes
-            state.querySelectorAll('[id]').forEach(el => {
-                const oldId = el.id;
-                
-                // Use same improved ID update logic for renumbering
-                if (oldId.includes('spell') && !oldId.includes('spellPoints')) {
-                    const parts = oldId.split('-');
-                    const nums = parts.filter(part => !isNaN(parseInt(part)));
+            </div>
 
-                    if (nums.length === 1) {
-                        // Example: state-spells-checkbox-0
-                        parts[parts.length - 1] = index;
-                    } else if (nums.length >= 2) {
-                        // Example: state-spells-checkbox-0-0 - change the second to last number
-                        const lastIndex = parts.length - 2;
-                        if (!isNaN(parseInt(parts[lastIndex]))) {
-                            parts[lastIndex] = index;
-                        }
-                    }
+            <!-- Artifact Type Counts -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-artifactTypeCounts-checkbox" data-controls="state-artifactTypeCounts-container">
+                    artifactTypeCounts <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="artifactTypeCounts">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-artifactTypeCounts-container">
+                    <input type="text" class="state-artifactTypeCounts-input" placeholder="0,1,0,0">
+                </div>
+            </div>
 
-                    el.id = parts.join('-');
-                } else if (oldId.includes('spellPoints')) {
-                    // Handle spellPoints IDs
-                    const parts = oldId.split('-');
-                    if (parts.length > 2) {
-                        parts[parts.length - 1] = index; // Update the last part with the new state index
-                        el.id = parts.join('-');
-                    }
-                } else if (oldId.startsWith('state-')) {
-                    // Handle regular state IDs with one index at the end
-                    const lastDashPos = oldId.lastIndexOf('-');
-                    if (lastDashPos !== -1) {
-                        el.id = oldId.substring(0, lastDashPos + 1) + index;
-                    }
-                }
-            });
-            
-            // Update data-state-index attributes
-            state.querySelectorAll('[data-state-index]').forEach(el => {
-                el.setAttribute('data-state-index', index);
-            });
-            
-            // Update related event listeners
-            setupStateFields(index);
-        });
-    }
-    
-    // Setup for adding new states
-    document.getElementById('add-state').addEventListener('click', function() {
-        const statesContainer = document.getElementById('states-items');
-        const statesCount = statesContainer.querySelectorAll('.state-item').length;
-        
-        if (statesCount < 4) {
-            const newStateIndex = statesCount;
-            const stateTemplate = document.querySelector('.state-item').cloneNode(true);
-            
-            // Update ID attributes and heading
-            stateTemplate.querySelector('h4').textContent = `State #${newStateIndex + 1}`;
-            
-            // Update all IDs within the template - FIX THE ID UPDATE LOGIC
-            stateTemplate.querySelectorAll('[id]').forEach(el => {
-                const oldId = el.id;
-                
-                // Fix: Use a consistent approach for all ID types
-                if (oldId.includes('spell') && !oldId.includes('spellPoints')) {
-                    const parts = oldId.split('-');
-                    const nums = parts.filter(part => !isNaN(parseInt(part)));
+            <!-- Creature Reward Count -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-creatureRewardCount-checkbox" data-controls="state-creatureRewardCount-container">
+                    creatureRewardCount <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="creatureRewardCount">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-creatureRewardCount-container">
+                    <input type="number" class="state-creatureRewardCount-input" min="0">
+                </div>
+            </div>
 
-                    if (nums.length === 1) {
-                        // Example: state-spells-checkbox-0
-                        parts[parts.length - 1] = newStateIndex;
-                    } else if (nums.length >= 2) {
-                        // Example: state-spells-checkbox-0-0 - change the second to last number
-                        const lastIndex = parts.length - 2;
-                        if (!isNaN(parseInt(parts[lastIndex]))) {
-                            parts[lastIndex] = newStateIndex;
-                        }
-                    }
+            <!-- Creature Reward Type -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-creatureRewardType-checkbox" data-controls="state-creatureRewardType-container">
+                    creatureRewardType <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="creatureRewardType">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-creatureRewardType-container">
+                    <input type="number" class="state-creatureRewardType-input">
+                </div>
+            </div>
 
-                    el.id = parts.join('-');
-                } else if (oldId.includes('spellPoints')) {
-                    const parts = oldId.split('-');
-                    if (parts.length > 2) {
-                        parts[parts.length - 1] = newStateIndex; // Update the last part with the new state index
-                        el.id = parts.join('-');
-                    }
-                } else if (oldId.startsWith('state-')) {
-                    const lastDashPos = oldId.lastIndexOf('-');
-                    if (lastDashPos !== -1) {
-                        el.id = oldId.substring(0, lastDashPos + 1) + newStateIndex;
-                    }
-                }
-            });
-            
-            // Update data-state-index attributes
-            stateTemplate.querySelectorAll('[data-state-index]').forEach(el => {
-                el.setAttribute('data-state-index', newStateIndex);
-            });
-            
-            // Reset all checkboxes and inputs
-            stateTemplate.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            
-            stateTemplate.querySelectorAll('.field-input').forEach(container => {
-                if (!container.id.includes('state-spells-items')) {
-                    container.classList.add('disabled');
-                }
-            });
-            
-            stateTemplate.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
-                input.value = '';
-            });
-            
-            // Handle spell items container
-            const spellItemsContainer = stateTemplate.querySelector(`[id^=state-spells-items-]`);
-            if (spellItemsContainer) {
-                spellItemsContainer.id = `state-spells-items-${newStateIndex}`;
-                // Keep only one spell item template
-                const firstSpellItem = spellItemsContainer.querySelector('.array-item');
-                while (spellItemsContainer.children.length > 1) {
-                    spellItemsContainer.removeChild(spellItemsContainer.lastChild);
-                }
-            }
-            
-            statesContainer.appendChild(stateTemplate);
-            
-            // Setup the new state's fields
-            setupStateFields(newStateIndex);
-            
-            // Disable add button if we reached the maximum
-            if (statesContainer.querySelectorAll('.state-item').length >= 4) {
-                this.disabled = true;
-            }
-            
-            updateJsonPreview();
-        }
-    });
-    
-    // Initialize the first state
-    setupStateFields(0);
+            <!-- Guardians -->
+            <div class="field-group">
+                 <div class="field-row">
+                    <label class="field-label">
+                        <input type="checkbox" class="state-guardians-checkbox" data-controls="state-guardians-container state-guardians-count-container state-guardians-type-container">
+                        guardians <span class="help-icon">?
+                            <span class="tooltip" data-translate-id="guardians">Loading help text...</span></span>
+                    </label>
+                     <div class="field-input disabled state-guardians-container">
+                         <div class="field-row">
+                            <label class="field-label">
+                                count<br>(comma-sep) <span class="help-icon">?
+                                    <span class="tooltip" data-translate-id="guardiansCount">Loading help text...</span></span>
+                            </label>
+                            <div class="field-input disabled state-guardians-count-container">
+                                <input type="text" class="state-guardians-count-input" placeholder="15,15,15,0,0,0,0">
+                            </div>
+                        </div>
+                         <div class="field-row">
+                            <label class="field-label">
+                                type<br>(comma-sep) <span class="help-icon">?
+                                    <span class="tooltip" data-translate-id="guardiansType">Loading help text...</span></span>
+                            </label>
+                            <div class="field-input disabled state-guardians-type-container">
+                                <input type="text" class="state-guardians-type-input" placeholder="59,59,59,-1,-1,-1,-1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    // Array field functionality - remove older functions that aren't needed anymore
-    // setupArrayField('add-state', 'states-items', 'state-item');
-    // setupArrayField('add-spell', 'spells-items', 'spell-item');
+            <!-- Resources -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-resources-checkbox" data-controls="state-resources-container">
+                    resources <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="resources">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-resources-container">
+                    <input type="text" class="state-resources-input" placeholder="0,0,0,0,0,0,2500,12">
+                </div>
+            </div>
 
-    // JSON preview toggle
-    document.getElementById('toggle-json').addEventListener('click', function() {
-        const jsonPreview = document.getElementById('json-preview');
-        jsonPreview.classList.toggle('show');
-        this.textContent = jsonPreview.classList.contains('show') ? 
-            translations.hideJsonCode : translations.showJsonCode;
-        updateJsonPreview();
-    });
+            <!-- Upgrade -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-upgrade-checkbox" data-controls="state-upgrade-container">
+                    upgrade <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="upgrade">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-upgrade-container">
+                    <input type="number" class="state-upgrade-input" min="0" value="0">
+                </div>
+            </div>
 
-    // Required fields validation and Save button enable/disable
-    function validateRequiredFields() {
-        const subtype = document.getElementById('object-subtype').value;
-        
-        // Check if at least one valid property exists
-        const propertyInputs = document.querySelectorAll('.property-input');
-        let hasValidProperty = false;
-        propertyInputs.forEach(input => {
-            if (input.value.trim() !== '' && validateProperty(input.value.trim())) {
-                hasValidProperty = true;
-            }
-        });
-        
-        // Value and density are only required if enabled is checked
-        const enabledChecked = document.getElementById('enabled-checkbox').checked;
-        if (enabledChecked) {
-            const value = document.getElementById('value').value;
-            const density = document.getElementById('density').value;
-            return subtype !== '' && value !== '' && density !== '' && hasValidProperty;
-        }
-        
-        return subtype !== '' && hasValidProperty;
-    }
+            <!-- Chance -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-chance-checkbox" data-controls="state-chance-container">
+                    chance <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="stateChance">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-chance-container">
+                    <input type="number" class="state-chance-input" min="0" max="100">
+                </div>
+            </div>
+        </div>
+        <button class="remove-state" data-remove-target="state-item">Remove State</button>
+    </div>
+</template>
 
-    function updateSaveButtonState() {
-        document.getElementById('save-file').disabled = !validateRequiredFields();
-    }
+<template id="spell-item-template">
+    <div class="array-item">
+        <div class="field-group">
+            <!-- Spell ID -->
+            <div class="field-row">
+                <label class="field-label">
+                    <input type="checkbox" class="spell-id-checkbox" data-controls="spell-id-container">
+                    id <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="spellsId">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled spell-id-container">
+                    <input type="number" class="spell-id-input" min="0">
+                </div>
+            </div>
 
-    document.getElementById('value').addEventListener('input', function() {
-        updateSaveButtonState();
-        updateJsonPreview();
-    });
-    
-    document.getElementById('density').addEventListener('input', function() {
-        updateSaveButtonState();
-        updateJsonPreview();
-    });
-    
-    // Remove this event listener as the element doesn't exist anymore
-    // document.getElementById('properties').addEventListener('input', function() {
-    //     updateSaveButtonState();
-    //     updateJsonPreview();
-    // });
+            <!-- Spell Bits -->
+            <div class="field-row">
+                <label class="field-label">
+                    <input type="checkbox" class="spell-bits-checkbox" data-controls="spell-bits-container spell-bits-flags-container spell-bits-levels-container spell-bits-schools-container">
+                    bits <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="spellsBits">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled spell-bits-container">
+                    <div class="field-group"> <!-- Inner group for bits -->
+                         <div class="field-row">
+                            <label class="field-label">
+                                flags <span class="help-icon">?
+                                    <span class="tooltip" data-translate-id="bitsFlags">Loading help text...</span></span>
+                            </label>
+                            <div class="field-input disabled spell-bits-flags-container">
+                                <input type="number" class="spell-bits-flags-input" min="0">
+                            </div>
+                        </div>
+                         <div class="field-row">
+                            <label class="field-label">
+                                levels <span class="help-icon">?
+                                    <span class="tooltip" data-translate-id="bitsLevels">Loading help text...</span></span>
+                             </label>
+                            <div class="field-input disabled spell-bits-levels-container">
+                                <input type="number" class="spell-bits-levels-input" min="0">
+                            </div>
+                        </div>
+                         <div class="field-row">
+                            <label class="field-label">
+                                schools <span class="help-icon">?
+                                    <span class="tooltip" data-translate-id="bitsSchools">Loading help text...</span></span>
+                             </label>
+                            <div class="field-input disabled spell-bits-schools-container">
+                                <input type="number" class="spell-bits-schools-input" min="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="remove-spell" data-remove-target="array-item">-</button>
+    </div>
+</template>
 
-    // Sound field validation (.wav extension)
-    function validateWavFile(input) {
-        if (input.value && !input.value.toLowerCase().endsWith('.wav')) {
-            input.value = input.value + '.wav';
-        }
-        updateJsonPreview();
-    }
+<!-- Load JavaScript -->
+<script src="./js/script.js" defer></script>
 
-    document.getElementById('sound-enter').addEventListener('blur', function() {
-        validateWavFile(this);
-    });
-    
-    document.getElementById('sound-loop').addEventListener('blur', function() {
-        validateWavFile(this);
-    });
-
-    document.getElementById('sound-enter').addEventListener('input', updateJsonPreview);
-    document.getElementById('sound-loop').addEventListener('input', updateJsonPreview);
-    document.getElementById('text-visit').addEventListener('input', updateJsonPreview);
-    document.getElementById('name').addEventListener('input', updateJsonPreview);
-    document.getElementById('enabled').addEventListener('change', updateJsonPreview);
-    document.getElementById('object-subtype').addEventListener('input', function() {
-        updateSaveButtonState();
-        updateJsonPreview();
-    });
-
-    // Generate JSON preview - updated to handle the complex states structure
-    function updateJsonPreview() {
-        const jsonObj = buildJsonObject();
-        
-        // Custom stringify to handle newlines in text.visit
-        let jsonString = JSON.stringify(jsonObj, (key, value) => {
-            // Return the value unchanged (even with newlines) for all properties
-            return value;
-        }, 2);
-        
-        document.getElementById('json-preview').textContent = jsonString;
-        updateSaveButtonState(); // Update save button state when JSON is updated
-    }
-
-    function buildJsonObject() {
-        const innerJsonObj = {};
-        
-        // Required fields - Updated to handle multiple properties with validation
-        const propertyInputs = document.querySelectorAll('.property-input');
-        const properties = [];
-        propertyInputs.forEach(input => {
-            if (input.value.trim() !== '') {
-                // Only add properties that pass validation
-                if (validateProperty(input.value.trim())) {
-                    properties.push(input.value.trim());
-                    // Remove error styling if previously applied
-                    input.classList.remove('invalid-input');
-                } else {
-                    // Add error styling to invalid properties
-                    input.classList.add('invalid-input');
-                }
-            }
-        });
-        innerJsonObj.properties = properties;
-        
-        // Optional fields including value and density which are tied to enabled
-        if (document.getElementById('enabled-checkbox').checked) {
-            innerJsonObj.enabled = document.getElementById('enabled').value === 'true';
-            
-            // Get values from inputs, or use defaults if empty/zero
-            const valueInput = document.getElementById('value');
-            const densityInput = document.getElementById('density');
-            
-            // Use default values if inputs are empty or zero
-            innerJsonObj.value = parseInt(valueInput.value) || 2000;
-            innerJsonObj.density = parseInt(densityInput.value) || 100;
-        }
-        
-        if (document.getElementById('name-checkbox').checked) {
-            innerJsonObj.name = document.getElementById('name').value;
-        }
-        
-        if (document.getElementById('sound-checkbox').checked) {
-            const enter = document.getElementById('sound-enter').value;
-            const loop = document.getElementById('sound-loop').value;
-            
-            if (enter || loop) {
-                innerJsonObj.sound = {};
-                if (enter) innerJsonObj.sound.enter = enter;
-                if (loop) innerJsonObj.sound.loop = loop;
-            }
-        }
-        
-        if (document.getElementById('text-checkbox').checked) {
-            const visit = document.getElementById('text-visit').value;
-            
-            if (visit) {
-                innerJsonObj.text = {
-                    visit: visit // Don't do any special processing - newlines will be preserved
-                };
-            }
-        }
-        
-        // Handle states array
-        if (document.getElementById('states-checkbox').checked) {
-            const stateElements = document.querySelectorAll('.state-item');
-            if (stateElements.length > 0) {
-                innerJsonObj.states = [];
-                
-                stateElements.forEach((stateElement, stateIdx) => {
-                    // Get the actual state index from the heading text
-                    const stateHeading = stateElement.querySelector('h4').textContent;
-                    const stateIndex = parseInt(stateHeading.match(/\d+/)[0]) - 1;
-                    const stateObj = {};
-                    
-                    // Process all optional fields in the state - FIX SELECTORS
-                    const moraleCheckbox = stateElement.querySelector(`input[id^="state-morale-checkbox"]`);
-                    if (moraleCheckbox && moraleCheckbox.checked) {
-                        const moraleInput = stateElement.querySelector(`input[id^="state-morale-"][type="number"]`);
-                        if (moraleInput && moraleInput.value !== '') {
-                            stateObj.morale = parseInt(moraleInput.value);
-                        }
-                    }
-                    
-                    const luckCheckbox = stateElement.querySelector(`input[id^="state-luck-checkbox"]`);
-                    if (luckCheckbox && luckCheckbox.checked) {
-                        const luckInput = stateElement.querySelector(`input[id^="state-luck-"][type="number"]`);
-                        if (luckInput && luckInput.value !== '') {
-                            stateObj.luck = parseInt(luckInput.value);
-                        }
-                    }
-                    
-                    // Handle spells array within state
-                    const spellsCheckbox = stateElement.querySelector(`input[id^="state-spells-checkbox"]`);
-                    if (spellsCheckbox && spellsCheckbox.checked) {
-                        const spellElements = stateElement.querySelectorAll('.array-item');
-                        if (spellElements.length > 0) {
-                            stateObj.spells = [];
-                            
-                            spellElements.forEach((spellElement, spellIdx) => {
-                                const spellObj = {};
-                                
-                                // Add id if checked
-                                const idCheckbox = spellElement.querySelector(`input[id^="state-spell-id-checkbox"]`);
-                                if (idCheckbox && idCheckbox.checked) {
-                                    const idInput = spellElement.querySelector(`input[id^="state-spell-id-"][type="number"]`);
-                                    if (idInput && idInput.value !== '') {
-                                        spellObj.id = parseInt(idInput.value);
-                                    }
-                                }
-                                
-                                // Add bits if checked
-                                const bitsCheckbox = spellElement.querySelector(`input[id^="state-spell-bits-checkbox"]`);
-                                if (bitsCheckbox && bitsCheckbox.checked) {
-                                    spellObj.bits = {};
-                                    
-                                    const flagsInput = spellElement.querySelector(`input[id^="state-spell-bits-flags"]`);
-                                    const levelsInput = spellElement.querySelector(`input[id^="state-spell-bits-levels"]`);
-                                    const schoolsInput = spellElement.querySelector(`input[id^="state-spell-bits-schools"]`);
-                                    
-                                    if (flagsInput && flagsInput.value !== '') spellObj.bits.flags = parseInt(flagsInput.value);
-                                    if (levelsInput && levelsInput.value !== '') spellObj.bits.levels = parseInt(levelsInput.value);
-                                    if (schoolsInput && schoolsInput.value !== '') spellObj.bits.schools = parseInt(schoolsInput.value);
-                                    
-                                    // Remove empty bits object
-                                    if (Object.keys(spellObj.bits).length === 0) {
-                                        delete spellObj.bits;
-                                    }
-                                }
-                                
-                                // Only add non-empty spell objects
-                                if (Object.keys(spellObj).length > 0) {
-                                    stateObj.spells.push(spellObj);
-                                }
-                            });
-                            
-                            // Remove spells array if empty
-                            if (stateObj.spells.length === 0) {
-                                delete stateObj.spells;
-                            }
-                        }
-                    }
-                    
-                    const spellPointsCheckbox = stateElement.querySelector(`input[id^="state-spellPoints-checkbox"]`);
-                    if (spellPointsCheckbox && spellPointsCheckbox.checked) {
-                        const spellPointsInput = stateElement.querySelector(`input[id^="state-spellPoints-"][type="number"]`);
-                        if (spellPointsInput && spellPointsInput.value !== '') {
-                            stateObj.spellPoints = parseInt(spellPointsInput.value);
-                        }
-                    }
-                    
-                    const experienceCheckbox = stateElement.querySelector(`input[id^="state-experience-checkbox"]`);
-                    if (experienceCheckbox && experienceCheckbox.checked) {
-                        const experienceInput = stateElement.querySelector(`input[id^="state-experience-"][type="number"]`);
-                        if (experienceInput && experienceInput.value !== '') {
-                            stateObj.experience = parseInt(experienceInput.value);
-                        }
-                    }
-                    
-                    const skillsCheckbox = stateElement.querySelector(`input[id^="state-skills-checkbox"]`);
-                    if (skillsCheckbox && skillsCheckbox.checked) {
-                        const primarySkillsInput = stateElement.querySelector(`input[id^="state-skills-primary-"]`);
-                        if (primarySkillsInput && primarySkillsInput.value) {
-                            stateObj.skills = {
-                                primary: primarySkillsInput.value.split(',').map(val => {
-                                    const parsed = parseInt(val.trim());
-                                    return isNaN(parsed) ? 0 : parsed;
-                                })
-                            };
-                        }
-                    }
-                    
-                    const artifactTypeCountsCheckbox = stateElement.querySelector(`input[id^="state-artifactTypeCounts-checkbox"]`);
-                    if (artifactTypeCountsCheckbox && artifactTypeCountsCheckbox.checked) {
-                        const artifactTypeCountsInput = stateElement.querySelector(`input[id^="state-artifactTypeCounts-"]`);
-                        if (artifactTypeCountsInput && artifactTypeCountsInput.value) {
-                            stateObj.artifactTypeCounts = artifactTypeCountsInput.value.split(',').map(val => {
-                                const parsed = parseInt(val.trim());
-                                return isNaN(parsed) ? 0 : parsed;
-                            });
-                        }
-                    }
-                    
-                    const creatureRewardCountCheckbox = stateElement.querySelector(`input[id^="state-creatureRewardCount-checkbox"]`);
-                    if (creatureRewardCountCheckbox && creatureRewardCountCheckbox.checked) {
-                        const creatureRewardCountInput = stateElement.querySelector(`input[id^="state-creatureRewardCount-"][type="number"]`);
-                        if (creatureRewardCountInput && creatureRewardCountInput.value !== '') {
-                            stateObj.creatureRewardCount = parseInt(creatureRewardCountInput.value);
-                        }
-                    }
-                    
-                    const creatureRewardTypeCheckbox = stateElement.querySelector(`input[id^="state-creatureRewardType-checkbox"]`);
-                    if (creatureRewardTypeCheckbox && creatureRewardTypeCheckbox.checked) {
-                        const creatureRewardTypeInput = stateElement.querySelector(`input[id^="state-creatureRewardType-"][type="number"]`);
-                        if (creatureRewardTypeInput && creatureRewardTypeInput.value !== '') {
-                            stateObj.creatureRewardType = parseInt(creatureRewardTypeInput.value);
-                        }
-                    }
-                    
-                    const guardiansCheckbox = stateElement.querySelector(`input[id^="state-guardians-checkbox"]`);
-                    if (guardiansCheckbox && guardiansCheckbox.checked) {
-                        const countInput = stateElement.querySelector(`input[id^="state-guardians-count-"]`);
-                        const typeInput = stateElement.querySelector(`input[id^="state-guardians-type-"]`);
-                        
-                        if ((countInput && countInput.value) || (typeInput && typeInput.value)) {
-                            stateObj.guardians = {};
-                            if (countInput && countInput.value) {
-                                stateObj.guardians.count = countInput.value.split(',').map(val => {
-                                    const parsed = parseInt(val.trim());
-                                    return isNaN(parsed) ? 0 : parsed;
-                                });
-                            }
-                            if (typeInput && typeInput.value) {
-                                stateObj.guardians.type = typeInput.value.split(',').map(val => {
-                                    const parsed = parseInt(val.trim());
-                                    return isNaN(parsed) ? -1 : parsed;
-                                });
-                            }
-                        }
-                    }
-                    
-                    const resourcesCheckbox = stateElement.querySelector(`input[id^="state-resources-checkbox"]`);
-                    if (resourcesCheckbox && resourcesCheckbox.checked) {
-                        const resourcesInput = stateElement.querySelector(`input[id^="state-resources-"]`);
-                        if (resourcesInput && resourcesInput.value) {
-                            stateObj.resources = resourcesInput.value.split(',').map(val => {
-                                const parsed = parseInt(val.trim());
-                                return isNaN(parsed) ? 0 : parsed;
-                            });
-                        }
-                    }
-                    
-                    const upgradeCheckbox = stateElement.querySelector(`input[id^="state-upgrade-checkbox"]`);
-                    if (upgradeCheckbox && upgradeCheckbox.checked) {
-                        const upgradeInput = stateElement.querySelector(`input[id^="state-upgrade-"][type="number"]`);
-                        if (upgradeInput && upgradeInput.value !== '') {
-                            stateObj.upgrade = parseInt(upgradeInput.value);
-                        }
-                    }
-                    
-                    const chanceCheckbox = stateElement.querySelector(`input[id^="state-chance-checkbox"]`);
-                    if (chanceCheckbox && chanceCheckbox.checked) {
-                        const chanceInput = stateElement.querySelector(`input[id^="state-chance-"][type="number"]`);
-                        if (chanceInput && chanceInput.value !== '') {
-                            stateObj.chance = parseInt(chanceInput.value);
-                        }
-                    }
-                    
-                    // Only add non-empty state objects
-                    if (Object.keys(stateObj).length > 0) {
-                        innerJsonObj.states.push(stateObj);
-                    }
-                });
-                
-                // Remove states array if empty
-                if (innerJsonObj.states.length === 0) {
-                    delete innerJsonObj.states;
-                }
-            }
-        }
-        
-        // Wrap in the required structure
-        const subtype = document.getElementById('object-subtype').value || "13";
-        
-        return {
-            "RMG": {
-                "objectGeneration": {
-                    "16": {
-                        [subtype]: innerJsonObj
-                    }
-                }
-            }
-        };
-    }
-
-    // Save file functionality
-    document.getElementById('save-file').addEventListener('click', function() {
-        if (!validateRequiredFields()) return;
-        
-        const jsonObj = buildJsonObject();
-        const jsonString = JSON.stringify(jsonObj, null, 2);
-        const blob = new Blob([jsonString], { type: 'application/json' });
-        
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'creature_bank.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(a.href); // Clean up the created URL
-    });
-
-    // PWA installation
-    let deferredPrompt;
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        
-        // Show the install button
-        const installButton = document.getElementById('install-pwa');
-        installButton.style.display = 'block';
-        
-        installButton.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            
-            if (outcome === 'accepted') {
-                console.log('User accepted the install prompt');
-            } else {
-                console.log('User dismissed the install prompt');
-            }
-            
-            deferredPrompt = null;
-            installButton.style.display = 'none';
-        });
-    });
-
-    // Generate manifest dynamically
-    const manifestData = {
-        name: "Creature Bank Editor for Heroes 3: ERA",
-        short_name: "Creature Bank Editor",
-        description: "JSON editor for Heroes 3: ERA creature banks",
-        start_url: "./",
-        display: "standalone",
-        background_color: "#1f2937",
-        theme_color: "#1f2937",
-        icons: [
-            {
-                src: "./icon-192.png",
-                sizes: "192x192",
-                type: "image/png"
-            },
-            {
-                src: "./icon-512.png", 
-                sizes: "512x512",
-                type: "image/png"
-            }
-        ]
-    };
-
-    const manifestString = JSON.stringify(manifestData);
-    const manifestBlob = new Blob([manifestString], {type: 'application/json'});
-    const manifestURL = URL.createObjectURL(manifestBlob);
-    document.getElementById('manifestPlaceholder').href = manifestURL;
-
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            // In a real app, you would register a real service worker file
-            // For this demo, we'll just log to console
-            console.log('Service Worker would be registered here in a real PWA');
-        });
-    }
-    
-    // Initialize UI - load default language first
-    document.addEventListener('DOMContentLoaded', () => {
-        loadLanguage(currentLang);
-        document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
-    });
-
-    // Update initial UI state (fallback if language load fails)
-    updateJsonPreview();
-
-    // Properties functionality
-    let propertyCounter = 1;
-    
-    document.getElementById('add-property').addEventListener('click', function() {
-        const propertiesContainer = document.getElementById('properties-container');
-        const newPropertyItem = document.createElement('div');
-        newPropertyItem.className = 'property-item';
-        
-        // Create property input
-        const newPropertyInput = document.createElement('input');
-        newPropertyInput.type = 'text';
-        newPropertyInput.className = 'property-input';
-        newPropertyInput.id = `property-${propertyCounter}`;
-        setupPropertyInput(newPropertyInput);
-        
-        // Create remove button
-        const removeButton = document.createElement('button');
-        removeButton.className = 'remove-property';
-        removeButton.textContent = '-';
-        removeButton.addEventListener('click', function() {
-            if (propertiesContainer.children.length > 1) {
-                propertiesContainer.removeChild(newPropertyItem);
-                updateJsonPreview();
-                updateSaveButtonState();
-            }
-        });
-        
-        // Add elements to DOM
-        newPropertyItem.appendChild(newPropertyInput);
-        newPropertyItem.appendChild(removeButton);
-        propertiesContainer.appendChild(newPropertyItem);
-        
-        propertyCounter++;
-        updateJsonPreview();
-    });
-    
-    // Add event listener to the first property input
-    setupPropertyInput(document.querySelector('.property-input'));
-    
-    // Add event listener to the first remove-property button
-    document.querySelector('.remove-property').addEventListener('click', function() {
-        if (document.getElementById('properties-container').children.length > 1) {
-            this.parentElement.remove();
-            updateJsonPreview();
-            updateSaveButtonState();
-        }
-    });
-
-    // Add this validation function after other helper functions
-    function validateProperty(propertyValue) {
-        // Check for required format: "name.def numbers numbers numbers numbers numbers numbers numbers numbers"
-        const regex = /^.+\.def(\s+\d+){8}$/;
-        return regex.test(propertyValue);
-    }
-
-    // Add new function to validate type and subtype values in property
-    function validatePropertyTypeSubtype(propertyValue) {
-        if (!validateProperty(propertyValue)) return false;
-        
-        const parts = propertyValue.split(/\s+/);
-        // Get the 5th and 6th numbers (index 5 and 6 after the .def part)
-        const typeValue = parts[5];
-        const subtypeValue = parts[6];
-        
-        // Get the current object type and subtype values
-        const objectType = "16"; // This is fixed in the HTML
-        const objectSubtype = document.getElementById('object-subtype').value;
-        
-        // Check if both match
-        return typeValue === objectType && subtypeValue === objectSubtype;
-    }
-
-    // Function to create and update warning icons for property inputs
-    function updatePropertyWarnings() {
-        document.querySelectorAll('.property-input').forEach(input => {
-            // Check if warning icon already exists
-            let warningIcon = input.parentElement.querySelector('.property-warning');
-            
-            if (input.value.trim() !== '' && validateProperty(input.value.trim())) {
-                // If the property format is valid, check type and subtype
-                if (!validatePropertyTypeSubtype(input.value.trim())) {
-                    // If type or subtype doesn't match, show warning
-                    if (!warningIcon) {
-                        // Create warning icon if it doesn't exist
-                        warningIcon = document.createElement('span');
-                        warningIcon.className = 'property-warning';
-                        warningIcon.innerHTML = '⚠️';
-                        warningIcon.title = 'The 5th number must match object type (16) and the 6th number must match object subtype';
-                        
-                        // Insert warning icon before the input
-                        input.parentElement.insertBefore(warningIcon, input);
-                    }
-                    warningIcon.style.display = 'inline';
-                } else if (warningIcon) {
-                    // If values match and warning exists, hide it
-                    warningIcon.style.display = 'none';
-                }
-            } else if (warningIcon) {
-                // If input is empty or invalid format, hide warning
-                warningIcon.style.display = 'none';
-            }
-        });
-    }
-
-    // Modify property input event listeners to include type/subtype validation
-    function setupPropertyInput(input) {
-        input.addEventListener('input', function() {
-            if (this.value.trim() !== '') {
-                if (validateProperty(this.value.trim())) {
-                    this.classList.remove('invalid-input');
-                } else {
-                    this.classList.add('invalid-input');
-                }
-            } else {
-                this.classList.remove('invalid-input');
-            }
-            updatePropertyWarnings();
-            updateJsonPreview();
-            updateSaveButtonState();
-        });
-    }
-
-    // Add listener for subtype changes to update property warnings
-    document.getElementById('object-subtype').addEventListener('input', function() {
-        updatePropertyWarnings();
-        updateSaveButtonState();
-        updateJsonPreview();
-    });
-
-    // Update initial UI state
-    document.addEventListener('DOMContentLoaded', () => {
-        loadLanguage(currentLang);
-        document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
-        updatePropertyWarnings();
-    });
-
-    // Add CSS for invalid input styling within the script tag
-    document.head.insertAdjacentHTML('beforeend', `
-        <style>
-            .invalid-input {
-                border: 2px solid #ff5252;
-                background-color: rgba(255, 82, 82, 0.1);
-            }
-            .property-hint {
-                font-size: 0.8em;
-                color: #666;
-                margin-top: 5px;
-                display: block;
-            }
-            .property-warning {
-                margin-right: 5px;
-                color: #ff5252;
-                cursor: help;
-            }
-        </style>
-    `);
-
-    // Add hint text for property format
-    const propertiesContainer = document.getElementById('properties-container');
-    const hintElement = document.createElement('span');
-    hintElement.className = 'property-hint';
-    hintElement.innerHTML = 'Format: name.def [8 groups of numbers separated by spaces]<br>Example: CBname.def 100011111 01000000 000000100 000000100 16 13 1 0';
-    propertiesContainer.parentNode.insertBefore(hintElement, propertiesContainer.nextSibling);
-
-    // Function to add line break indicators
-    function updateLineBreakIndicators(textarea) {
-        // Clear existing indicators
-        const container = textarea.closest('.textarea-container');
-        container.querySelectorAll('.line-break-indicator').forEach(el => el.remove());
-        
-        // Get text content and find line breaks
-        const text = textarea.value;
-        const lines = text.split('\n');
-        
-        if (lines.length <= 1) return; // No line breaks
-        
-        // Calculate line heights
-        const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
-        const paddingTop = parseInt(window.getComputedStyle(textarea).paddingTop);
-        
-        // Add indicator for each line break (except the last line)
-        for (let i = 0; i < lines.length - 1; i++) {
-            const indicator = document.createElement('span');
-            indicator.className = 'line-break-indicator';
-            indicator.textContent = '↵'; // Line break symbol
-            
-            // Calculate position based on text content
-            const tempDiv = document.createElement('div');
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.visibility = 'hidden';
-            tempDiv.style.fontSize = window.getComputedStyle(textarea).fontSize;
-            tempDiv.style.fontFamily = window.getComputedStyle(textarea).fontFamily;
-            tempDiv.textContent = lines[i];
-            document.body.appendChild(tempDiv);
-            
-            // Position at the end of each line
-            const width = tempDiv.clientWidth;
-            const top = paddingTop + (i * lineHeight) + (lineHeight / 2) - 8; // Adjust vertical position
-            
-            indicator.style.left = `${width + 12}px`; // Add padding
-            indicator.style.top = `${top}px`;
-            
-            container.appendChild(indicator);
-            document.body.removeChild(tempDiv);
-        }
-    }
-    
-    // Modify the text-visit input event handler
-    document.addEventListener('DOMContentLoaded', function() {
-        const textVisit = document.getElementById('text-visit');
-        if (textVisit) {
-            textVisit.addEventListener('input', function() {
-                updateJsonPreview();
-                updateLineBreakIndicators(this);
-            });
-            
-            // Update indicators when textarea is resized
-            textVisit.addEventListener('mouseup', function() {
-                updateLineBreakIndicators(this);
-            });
-        }
-    });
-</script>
 </body>
 </html>
