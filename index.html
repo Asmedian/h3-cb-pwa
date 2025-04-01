@@ -56,7 +56,7 @@
             </span>
             <div class="field-input">
                 <!-- Displaying as text, not editable -->
-                <span>16</span>
+                <span id="object-type">16</span>
             </div>
         </div>
 
@@ -226,19 +226,27 @@
 
         <!-- States -->
         <div class="field-group">
-             <div class="field-row">
+            <div class="field-row states-header-row">
                 <label class="field-label-small" for="states-checkbox">
                     <input type="checkbox" id="states-checkbox" data-controls="states-container">
                     states <span class="help-icon">?
                         <span class="tooltip" id="help-states">Loading help text...</span>
                     </span>
                 </label>
-                 <div class="field-input disabled" id="states-container">
-                    <div id="states-items">
-                        <!-- State item template/initial item will be here or loaded -->
-                         <!-- JS will populate the first state here -->
-                    </div>
+                <div class="states-buttons">
                     <button class="add-item add-state" id="add-state">Add State</button>
+                    <button class="remove-state-btn" id="remove-state-btn" disabled>Remove State</button>
+                </div>
+            </div>
+            <div class="field-input disabled" id="states-container">
+                <div class="states-tabs-container">
+                    <div class="states-tabs-headers" id="states-tabs-headers">
+                        <!-- Tab headers will be added here -->
+                    </div>
+                    <div id="states-items" class="states-tabs-content">
+                        <!-- State item template/initial item will be here or loaded -->
+                        <!-- JS will populate the first state here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -256,70 +264,30 @@
 <template id="state-item-template">
     <div class="state-item">
         <div class="field-group">
-            <h4>State #<span class="state-number">1</span></h4>
-
-            <!-- Morale -->
-            <div class="field-row">
-                <label class="field-label margin-left-10">
-                    <input type="checkbox" class="state-morale-checkbox" data-controls="state-morale-container">
-                    morale <span class="help-icon">?
-                        <span class="tooltip" data-translate-id="statesMorale">Loading help text...</span></span>
-                </label>
-                <div class="field-input disabled state-morale-container">
-                    <input type="number" class="state-morale-input" min="-3" max="3">
-                </div>
-            </div>
-
-            <!-- Luck -->
-            <div class="field-row">
-                <label class="field-label margin-left-10">
-                    <input type="checkbox" class="state-luck-checkbox" data-controls="state-luck-container">
-                    luck <span class="help-icon">?
-                        <span class="tooltip" data-translate-id="statesLuck">Loading help text...</span></span>
-                </label>
-                <div class="field-input disabled state-luck-container">
-                    <input type="number" class="state-luck-input" min="-3" max="3">
-                </div>
-            </div>
+            <!-- State number is now shown in the tab header -->
 
             <!-- Spells -->
             <div class="field-group">
-                <div class="field-row">
-                    <label class="field-label">
+                <div class="field-row spells-header-row">
+                    <label class="field-label-small">
                         <input type="checkbox" class="state-spells-checkbox" data-controls="state-spells-container">
                         spells <span class="help-icon">?
                             <span class="tooltip" data-translate-id="spells">Loading help text...</span></span>
                     </label>
-                    <div class="field-input disabled state-spells-container">
-                        <div class="state-spells-items">
-                            <!-- Spell items will be added here -->
-                        </div>
-                        <button class="add-spell" data-translate-id="addSpell">+</button>
+                    <div class="spells-buttons">
+                        <button class="add-spell-btn" id="add-spell-btn">Add Spell</button>
+                        <button class="remove-spell-btn" id="remove-spell-btn" disabled>Remove Spell</button>
                     </div>
                 </div>
-            </div>
-
-            <!-- Spell Points -->
-            <div class="field-row">
-                 <label class="field-label margin-left-10">
-                    <input type="checkbox" class="state-spellPoints-checkbox" data-controls="state-spellPoints-container">
-                    spellPoints <span class="help-icon">?
-                        <span class="tooltip" data-translate-id="spellPoints">Loading help text...</span></span>
-                </label>
-                <div class="field-input disabled state-spellPoints-container">
-                    <input type="number" class="state-spellPoints-input" min="0" max="999">
-                </div>
-            </div>
-
-            <!-- Experience -->
-            <div class="field-row">
-                <label class="field-label margin-left-10">
-                    <input type="checkbox" class="state-experience-checkbox" data-controls="state-experience-container">
-                    experience <span class="help-icon">?
-                        <span class="tooltip" data-translate-id="experience">Loading help text...</span></span>
-                </label>
-                <div class="field-input disabled state-experience-container">
-                    <input type="number" class="state-experience-input" min="0" max="2147483647">
+                <div class="field-input disabled state-spells-container">
+                    <div class="spells-tabs-container">
+                        <div class="spells-tabs-headers">
+                            <!-- Spell tab headers will be added here -->
+                        </div>
+                        <div class="state-spells-items spells-tabs-content">
+                            <!-- Spell items will be added here -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -358,35 +326,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Artifact Type Counts -->
-            <div class="field-row">
-                <label class="field-label margin-left-10">
-                    <input type="checkbox" class="state-artifactTypeCounts-checkbox" data-controls="state-artifactTypeCounts-container">
-                    artifactTypeCounts <span class="help-icon">?
-                        <span class="tooltip" data-translate-id="artifactTypeCounts">Loading help text...</span></span>
-                </label>
-                <div class="field-input disabled state-artifactTypeCounts-container">
-                    <div class="artifact-type-fields">
-                        <div class="artifact-field">
-                            <label id="artifact-valuable-label">Valuable</label>
-                            <input type="number" class="state-artifactTypeCounts-valuable" min="0" max="127">
-                        </div>
-                        <div class="artifact-field">
-                            <label id="artifact-minor-label">Minor</label>
-                            <input type="number" class="state-artifactTypeCounts-minor" min="0" max="127">
-                        </div>
-                        <div class="artifact-field">
-                            <label id="artifact-major-label">Major</label>
-                            <input type="number" class="state-artifactTypeCounts-major" min="0" max="127">
-                        </div>
-                        <div class="artifact-field">
-                            <label id="artifact-relic-label">Relic</label>
-                            <input type="number" class="state-artifactTypeCounts-relic" min="0" max="127">
                         </div>
                     </div>
                 </div>
@@ -500,6 +439,124 @@
                 </div>
             </div>
 
+            <!-- Upgrade -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-upgrade-checkbox" data-controls="state-upgrade-container">
+                    upgrade <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="upgrade">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-upgrade-container">
+                    <input type="number" class="state-upgrade-input" min="0" max="100" value="0">
+                </div>
+            </div>
+            
+            <!-- Morale -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-morale-checkbox" data-controls="state-morale-container">
+                    morale <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="statesMorale">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-morale-container">
+                    <input type="number" class="state-morale-input" min="-3" max="3">
+                </div>
+            </div>
+
+            <!-- Luck -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-luck-checkbox" data-controls="state-luck-container">
+                    luck <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="statesLuck">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-luck-container">
+                    <input type="number" class="state-luck-input" min="-3" max="3">
+                </div>
+            </div>
+
+            <!-- Spell Points -->
+            <div class="field-row">
+                 <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-spellPoints-checkbox" data-controls="state-spellPoints-container">
+                    spellPoints <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="spellPoints">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-spellPoints-container">
+                    <input type="number" class="state-spellPoints-input" min="0" max="999">
+                </div>
+            </div>
+
+            <!-- Experience -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-experience-checkbox" data-controls="state-experience-container">
+                    experience <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="experience">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-experience-container">
+                    <input type="number" class="state-experience-input" min="0" max="2147483647">
+                </div>
+            </div>
+
+            <!-- ArtifactIds (new section) -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-artifactIds-checkbox" data-controls="state-artifactIds-container">
+                    artifactIds <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="artifactIds">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-artifactIds-container">
+                    <div class="artifact-type-fields">
+                        <div class="artifact-field">
+                            <label>#1</label>
+                            <input type="number" class="state-artifactIds-1" min="-1" max="1023" value="-1">
+                        </div>
+                        <div class="artifact-field">
+                            <label>#2</label>
+                            <input type="number" class="state-artifactIds-2" min="-1" max="1023" value="-1">
+                        </div>
+                        <div class="artifact-field">
+                            <label>#3</label>
+                            <input type="number" class="state-artifactIds-3" min="-1" max="1023" value="-1">
+                        </div>
+                        <div class="artifact-field">
+                            <label>#4</label>
+                            <input type="number" class="state-artifactIds-4" min="-1" max="1023" value="-1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Artifact Type Counts -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-artifactTypeCounts-checkbox" data-controls="state-artifactTypeCounts-container">
+                    artifactTypeCounts <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="artifactTypeCounts">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-artifactTypeCounts-container">
+                    <div class="artifact-type-fields">
+                        <div class="artifact-field">
+                            <label id="artifact-treasure-label">Treasure</label>
+                            <input type="number" class="state-artifactTypeCounts-treasure" min="0" max="127">
+                        </div>
+                        <div class="artifact-field">
+                            <label id="artifact-minor-label">Minor</label>
+                            <input type="number" class="state-artifactTypeCounts-minor" min="0" max="127">
+                        </div>
+                        <div class="artifact-field">
+                            <label id="artifact-major-label">Major</label>
+                            <input type="number" class="state-artifactTypeCounts-major" min="0" max="127">
+                        </div>
+                        <div class="artifact-field">
+                            <label id="artifact-relic-label">Relic</label>
+                            <input type="number" class="state-artifactTypeCounts-relic" min="0" max="127">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Resources -->
             <div class="field-row">
                 <label class="field-label margin-left-10">
@@ -545,18 +602,6 @@
                 </div>
             </div>
 
-            <!-- Upgrade -->
-            <div class="field-row">
-                <label class="field-label margin-left-10">
-                    <input type="checkbox" class="state-upgrade-checkbox" data-controls="state-upgrade-container">
-                    upgrade <span class="help-icon">?
-                        <span class="tooltip" data-translate-id="upgrade">Loading help text...</span></span>
-                </label>
-                <div class="field-input disabled state-upgrade-container">
-                    <input type="number" class="state-upgrade-input" min="0" max="100" value="0">
-                </div>
-            </div>
-
             <!-- Chance -->
             <div class="field-row">
                 <label class="field-label margin-left-10">
@@ -569,7 +614,6 @@
                 </div>
             </div>
         </div>
-        <button class="remove-state" data-remove-target="state-item">Remove State</button>
     </div>
 </template>
 
@@ -648,7 +692,6 @@
                 </div>
             </div>
         </div>
-        <button class="remove-spell" data-remove-target="array-item">-</button>
     </div>
 </template>
 

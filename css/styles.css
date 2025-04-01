@@ -76,7 +76,7 @@ header {
 .header-controls {
     display: flex;
     gap: 15px;
-    align-items: center; /* Align buttons vertically */
+    align-items: center;
 }
 
 .browser-support {
@@ -99,7 +99,7 @@ button {
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.2s;
-    white-space: nowrap; /* Prevent button text wrapping */
+    white-space: nowrap;
 }
 
 button:hover:not(:disabled) {
@@ -141,8 +141,8 @@ button:disabled {
     background: none;
     color: var(--text-color);
     padding: 8px 16px;
-    border: none; /* Ensure dropdown buttons have no border */
-    border-radius: 0; /* No border radius inside dropdown */
+    border: none;
+    border-radius: 0;
 }
 
 .dropdown button:hover {
@@ -162,40 +162,40 @@ button:disabled {
 .field-group {
     width: 100%;
     margin-bottom: 15px;
-    padding: 15px; /* Increased padding */
+    padding: 15px;
     border-radius: 6px;
     background-color: var(--indented-bg);
     border: 1px solid var(--indented-border);
 }
 .field-group h3, .field-group h4 {
-    margin-bottom: 15px; /* Space below headings */
+    margin-bottom: 15px;
     font-weight: 600;
 }
 
 /* Nested field groups */
 .field-group .field-group {
     margin-top: 15px;
-    background-color: var(--secondary-bg); /* Slightly different bg for nesting */
+    background-color: var(--secondary-bg);
 }
 
 .field-row {
     display: flex;
-    margin-bottom: 12px; /* Increased space */
+    margin-bottom: 12px;
     align-items: center;
-    gap: 15px; /* Gap between label and input */
+    gap: 15px;
 }
 
 /* --- Labels & Help Icons --- */
 .field-label, .field-label-small {
     display: flex;
     align-items: center;
-    flex-shrink: 0; /* Prevent label shrinking */
+    flex-shrink: 0;
 }
 .field-label {
-    flex-basis: 200px; /* Use flex-basis */
+    flex-basis: 200px;
 }
 .field-label-small {
-    flex-basis: 120px; /* Adjusted small label */
+    flex-basis: 120px;
 }
 
 .field-label .help-icon, .field-label-small .help-icon {
@@ -205,9 +205,9 @@ button:disabled {
 .help-icon {
     cursor: pointer;
     font-size: 16px;
-    color: var(--button-bg); /* Use theme color */
+    color: var(--button-bg);
     position: relative;
-    display: inline-flex; /* Align icon better */
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 20px;
@@ -217,8 +217,7 @@ button:disabled {
 .tooltip {
     position: absolute;
     bottom: 100%;
-    /* Changed positioning strategy to prevent overflow */
-    left: 0; /* Default alignment to left edge */
+    left: 0;
     transform: translateY(-5px);
     background-color: var(--tertiary-bg);
     color: var(--text-color);
@@ -226,7 +225,7 @@ button:disabled {
     border-radius: 4px;
     font-size: 13px;
     width: 250px;
-    max-width: calc(100vw - 30px); /* Prevent exceeding viewport width */
+    max-width: calc(100vw - 30px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     z-index: 110;
     display: none;
@@ -245,14 +244,13 @@ button:disabled {
     .field-row:last-child .help-icon .tooltip,
     .field-input .help-icon .tooltip {
         left: auto;
-        /* right: 0; */
     }
 }
 
 /* --- Inputs --- */
 .field-input {
-    flex: 1; /* Allow input to grow */
-    min-width: 150px; /* Minimum width for inputs */
+    flex: 1;
+    min-width: 150px;
 }
 
 input[type="text"],
@@ -265,56 +263,98 @@ textarea {
     border: 1px solid var(--border-color);
     background-color: var(--input-bg);
     color: var(--text-color);
-    font-size: 14px; /* Consistent font size */
+    font-size: 14px;
     transition: border-color 0.2s, background-color 0.2s;
 }
 
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: var(--button-bg); /* Highlight focus */
+    border-color: var(--button-bg);
 }
 
-/* --- Checkboxes --- */
+/* --- Checkboxes and Radio Buttons --- */
 input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
     width: 20px;
     height: 20px;
-    border-radius: 50%; /* Circular checkbox */
+    border-radius: 4px;
     border: 2px solid var(--checkbox-unchecked);
     background-color: transparent;
     margin-right: 10px;
     position: relative;
     cursor: pointer;
-    vertical-align: middle; /* Align checkbox with text */
+    vertical-align: middle;
     transition: all 0.2s ease;
-    flex-shrink: 0; /* Prevent checkbox shrinking */
+    flex-shrink: 0;
 }
 
 input[type="checkbox"]:hover {
     border-color: var(--checkbox-hover);
-    background-color: rgba(107, 114, 128, 0.1); /* Subtle hover background */
+    background-color: rgba(107, 114, 128, 0.1);
 }
 
 input[type="checkbox"]:checked {
-    background-color: var(--checkbox-checked);
-    border-color: var(--checkbox-checked);
+    background-color: #22c55e;
+    border-color: #22c55e;
 }
 
 input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+}
+
+/* Radio buttons styling */
+input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--checkbox-unchecked);
+    background-color: var(--secondary-bg); /* Dark background for unchecked */
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin-right: 5px;
+}
+
+input[type="radio"]::after {
     content: "";
     position: absolute;
-    /* Centered inner circle */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: white;
+    background-color: #333; /* Black dot for unchecked */
+    opacity: 0.7;
+    transition: all 0.2s ease;
 }
 
-/* Add these styles for the radio buttons */
+input[type="radio"]:hover {
+    border-color: var(--checkbox-hover);
+}
+
+input[type="radio"]:checked {
+    background-color: #22c55e; /* Green background for checked */
+    border-color: #22c55e;
+}
+
+input[type="radio"]:checked::after {
+    background-color: white; /* White dot for checked */
+    opacity: 1;
+}
+
 .radio-group {
     display: flex;
     gap: 15px;
@@ -325,49 +365,6 @@ input[type="checkbox"]:checked::after {
     display: flex;
     align-items: center;
     cursor: pointer;
-}
-
-.radio-label input[type="radio"] {
-    margin-right: 5px;
-    cursor: pointer;
-}
-
-/* Styling for radio buttons */
-input[type="radio"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid var(--checkbox-unchecked);
-    background-color: transparent;
-    position: relative;
-    cursor: pointer;
-    vertical-align: middle;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-input[type="radio"]:hover {
-    border-color: var(--checkbox-hover);
-    background-color: rgba(107, 114, 128, 0.1);
-}
-
-input[type="radio"]:checked {
-    background-color: var(--checkbox-checked);
-    border-color: var(--checkbox-checked);
-}
-
-input[type="radio"]:checked::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: white;
 }
 
 .spell-type-selection {
@@ -384,86 +381,80 @@ input[type="radio"]:checked::after {
 
 /* Prevent disabled effect from being applied multiple times */
 .disabled .disabled {
-    opacity: 1; /* Reset opacity for nested disabled elements */
-    /* Keep pointer-events none, but don't compound the opacity effect */
+    opacity: 1;
 }
 
 /* Allow help icons within disabled sections to remain interactive */
 .disabled .help-icon {
     opacity: 1;
     pointer-events: auto;
-    position: relative; /* Needed for tooltip positioning */
-    z-index: 101; /* Ensure it's above the disabled overlay */
+    position: relative;
+    z-index: 101;
 }
 .disabled .help-icon .tooltip {
-     pointer-events: auto; /* Tooltip content should be selectable */
+     pointer-events: auto;
 }
 
 /* --- Dynamic Lists (Properties, Spells, States) --- */
 .property-item, .array-item, .state-item {
     display: flex;
-    margin-bottom: 10px; /* Consistent spacing */
-    align-items: flex-start; /* Align items to the top */
-    gap: 10px; /* Gap between input/group and button */
+    margin-bottom: 10px;
     align-items: flex-start;
-    flex-direction: column; /* Place the "remove" button at the bottom */
+    gap: 10px;
+    flex-direction: column;
 }
 .state-item > .field-group {
-    flex-grow: 1; /* Allow state field group to take available space */
+    flex-grow: 1;
 }
 
 .property-input {
-    flex-grow: 1; /* Allow property input to take space */
+    flex-grow: 1;
 }
 
+/* Unified remove buttons */
 .remove-property, .remove-spell, .remove-state {
-    background-color: #ef4444; /* Red for remove buttons */
+    background-color: #ef4444;
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 4px 10px; /* Slightly adjusted padding */
+    padding: 4px 10px;
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.2s;
-    height: fit-content; /* Fit button height to content */
-    margin-top: 5px; /* Align better with inputs */
-    flex-shrink: 0; /* Prevent button shrinking */
+    height: fit-content;
+    margin-top: 5px;
+    flex-shrink: 0;
 }
 .remove-property:hover, .remove-spell:hover, .remove-state:hover {
-    background-color: #dc2626; /* Darker red on hover */
+    background-color: #dc2626;
 }
-/* Specific widths if needed, but flexbox handles it well */
-/* .remove-spell { min-width: 50px; } */
-/* .remove-state { min-width: 150px; } */
 
-.add-item, .add-spell, .add-state {
+/* Unified add buttons */
+.add-item, .add-spell, .add-state, .add-spell-btn {
     margin-top: 10px;
-    min-width: 130px; /* Slightly smaller min-width */
-    background-color: #22c55e; /* Green for add buttons */
+    min-width: 130px;
+    background-color: #22c55e;
 }
-.add-item:hover, .add-spell:hover, .add-state:hover {
-    background-color: #16a34a; /* Darker green on hover */
+.add-item:hover, .add-spell:hover, .add-state:hover, .add-spell-btn:hover {
+    background-color: #16a34a;
 }
 
 /* --- Bottom Controls & JSON Preview --- */
 .bottom-controls {
     margin-top: 30px;
     padding-top: 20px;
-    border-top: 1px solid var(--border-color); /* Separator */
-    display: flex; /* Align buttons */
+    border-top: 1px solid var(--border-color);
+    display: flex;
     flex-wrap: wrap;
     gap: 15px;
     align-items: center;
 }
 
-.save-button {
+.save-button, .json-preview-toggle {
     padding: 10px 20px;
     font-size: 16px;
-    /* :disabled styles handled globally */
-}
-
-.json-preview-toggle {
-    margin-bottom: 0; /* Remove margin as flex gap handles spacing */
+    min-width: 150px;
+    text-align: center;
 }
 
 .json-preview {
@@ -471,15 +462,15 @@ input[type="radio"]:checked::after {
     padding: 15px;
     border-radius: 6px;
     white-space: pre-wrap;
-    word-wrap: break-word; /* Ensure long lines break */
-    font-family: 'Courier New', Courier, monospace; /* Monospace font */
+    word-wrap: break-word;
+    font-family: 'Courier New', Courier, monospace;
     max-height: 400px;
     overflow-y: auto;
     border: 1px solid var(--indented-border);
-    display: none; /* Initially hidden */
-    width: 100%; /* Take full width when shown */
-    margin-top: 15px; /* Space above preview */
-    color: var(--text-color); /* Ensure text color matches theme */
+    display: none;
+    width: 100%;
+    margin-top: 15px;
+    color: var(--text-color);
 }
 
 .json-preview.show {
@@ -488,16 +479,16 @@ input[type="radio"]:checked::after {
 
 /* --- PWA Install Button --- */
 .install-pwa {
-    display: none; /* Hidden by default, shown via JS */
-    background-color: #6366f1; /* Indigo color */
+    display: none;
+    background-color: #6366f1;
 }
 .install-pwa:hover {
-    background-color: #4f46e5; /* Darker indigo */
+    background-color: #4f46e5;
 }
 
 /* --- Validation & Hints --- */
 .invalid-input {
-    border: 2px solid var(--error-border) !important; /* Use important to override focus */
+    border: 2px solid var(--error-border) !important;
     background-color: var(--error-bg);
 }
 
@@ -506,16 +497,16 @@ input[type="radio"]:checked::after {
     margin-right: 8px;
     cursor: help;
     font-size: 16px;
-    display: inline-flex; /* Align icon */
+    display: inline-flex;
     align-items: center;
     flex-shrink: 0;
 }
 
 .property-hint {
-    font-size: 0.85em; /* Slightly larger hint */
+    font-size: 0.85em;
     color: var(--hint-color);
     opacity: 0.7;
-    margin-top: 8px; /* More space above hint */
+    margin-top: 8px;
     display: block;
     line-height: 1.4;
     text-wrap: auto;
@@ -529,9 +520,9 @@ input[type="radio"]:checked::after {
 
 textarea.resizable-textarea {
     min-height: 80px;
-    resize: vertical; /* Allow only vertical resize */
-    line-height: 1.5; /* Match base line-height */
-    overflow: auto; /* Ensure scrollbars appear if needed */
+    resize: vertical;
+    line-height: 1.5;
+    overflow: auto;
 }
 
 .line-break-indicator {
@@ -541,13 +532,8 @@ textarea.resizable-textarea {
     user-select: none;
     pointer-events: none;
     opacity: 0.7;
-    font-family: monospace; /* Use monospace for consistency */
-    line-height: 1; /* Prevent interference with layout */
-}
-
-/* --- Utility Classes --- */
-.margin-left-10 {
-    margin-left: 10px; /* Keep if specifically needed, but prefer gap */
+    font-family: monospace;
+    line-height: 1;
 }
 
 /* Spell Flags Checkboxes */
@@ -584,25 +570,20 @@ textarea.resizable-textarea {
     font-weight: bold;
 }
 
-/* Make sure checkboxes stay aligned */
-.flag-checkbox-item input[type="checkbox"] {
-    margin-right: 5px;
-}
-
 .checkbox-group {
     display: flex;
-    gap: 10px; /* Space between checkboxes */
+    gap: 10px;
 }
 
 .checkbox-group label {
     display: flex;
     flex-direction: column-reverse;
-    gap: 2px; /* Space between checkboxes */
+    gap: 2px;
 }
 
 .checkbox-group label input[type="checkbox"] {
-    align-self: center; /* Center checkbox label */
-    margin: 0; /* Reset margin */
+    align-self: center;
+    margin: 0;
 }
 
 /* --- Primary Skills & Artifact Type Fields --- */
@@ -642,7 +623,139 @@ textarea.resizable-textarea {
     width: 100%;
 }
 
+/* --- Tabs Layout (Unified for States and Spells) --- */
+.states-header-row,
+.spells-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.states-buttons,
+.spells-buttons {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.states-tabs-container,
+.spells-tabs-container {
+    width: 100%;
+}
+
+.states-tabs-headers,
+.spells-tabs-headers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.state-tab-header,
+.spell-tab-header {
+    padding: 8px 15px;
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.state-tab-header:hover,
+.spell-tab-header:hover {
+    background-color: var(--tertiary-bg);
+}
+
+.state-tab-header.active,
+.spell-tab-header.active {
+    background-color: var(--button-bg);
+    color: white;
+    border-color: var(--button-bg);
+}
+
+.states-tabs-content .state-item,
+.spells-tabs-content .array-item {
+    display: none;
+}
+
+.states-tabs-content .state-item.active,
+.spells-tabs-content .array-item.active {
+    display: block;
+}
+
+.remove-state-btn,
+.remove-spell-btn {
+    background-color: #ef4444;
+    margin-top: 10px;
+    min-width: 130px;
+}
+
+.remove-state-btn:hover,
+.remove-spell-btn:hover {
+    background-color: #dc2626;
+}
+
+.remove-state-btn:disabled,
+.remove-spell-btn:disabled {
+    background-color: var(--disabled-bg);
+    color: var(--disabled-text);
+    cursor: not-allowed;
+}
+
+/* --- Responsive Design --- */
 @media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-controls {
+        margin-top: 15px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .field-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .field-label, .field-label-small {
+        flex-basis: auto;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    .field-input {
+        width: 100%;
+    }
+
+    .property-item, .array-item, .state-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .remove-property, .remove-spell, .remove-state {
+        margin-top: 5px;
+        align-self: flex-end;
+        width: auto;
+        padding: 6px 12px;
+    }
+    .state-item > .field-group {
+        width: 100%;
+    }
+
+    .bottom-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .save-button, .json-preview-toggle {
+        width: 100%;
+    }
+    
     .skills-primary-fields,
     .artifact-type-fields,
     .resources-fields,
@@ -657,56 +770,31 @@ textarea.resizable-textarea {
     .guardian-field {
         width: 100%;
     }
-}
-
-/* --- Responsive Design --- */
-@media (max-width: 768px) {
-    header {
+    
+    .states-header-row,
+    .spells-header-row {
         flex-direction: column;
-        align-items: flex-start; /* Align items left */
+        align-items: flex-start;
+        gap: 10px;
     }
-
-    .header-controls {
-        margin-top: 15px;
-        width: 100%; /* Take full width */
-        justify-content: flex-start; /* Align controls left */
+    
+    .states-buttons,
+    .spells-buttons {
+        width: 100%;
+        margin-left: 0;
     }
-
-    .field-row {
-        flex-direction: column;
-        align-items: flex-start; /* Align labels and inputs top-left */
-        gap: 8px; /* Reduce gap for column layout */
+    
+    .states-tabs-headers,
+    .spells-tabs-headers {
+        overflow-x: auto;
+        padding-bottom: 5px;
+        flex-wrap: nowrap;
     }
-
-    .field-label, .field-label-small {
-        flex-basis: auto; /* Reset flex-basis */
-        width: 100%; /* Take full width */
-        margin-bottom: 5px; /* Add space below label */
-    }
-    .field-input {
-        width: 100%; /* Ensure input takes full width */
-    }
-
-    .property-item, .array-item, .state-item {
-        flex-direction: column; /* Stack items vertically */
-        align-items: stretch; /* Stretch items */
-    }
-    .remove-property, .remove-spell, .remove-state {
-        margin-top: 5px;
-        align-self: flex-end; /* Align remove button right */
-        width: auto; /* Let button size naturally */
-        padding: 6px 12px;
-    }
-    .state-item > .field-group {
-        width: 100%; /* Ensure field group takes full width */
-    }
-
-    .bottom-controls {
-        flex-direction: column;
-        align-items: stretch; /* Stretch buttons */
-    }
-    .save-button, .json-preview-toggle {
-        width: 100%; /* Full width buttons */
+    
+    .state-tab-header,
+    .spell-tab-header {
+        flex: 0 0 auto;
+        white-space: nowrap;
     }
 }
 
@@ -721,7 +809,7 @@ textarea.resizable-textarea {
         padding: 10px;
     }
     button {
-        padding: 10px 15px; /* Larger tap targets */
+        padding: 10px 15px;
         font-size: 15px;
     }
     .dropdown {
@@ -731,4 +819,8 @@ textarea.resizable-textarea {
         width: 200px;
         font-size: 12px;
     }
+}
+
+#object-type {
+    padding-left: 10px;
 }

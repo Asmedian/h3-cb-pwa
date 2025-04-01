@@ -9,6 +9,7 @@
   "requiredFields": "Required Fields",
   "optionalFields": "Optional Fields",
   "addSpell": "Add Spell",
+  "removeSpell": "Remove Spell",
   "saveFile": "Save File",
   "showJsonCode": "Show JSON Code",
   "hideJsonCode": "Hide JSON Code",
@@ -69,6 +70,7 @@
     "skills": "skills",
     "primary": "primary",
     "artifactTypeCounts": "artifactTypeCounts",
+    "artifactIds": "artifactIds",
     "chance": "chance",
     "creatureRewardCount": "creatureRewardCount",
     "creatureRewardType": "creatureRewardType",
@@ -88,7 +90,7 @@
     "knowledge": "Knowledge"
   },
   "artifactTypes": {
-    "valuable": "Valuable",
+    "treasure": "Treasure",
     "minor": "Minor",
     "major": "Major",
     "relic": "Relic"
@@ -129,7 +131,8 @@
     "experience": "Amount of experience points granted by the creature bank after looting.",
     "skills": "Hero skills that can be granted by the creature bank.",
     "skillsPrimary": "Primary skills values for Attack, Defense, Power, and Knowledge. Values range from 0 to 127 for each skill.",
-    "artifactTypeCounts": "Number of random artifacts by rarity type. Array of 4 numbers for: valuable, minor, major, and relic artifacts.",
+    "artifactTypeCounts": "Number of random artifacts by rarity type. Array of 4 numbers for: treasure, minor, major, and relic artifacts.",
+    "artifactIds": "Specific artifact IDs to be awarded. Array of up to 4 values ranging from -1 to 1023. -1 means no artifact.",
     "stateChance": "Probability of this state being chosen (percentage, 0-100). The sum of chances for all states should equal 100.",
     "creatureRewardCount": "Number of creatures awarded as reward.",
     "creatureRewardType": "Creature type ID for the reward (-1 means no creature reward).",
@@ -139,5 +142,7 @@
     "creatureReward": "Configuration for the creature reward, combining type and count in one setting.",
     "guardiansCount": "The number of each type of guardian. Values range from 0 to 2,147,483,647 for each slot.",
     "guardiansType": "Identifiers of guardian creature types. Values range from -1 to 999, where -1 means no creature in this slot."
-  }
+  },
+  "addState": "Add State",
+  "removeState": "Remove State"
 }

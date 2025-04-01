@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLang = 'en';
     let isDarkTheme = true;
     let deferredPrompt; // For PWA installation
+    let activeStateTab = 0; // Track which state tab is active
+    let activeSpellTabs = {}; // Track active spell tab for each state
 
     // --- DOM Element References ---
     const dom = {
@@ -47,7 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Dynamic remove buttons (using containers for delegation)
         statesContainer: document.getElementById('states-container'), // Parent for state removal delegation
         // Inputs that trigger updates (example, refine as needed)
-        inputsForJsonUpdate: () => document.querySelectorAll('input[type="text"], input[type="number"], input[type="checkbox"], select, textarea')
+        inputsForJsonUpdate: () => document.querySelectorAll('input[type="text"], input[type="number"], input[type="checkbox"], select, textarea'),
+        // States Tab Elements
+        statesTabsHeaders: document.getElementById('states-tabs-headers'),
+        removeStateButton: document.getElementById('remove-state-btn')
     };
 
     // --- Initialization ---
@@ -63,6 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSaveButtonState(); // Initial save button state
         updateAllLineBreakIndicators(); // Initial check for textareas
         updatePropertyWarnings(); // Initial check for property warnings
+        initializeSpellTabs(); // Initialize spell tabs for any existing states
+        initializeButtonStates(); // Initialize button states based on checkboxes
     };
 
     // --- Localization ---
@@ -238,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setText(document.getElementById('primary-knowledge-label'), translations.primarySkills?.knowledge || 'Knowledge');
 
         // Update the translations for artifact type labels
-        setText(document.getElementById('artifact-valuable-label'), translations.artifactTypes?.valuable || 'Valuable');
+        setText(document.getElementById('artifact-treasure-label'), translations.artifactTypes?.treasure || 'treasure');
         setText(document.getElementById('artifact-minor-label'), translations.artifactTypes?.minor || 'Minor');
         setText(document.getElementById('artifact-major-label'), translations.artifactTypes?.major || 'Major');
         setText(document.getElementById('artifact-relic-label'), translations.artifactTypes?.relic || 'Relic');
@@ -255,6 +262,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Re-evaluate save button state as language might affect validation perception
         updateSaveButtonState();
+        
+        // Update "Add Spell" and "Remove Spell" buttons
+        document.querySelectorAll('.add-spell-btn').forEach(button => {
+            setText(button, translations.addSpell || 'Add Spell');
+        });
+        
+        document.querySelectorAll('.remove-spell-btn').forEach(button => {
+            setText(button, translations.removeSpell || 'Remove Spell');
+        });
     };
 
     // --- Theming ---
@@ -472,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add validation for artifact type counts inputs
         dom.statesItemsContainer.addEventListener('input', (event) => {
             const target = event.target;
-            if (target.classList.contains('state-artifactTypeCounts-valuable') || 
+            if (target.classList.contains('state-artifactTypeCounts-treasure') || 
                 target.classList.contains('state-artifactTypeCounts-minor') || 
                 target.classList.contains('state-artifactTypeCounts-major') || 
                 target.classList.contains('state-artifactTypeCounts-relic')) {
@@ -658,6 +674,33 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Add validation for artifactIds inputs
+        dom.statesItemsContainer.addEventListener('input', (event) => {
+            const target = event.target;
+            if (target.classList.contains('state-artifactIds-1') || 
+                target.classList.contains('state-artifactIds-2') || 
+                target.classList.contains('state-artifactIds-3') || 
+                target.classList.contains('state-artifactIds-4')) {
+                
+                // Ensure value is within -1 to 1023 range
+                if (target.value !== '') {
+                    const value = parseInt(target.value);
+                    if (!isNaN(value)) {
+                        if (value < -1) target.value = -1;
+                        if (value > 1023) target.value = 1023;
+                    }
+                }
+            }
+        });
+
+        // State tab handling
+        dom.statesTabsHeaders.addEventListener('click', handleTabClick);
+        dom.removeStateButton.addEventListener('click', removeActiveState);
+
+        // Delegation for spell tab handling
+        dom.statesItemsContainer.addEventListener('click', handleSpellTabClick);
+        dom.statesItemsContainer.addEventListener('click', handleAddSpellBtnClick);
+        dom.statesItemsContainer.addEventListener('click', handleRemoveSpellBtnClick);
     };
 
     // Event Handlers
@@ -700,6 +743,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!removeButton) return;
 
         const targetSelector = removeButton.dataset.removeTarget;
+        // Don't handle state-item removal here anymore - it's handled by removeActiveState
+        if (targetSelector === 'state-item') return;
+
         const itemToRemove = removeButton.closest(`.${targetSelector}`);
 
         if (itemToRemove) {
@@ -796,8 +842,63 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Handle state buttons when states checkbox is toggled
+        if (checkbox.id === 'states-checkbox') {
+            updateStateButtonsState(isChecked);
+        }
+
+        // Handle spell buttons when spells checkbox is toggled
+        if (checkbox.classList.contains('state-spells-checkbox')) {
+            const stateItem = checkbox.closest('.state-item');
+            if (stateItem) {
+                updateSpellButtonsState(stateItem, isChecked);
+            }
+        }
+
         updateJsonPreview();
         updateSaveButtonState(); // State of 'enabled' affects requirements
+    };
+
+    // New function to update state buttons based on checkbox state
+    const updateStateButtonsState = (enabled) => {
+        dom.addStateButton.disabled = !enabled;
+        dom.removeStateButton.disabled = !enabled || dom.statesItemsContainer.querySelectorAll('.state-item').length <= 1;
+    };
+
+    // New function to update spell buttons for a specific state
+    const updateSpellButtonsState = (stateItem, enabled) => {
+        const addSpellBtn = stateItem.querySelector('.add-spell-btn');
+        const removeSpellBtn = stateItem.querySelector('.remove-spell-btn');
+        
+        if (addSpellBtn) {
+            addSpellBtn.disabled = !enabled;
+            // If enabled, also check the number of spells (max 4)
+            if (enabled) {
+                const spellsCount = stateItem.querySelectorAll('.state-spells-items .array-item').length;
+                addSpellBtn.disabled = spellsCount >= 4;
+            }
+        }
+        
+        if (removeSpellBtn) {
+            removeSpellBtn.disabled = !enabled || stateItem.querySelectorAll('.state-spells-items .array-item').length <= 1;
+        }
+    };
+
+    // New function to initialize all button states based on checkbox states
+    const initializeButtonStates = () => {
+        // Initialize state buttons
+        const statesCheckbox = document.getElementById('states-checkbox');
+        if (statesCheckbox) {
+            updateStateButtonsState(statesCheckbox.checked);
+        }
+        
+        // Initialize spell buttons for each state
+        document.querySelectorAll('.state-item').forEach(stateItem => {
+            const spellsCheckbox = stateItem.querySelector('.state-spells-checkbox');
+            if (spellsCheckbox) {
+                updateSpellButtonsState(stateItem, spellsCheckbox.checked);
+            }
+        });
     };
 
     const toggleJsonPreview = () => {
@@ -806,6 +907,95 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isVisible) {
             updateJsonPreview(); // Ensure preview is up-to-date when shown
         }
+    };
+
+    // --- States Tabs Management ---
+    const handleTabClick = (event) => {
+        const tabHeader = event.target.closest('.state-tab-header');
+        if (!tabHeader) return;
+        
+        const tabIndex = parseInt(tabHeader.dataset.tabIndex);
+        if (isNaN(tabIndex)) return;
+        
+        activateStateTab(tabIndex);
+    };
+
+    const activateStateTab = (tabIndex) => {
+        // Update active tab state
+        activeStateTab = tabIndex;
+        
+        // Update tab headers
+        const tabHeaders = dom.statesTabsHeaders.querySelectorAll('.state-tab-header');
+        tabHeaders.forEach((header, index) => {
+            if (index === tabIndex) {
+                header.classList.add('active');
+            } else {
+                header.classList.remove('active');
+            }
+        });
+        
+        // Update tab content
+        const stateItems = dom.statesItemsContainer.querySelectorAll('.state-item');
+        stateItems.forEach((item, index) => {
+            if (index === tabIndex) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+        
+        // Enable remove button when we have more than 1 state
+        dom.removeStateButton.disabled = stateItems.length <= 1;
+    };
+
+    const updateStateTabs = () => {
+        // Clear existing tab headers
+        dom.statesTabsHeaders.innerHTML = '';
+        
+        // Create tab headers for each state
+        const stateItems = dom.statesItemsContainer.querySelectorAll('.state-item');
+        stateItems.forEach((item, index) => {
+            const tabHeader = document.createElement('div');
+            tabHeader.className = 'state-tab-header';
+            tabHeader.textContent = `State #${index + 1}`;
+            tabHeader.dataset.tabIndex = index;
+            
+            if (index === activeStateTab) {
+                tabHeader.classList.add('active');
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+            
+            dom.statesTabsHeaders.appendChild(tabHeader);
+        });
+        
+        // Update remove button state
+        dom.removeStateButton.disabled = stateItems.length <= 1;
+        
+        // Update add button state - fix for button not being re-enabled after removing states
+        dom.addStateButton.disabled = stateItems.length >= 4;
+    };
+
+    const removeActiveState = () => {
+        const stateItems = dom.statesItemsContainer.querySelectorAll('.state-item');
+        if (stateItems.length <= 1) return; // Don't remove the last state
+        
+        // Remove the active state item
+        if (stateItems[activeStateTab]) {
+            stateItems[activeStateTab].remove();
+        }
+        
+        // Update activeStateTab if needed
+        if (activeStateTab >= stateItems.length - 1) {
+            activeStateTab = stateItems.length - 2; // Go to previous tab
+        }
+        
+        // Renumber states and update tabs
+        renumberStates();
+        updateStateTabs();
+        updateJsonPreview();
+        updateSaveButtonState();
     };
 
     // --- Dynamic Field Management (Properties, States, Spells) ---
@@ -840,6 +1030,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 initCreatureRewardDependencies(stateItem);
                 initGuardianFieldDependencies(stateItem); // Add this line
             });
+            // Setup tabs for existing states
+            updateStateTabs();
         }
     }
 
@@ -850,41 +1042,72 @@ document.addEventListener('DOMContentLoaded', () => {
         const template = dom.stateItemTemplate.content.cloneNode(true);
         const newStateItem = template.querySelector('.state-item');
 
-        // Update state number display
-        newStateItem.querySelector('.state-number').textContent = statesCount + 1;
-
-        // Set initial state (disabled checkboxes, empty inputs) - handled by template and CSS
-        // Set translated text for tooltips and buttons within the template
-        newStateItem.querySelectorAll('[data-translate-id]').forEach(el => {
-             const key = el.getAttribute('data-translate-id');
-             if (key === 'addSpell' && translations.addSpell) {
-                 el.textContent = translations.addSpell;
-             } else if (translations.helpTexts?.[key]) {
-                 el.textContent = translations.helpTexts[key];
-             }
-         });
-
-        // Add the first default (empty) spell structure
-        addSpellToState(newStateItem, false); // Add spell but don't update JSON yet
+        // Add spell tabs container to the new state
+        const spellsContainer = newStateItem.querySelector('.state-spells-container');
+        if (spellsContainer) {
+            const spellsTabsContainer = document.createElement('div');
+            spellsTabsContainer.className = 'spells-tabs-container';
+            
+            const spellsTabsHeaders = document.createElement('div');
+            
+            const spellsItemsContainer = newStateItem.querySelector('.state-spells-items');
+            if (spellsItemsContainer) {
+                spellsItemsContainer.className = 'state-spells-items spells-tabs-content';
+                
+                // Wrap existing content
+                const parentContainer = spellsItemsContainer.parentNode;
+                parentContainer.insertBefore(spellsTabsContainer, spellsItemsContainer);
+                spellsTabsContainer.appendChild(spellsTabsHeaders);
+                spellsTabsContainer.appendChild(spellsItemsContainer);
+            }
+        }
 
         dom.statesItemsContainer.appendChild(newStateItem);
 
-        // Disable add button if max reached
-        dom.addStateButton.disabled = dom.statesItemsContainer.children.length >= 4;
-
         // Initialize dependencies after adding to DOM
         initCreatureRewardDependencies(newStateItem);
-        initGuardianFieldDependencies(newStateItem); // Add this line
+        initGuardianFieldDependencies(newStateItem);
+
+        // Add the first default (empty) spell structure
+        const newSpell = addSpellToState(newStateItem, false); // Add spell but don't update JSON yet
+        
+        // Initialize active spell tab for this new state
+        const newStateIndex = dom.statesItemsContainer.children.length - 1;
+        activeSpellTabs[newStateIndex] = 0;
+        
+        // Update tab navigation and switch to the new tab
+        activeStateTab = newStateIndex; // Set active tab to the new state
+        updateStateTabs();
+        
+        // Make the first spell active
+        if (newSpell) {
+            newSpell.classList.add('active');
+        }
+        
+        // Initialize spell buttons state based on spells checkbox
+        const spellsCheckbox = newStateItem.querySelector('.state-spells-checkbox');
+        if (spellsCheckbox) {
+            updateSpellButtonsState(newStateItem, spellsCheckbox.checked);
+        }
+        
+        // Disable add button if max reached
+        dom.addStateButton.disabled = dom.statesItemsContainer.children.length >= 4;
 
         updateJsonPreview(); // Update JSON after adding
     };
 
     const renumberStates = () => {
-        const stateItems = dom.statesItemsContainer.querySelectorAll('.state-item');
-        stateItems.forEach((item, index) => {
-            item.querySelector('.state-number').textContent = index + 1;
-            // IDs don't strictly need renumbering if using relative selectors/delegation
+        // Update state tabs - now handled by updateStateTabs()
+        updateStateTabs();
+        
+        // Recreate activeSpellTabs object for the current states
+        const newActiveSpellTabs = {};
+        dom.statesItemsContainer.querySelectorAll('.state-item').forEach((stateItem, stateIndex) => {
+            newActiveSpellTabs[stateIndex] = activeSpellTabs[stateIndex] || 0;
+            updateSpellTabs(stateItem, stateIndex);
         });
+        activeSpellTabs = newActiveSpellTabs;
+        
         // Update JSON preview after renumbering if state order matters in JSON
         updateJsonPreview();
     };
@@ -935,11 +1158,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         spellsContainer.appendChild(newSpellItem);
 
-        // Disable the corresponding 'Add Spell' button if max is reached
-        const addSpellButton = stateItemElement.querySelector('.add-spell');
-        if (addSpellButton) {
-            addSpellButton.disabled = spellsContainer.querySelectorAll('.array-item').length >= 4;
-        }
+        // Update spell tabs
+        const stateIndex = Array.from(dom.statesItemsContainer.children).indexOf(stateItemElement);
+        updateSpellTabs(stateItemElement, stateIndex);
 
         // After adding the new spell item to the DOM, populate flags checkboxes
         if (translations && translations.spellFlags) {
@@ -975,9 +1196,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Update spell buttons state
+        const spellsCheckbox = stateItemElement.querySelector('.state-spells-checkbox');
+        if (spellsCheckbox && spellsCheckbox.checked) {
+            updateSpellButtonsState(stateItemElement, true);
+        }
+
         if (triggerJsonUpdate) {
             updateJsonPreview();
         }
+        
+        return newSpellItem;
     };
 
     // Function to hide/show remove buttons for properties based on count
@@ -1245,21 +1474,53 @@ document.addEventListener('DOMContentLoaded', () => {
                         const exp = getParsedInt('state-experience-container');
                          if (exp !== undefined && exp >= 0) stateObj.experience = exp;
                     }
+                    if (getCheckbox('state-artifactIds-checkbox').checked) {
+                        // Get values from individual artifact id fields
+                        const artifactId1Input = stateElement.querySelector('.state-artifactIds-1');
+                        const artifactId2Input = stateElement.querySelector('.state-artifactIds-2');
+                        const artifactId3Input = stateElement.querySelector('.state-artifactIds-3');
+                        const artifactId4Input = stateElement.querySelector('.state-artifactIds-4');
+                        
+                        // Create artifactIds array with only the entered values
+                        const artifactIds = [];
+                        
+                        // Helper function to add values only if they're valid and not default (-1)
+                        const addArtifactId = (input) => {
+                            if (input && input.value !== '') {
+                                const val = parseInt(input.value);
+                                if (!isNaN(val)) {
+                                    artifactIds.push(val);
+                                }
+                            }
+                        };
+                        
+                        // Process each field
+                        addArtifactId(artifactId1Input);
+                        addArtifactId(artifactId2Input);
+                        addArtifactId(artifactId3Input);
+                        addArtifactId(artifactId4Input);
+                        
+                        // Only add to state object if we have values
+                        if (artifactIds.length > 0) {
+                            stateObj.artifactIds = artifactIds;
+                        }
+                    }
+                    
                     if (getCheckbox('state-artifactTypeCounts-checkbox').checked) {
                         // Get values from individual artifact type fields
-                        const valuableInput = stateElement.querySelector('.state-artifactTypeCounts-valuable');
+                        const treasureInput = stateElement.querySelector('.state-artifactTypeCounts-treasure');
                         const minorInput = stateElement.querySelector('.state-artifactTypeCounts-minor');
                         const majorInput = stateElement.querySelector('.state-artifactTypeCounts-major');
                         const relicInput = stateElement.querySelector('.state-artifactTypeCounts-relic');
                         
-                        const valuable = valuableInput && valuableInput.value !== '' ? parseInt(valuableInput.value) : 0;
+                        const treasure = treasureInput && treasureInput.value !== '' ? parseInt(treasureInput.value) : 0;
                         const minor = minorInput && minorInput.value !== '' ? parseInt(minorInput.value) : 0;
                         const major = majorInput && majorInput.value !== '' ? parseInt(majorInput.value) : 0;
                         const relic = relicInput && relicInput.value !== '' ? parseInt(relicInput.value) : 0;
                         
                         // Create artifact type counts array
                         stateObj.artifactTypeCounts = [
-                            isNaN(valuable) ? 0 : valuable,
+                            isNaN(treasure) ? 0 : treasure,
                             isNaN(minor) ? 0 : minor,
                             isNaN(major) ? 0 : major,
                             isNaN(relic) ? 0 : relic
@@ -1788,6 +2049,155 @@ document.addEventListener('DOMContentLoaded', () => {
                     countInput.disabled = true;
                 }
             }
+        }
+    };
+
+    // --- Spells Tabs Management ---
+    const initializeSpellTabs = () => {
+        // Initialize spell tabs for all states
+        dom.statesItemsContainer.querySelectorAll('.state-item').forEach((stateItem, stateIndex) => {
+            // Initialize this state's spell tabs if not already in our tracking object
+            if (!activeSpellTabs[stateIndex]) {
+                activeSpellTabs[stateIndex] = 0;
+            }
+            updateSpellTabs(stateItem, stateIndex);
+        });
+    };
+
+    const handleSpellTabClick = (event) => {
+        const tabHeader = event.target.closest('.spell-tab-header');
+        if (!tabHeader) return;
+        
+        const tabIndex = parseInt(tabHeader.dataset.tabIndex);
+        if (isNaN(tabIndex)) return;
+        
+        const stateItem = tabHeader.closest('.state-item');
+        const stateIndex = Array.from(dom.statesItemsContainer.children).indexOf(stateItem);
+        
+        activateSpellTab(stateItem, stateIndex, tabIndex);
+    };
+
+    const activateSpellTab = (stateItem, stateIndex, spellIndex) => {
+        // Store active tab for this state
+        activeSpellTabs[stateIndex] = spellIndex;
+        
+        // Update tab headers
+        const tabHeaders = stateItem.querySelectorAll('.spell-tab-header');
+        tabHeaders.forEach((header, index) => {
+            if (index === spellIndex) {
+                header.classList.add('active');
+            } else {
+                header.classList.remove('active');
+            }
+        });
+        
+        // Update tab content
+        const spellItems = stateItem.querySelectorAll('.state-spells-items .array-item');
+        spellItems.forEach((item, index) => {
+            if (index === spellIndex) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+        
+        // Enable/disable remove button based on number of spells
+        const removeSpellBtn = stateItem.querySelector('.remove-spell-btn');
+        if (removeSpellBtn) {
+            removeSpellBtn.disabled = spellItems.length <= 1;
+        }
+    };
+
+    const updateSpellTabs = (stateItem, stateIndex) => {
+        // Clear existing tab headers
+        const headersContainer = stateItem.querySelector('.spells-tabs-headers');
+        if (!headersContainer) return;
+        
+        headersContainer.innerHTML = '';
+        
+        // Create tab headers for each spell
+        const spellItems = stateItem.querySelectorAll('.state-spells-items .array-item');
+        spellItems.forEach((item, index) => {
+            const tabHeader = document.createElement('div');
+            tabHeader.className = 'spell-tab-header';
+            tabHeader.textContent = `Spell #${index + 1}`;
+            tabHeader.dataset.tabIndex = index;
+            
+            if (index === activeSpellTabs[stateIndex]) {
+                tabHeader.classList.add('active');
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+            
+            headersContainer.appendChild(tabHeader);
+        });
+        
+        // Update remove button state
+        const removeSpellBtn = stateItem.querySelector('.remove-spell-btn');
+        if (removeSpellBtn) {
+            removeSpellBtn.disabled = spellItems.length <= 1;
+        }
+        
+        // Update add button state
+        const addSpellBtn = stateItem.querySelector('.add-spell-btn');
+        if (addSpellBtn) {
+            addSpellBtn.disabled = spellItems.length >= 4;
+        }
+    };
+
+    const handleAddSpellBtnClick = (event) => {
+        const addSpellBtn = event.target.closest('.add-spell-btn');
+        if (!addSpellBtn) return;
+        
+        const stateItem = addSpellBtn.closest('.state-item');
+        if (!stateItem) return;
+        
+        const stateIndex = Array.from(dom.statesItemsContainer.children).indexOf(stateItem);
+        const spellsContainer = stateItem.querySelector('.state-spells-items');
+        
+        if (spellsContainer && spellsContainer.children.length < 4) {
+            addSpellToState(stateItem);
+            
+            // Set active tab to the new spell
+            const newSpellIndex = spellsContainer.children.length - 1;
+            activateSpellTab(stateItem, stateIndex, newSpellIndex);
+            
+            // Update JSON
+            updateJsonPreview();
+        }
+    };
+
+    const handleRemoveSpellBtnClick = (event) => {
+        const removeSpellBtn = event.target.closest('.remove-spell-btn');
+        if (!removeSpellBtn) return;
+        
+        const stateItem = removeSpellBtn.closest('.state-item');
+        if (!stateItem) return;
+        
+        const stateIndex = Array.from(dom.statesItemsContainer.children).indexOf(stateItem);
+        const spellsContainer = stateItem.querySelector('.state-spells-items');
+        const spellItems = spellsContainer?.querySelectorAll('.array-item');
+        
+        if (spellItems && spellItems.length > 1) {
+            // Get current active spell index
+            const activeIndex = activeSpellTabs[stateIndex] || 0;
+            
+            // Remove the active spell
+            if (spellItems[activeIndex]) {
+                spellItems[activeIndex].remove();
+            }
+            
+            // Adjust active index if needed
+            if (activeIndex >= spellItems.length - 1) {
+                activeSpellTabs[stateIndex] = spellItems.length - 2;
+            }
+            
+            // Update tabs
+            updateSpellTabs(stateItem, stateIndex);
+            
+            // Update JSON
+            updateJsonPreview();
         }
     };
 
