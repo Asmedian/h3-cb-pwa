@@ -8,6 +8,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let deferredPrompt; // For PWA installation
     let activeStateTab = 0; // Track which state tab is active
     let activeSpellTabs = {}; // Track active spell tab for each state
+    let currentGridMode = 'attackers'; // For grid selection mode
+    const defendersList = [];
+    const attackersList = [];
+    const MAX_GRID_SELECTIONS = 7;
+    const borderCells = [
+        "00", "17", "34", "51", "68", "85", "102", "119", "136", "153", "170", 
+        "16", "33", "50", "67", "84", "101", "118", "135", "152", "169", "186"
+    ];
+    
+    // Define default cell positions for different isBank values
+    const DEFAULT_BANK_TRUE_ATTACKERS = ['57', '61', '90', '93', '96', '125', '129'];
+    const DEFAULT_BANK_TRUE_DEFENDERS = ['15', '185', '172', '02', '100', '87', '08'];
+    const DEFAULT_BANK_FALSE_ATTACKERS = ['01', '35', '69', '86', '103', '137', '171'];
+    const DEFAULT_BANK_FALSE_DEFENDERS = ['15', '49', '83', '100', '117', '151', '185'];
+    
+    // Track if we're using default values
+    let usingDefaultAttackers = true;
+    let usingDefaultDefenders = true;
 
     // --- DOM Element References ---
     const dom = {
@@ -52,7 +70,31 @@ document.addEventListener('DOMContentLoaded', () => {
         inputsForJsonUpdate: () => document.querySelectorAll('input[type="text"], input[type="number"], input[type="checkbox"], select, textarea'),
         // States Tab Elements
         statesTabsHeaders: document.getElementById('states-tabs-headers'),
-        removeStateButton: document.getElementById('remove-state-btn')
+        removeStateButton: document.getElementById('remove-state-btn'),
+        // Troop Placement Elements
+        troopPlacementCheckbox: document.getElementById('troopPlacement-checkbox'),
+        troopPlacementContainer: document.getElementById('troopPlacement-container'),
+        isBankSelect: document.getElementById('isBank'),
+        attackersInput: document.getElementById('attackers'),
+        defendersInput: document.getElementById('defenders'),
+        customizeGridBtn: document.getElementById('customize-grid-btn'),
+        // Grid Popup Elements
+        gridPopup: document.getElementById('grid-popup'),
+        gridPopupTitle: document.getElementById('grid-popup-title'),
+        closeGridPopup: document.getElementById('close-grid-popup'),
+        applyGrid: document.getElementById('apply-grid'),
+        cancelGrid: document.getElementById('cancel-grid'),
+        defendersButton: document.getElementById('defenders-button'),
+        attackersButton: document.getElementById('attackers-button'),
+        currentMode: document.getElementById('current-mode'),
+        defendersCells: document.getElementById('defenders-cells'),
+        defendersCount: document.getElementById('defenders-count'),
+        attackersCells: document.getElementById('attackers-cells'),
+        attackersCount: document.getElementById('attackers-count'),
+        hexGrid: document.getElementById('hex-grid'),
+        disabledCellsToggle: document.getElementById('disabled-cells-toggle'),
+        blockedPreview: document.querySelector('.blocked-preview'),
+        disabledCellsLabel: document.getElementById('disabled-cells-label')
     };
 
     // --- Initialization ---
@@ -60,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadThemePreference();
         setupEventListeners();
         loadLanguage(currentLang); // Load default language and update UI
-        generateManifest();
         setupPWA();
         addInitialState(); // Add the first state block
         updatePropertyRemoveButtons(); // Initialize property remove buttons visibility
@@ -70,6 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePropertyWarnings(); // Initial check for property warnings
         initializeSpellTabs(); // Initialize spell tabs for any existing states
         initializeButtonStates(); // Initialize button states based on checkboxes
+        initGridPopup(); // Initialize grid popup functionality
+        initializeDefaultTroopPlacements(); // Initialize default troop placements
+        updateCustomDefWarnings(); // Initialize customDef warnings
     };
 
     // --- Localization ---
@@ -178,6 +222,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTooltipContent('help-text', 'text');
         updateTooltipContent('help-textVisit', 'textVisit');
         updateTooltipContent('help-states', 'states');
+        updateTooltipContent('help-troopPlacement', 'troopPlacement');
+        updateTooltipContent('help-isBank', 'isBank');
+        updateTooltipContent('help-attackers', 'attackers');
+        updateTooltipContent('help-defenders', 'defenders');
 
         // Update tooltips within templates (these are accessed when cloning)
         // The data-translate-id attribute will be used when cloning templates
@@ -271,6 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.remove-spell-btn').forEach(button => {
             setText(button, translations.removeSpell || 'Remove Spell');
         });
+
+        // Update grid popup translations
+        updateGridTranslations();
     };
 
     // --- Theming ---
@@ -281,6 +332,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update theme-color meta tags
         document.querySelector('meta[name="theme-color"][media="(prefers-color-scheme: dark)"]').content = isDarkTheme ? '#1f2937' : '#f3f4f6';
         document.querySelector('meta[name="theme-color"][media="(prefers-color-scheme: light)"]').content = isDarkTheme ? '#1f2937' : '#f3f4f6';
+        // Update manifest theme color
+        updateManifestThemeColor();
         // Update button text (requires translations to be loaded)
         if (translations && translations.darkTheme && translations.lightTheme) {
             dom.themeToggleButton.textContent = isDarkTheme ? translations.darkTheme : translations.lightTheme;
@@ -701,6 +754,65 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.statesItemsContainer.addEventListener('click', handleSpellTabClick);
         dom.statesItemsContainer.addEventListener('click', handleAddSpellBtnClick);
         dom.statesItemsContainer.addEventListener('click', handleRemoveSpellBtnClick);
+
+        // Grid popup event listeners
+        dom.customizeGridBtn.addEventListener('click', openGridPopup);
+        dom.closeGridPopup.addEventListener('click', closeGridPopup);
+        dom.applyGrid.addEventListener('click', applyGridSelections);
+        dom.cancelGrid.addEventListener('click', closeGridPopup);
+        dom.defendersButton.addEventListener('click', () => switchGridMode('defenders'));
+        dom.attackersButton.addEventListener('click', () => switchGridMode('attackers'));
+        dom.disabledCellsToggle.addEventListener('change', toggleDisabledCellsStyle);
+        
+        // Close grid popup when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === dom.gridPopup) {
+                closeGridPopup();
+            }
+        });
+
+        // Add event listener for isBank select changes
+        dom.isBankSelect.addEventListener('change', () => {
+            // Always reset to defaults when isBank changes
+            usingDefaultAttackers = true;
+            usingDefaultDefenders = true;
+            
+            // Clear existing lists
+            attackersList.length = 0;
+            defendersList.length = 0;
+            
+            // Get new default values based on isBank
+            const isBank = dom.isBankSelect.value === 'true';
+            attackersList.push(...getDefaultAttackers(isBank));
+            defendersList.push(...getDefaultDefenders(isBank));
+            
+            // Update UI if grid popup is open
+            if (dom.gridPopup.style.display === 'block') {
+                refreshCellDisplay();
+                updateGridSelectionDisplay();
+                updateGridUiBasedOnIsBank(isBank);
+            }
+            
+            // Update input fields and JSON
+            updateTroopPlacementInputs();
+            updateJsonPreview();
+        });
+
+        // Add listener for customDef checkbox changes to trigger warnings check
+        if (editorContainer) {
+            editorContainer.addEventListener('change', (event) => {
+                if (event.target.classList.contains('state-customDef-checkbox')) {
+                    updateCustomDefWarnings();
+                }
+            });
+            
+            // Add listener for customDef input changes
+            editorContainer.addEventListener('input', (event) => {
+                if (event.target.classList.contains('state-customDef-input')) {
+                    updateCustomDefWarnings();
+                }
+            });
+        }
     };
 
     // Event Handlers
@@ -729,6 +841,11 @@ document.addEventListener('DOMContentLoaded', () => {
          // Validate .wav files on blur
          if (target === dom.soundEnterInput || target === dom.soundLoopInput) {
              validateWavFile(target);
+         }
+         // Validate .def files on blur
+         if (target.classList.contains('state-customDef-input')) {
+             validateDefFile(target);
+             updateCustomDefWarnings(); // Check consistency across states
          }
          // Validate property full content on blur
          if (target.classList.contains('property-input')) {
@@ -845,6 +962,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Handle state buttons when states checkbox is toggled
         if (checkbox.id === 'states-checkbox') {
             updateStateButtonsState(isChecked);
+            // Check customDef warnings when states are toggled
+            if (isChecked) {
+                updateCustomDefWarnings();
+            }
         }
 
         // Handle spell buttons when spells checkbox is toggled
@@ -853,6 +974,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (stateItem) {
                 updateSpellButtonsState(stateItem, isChecked);
             }
+        }
+
+        // Handle customDef checkboxes - update warnings
+        if (checkbox.classList.contains('state-customDef-checkbox')) {
+            updateCustomDefWarnings();
         }
 
         updateJsonPreview();
@@ -981,6 +1107,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const stateItems = dom.statesItemsContainer.querySelectorAll('.state-item');
         if (stateItems.length <= 1) return; // Don't remove the last state
         
+        // Check if any state has customDef enabled and collect that info before removal
+        const hasCustomDef = Array.from(stateItems).some(item => {
+            const checkbox = item.querySelector('.state-customDef-checkbox');
+            return checkbox && checkbox.checked;
+        });
+        
         // Remove the active state item
         if (stateItems[activeStateTab]) {
             stateItems[activeStateTab].remove();
@@ -994,6 +1126,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Renumber states and update tabs
         renumberStates();
         updateStateTabs();
+        
+        // Check customDef consistency after removal and before JSON update
+        updateCustomDefWarnings();
+        
+        // Update JSON preview and save button state
         updateJsonPreview();
         updateSaveButtonState();
     };
@@ -1038,6 +1175,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const addState = () => {
         const statesCount = dom.statesItemsContainer.children.length;
         if (statesCount >= 4) return; // Max 4 states
+
+        // Check existing states for customDef before adding a new state
+        const hasExistingCustomDef = Array.from(dom.statesItemsContainer.querySelectorAll('.state-item')).some(item => {
+            const checkbox = item.querySelector('.state-customDef-checkbox');
+            return checkbox && checkbox.checked;
+        });
 
         const template = dom.stateItemTemplate.content.cloneNode(true);
         const newStateItem = template.querySelector('.state-item');
@@ -1089,11 +1232,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (spellsCheckbox) {
             updateSpellButtonsState(newStateItem, spellsCheckbox.checked);
         }
+
+        // If existing states have customDef, we need to auto-check customDef in the new state
+        // to maintain consistency and avoid warnings
+        if (hasExistingCustomDef) {
+            const customDefCheckbox = newStateItem.querySelector('.state-customDef-checkbox');
+            if (customDefCheckbox) {
+                customDefCheckbox.checked = true;
+                // Also enable the container
+                const customDefContainer = newStateItem.querySelector('.state-customDef-container');
+                if (customDefContainer) {
+                    customDefContainer.classList.remove('disabled');
+                }
+            }
+        }
         
         // Disable add button if max reached
         dom.addStateButton.disabled = dom.statesItemsContainer.children.length >= 4;
 
         updateJsonPreview(); // Update JSON after adding
+        updateCustomDefWarnings(); // Check customDef consistency and show appropriate warnings
     };
 
     const renumberStates = () => {
@@ -1377,6 +1535,86 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Add new validation function for DEF files
+    const validateDefFile = (inputElement) => {
+        const value = inputElement.value.trim();
+        if (value && !value.toLowerCase().endsWith('.def')) {
+            // Append .def if missing, but allow empty input
+            inputElement.value = value + '.def';
+            updateJsonPreview(); // Update JSON if value changed
+        }
+    };
+
+    const updateCustomDefWarnings = () => {
+        // First check if any state has a customDef
+        const stateItems = dom.statesItemsContainer.querySelectorAll('.state-item');
+        let hasAnyCustomDef = false;
+        let areAllCustomDefsFilled = true;
+        
+        // Get all customDef values
+        const customDefValues = Array.from(stateItems).map(stateItem => {
+            const customDefInput = stateItem.querySelector('.state-customDef-input');
+            const checkbox = stateItem.querySelector('.state-customDef-checkbox');
+            
+            // Only consider the value if the checkbox is checked
+            if (checkbox && checkbox.checked) {
+                const value = customDefInput?.value.trim() || '';
+                if (value) {
+                    hasAnyCustomDef = true;
+                } else {
+                    areAllCustomDefsFilled = false;
+                }
+                return value;
+            }
+            // If checkbox isn't checked, we don't count this in our consistency check
+            return null;
+        }).filter(value => value !== null);
+        
+        // Show warnings if at least one state has customDef
+        if (hasAnyCustomDef && stateItems.length > 1) {
+            // Add warning to all states if any has customDef
+            stateItems.forEach((stateItem) => {
+                const customDefInput = stateItem.querySelector('.state-customDef-input');
+                const customDefContainer = stateItem.querySelector('.state-customDef-container');
+                const checkbox = stateItem.querySelector('.state-customDef-checkbox');
+                
+                if (!customDefContainer) return;
+                
+                let warningIcon = customDefContainer.querySelector('.customDef-warning');
+                
+                // If any state has customDef, all states must have it filled
+                if (!checkbox || !checkbox.checked || (customDefInput && !customDefInput.value.trim())) {
+                    // Need to add or show warning
+                    if (!warningIcon) {
+                        warningIcon = document.createElement('span');
+                        warningIcon.className = 'customDef-warning property-warning'; // Reuse property-warning style
+                        warningIcon.innerHTML = '⚠️';
+                        warningIcon.title = translations.customDefWarning || 'All states must have a customDef if any state has one';
+                        customDefContainer.insertBefore(warningIcon, customDefInput);
+                    } else {
+                        warningIcon.style.display = 'inline-flex';
+                    }
+                } else if (warningIcon) {
+                    // Hide warning if value exists and checkbox checked and all states are filled
+                    if (areAllCustomDefsFilled && 
+                        customDefValues.length === stateItems.length) {
+                        warningIcon.style.display = 'none';
+                    } else {
+                        warningIcon.style.display = 'inline-flex';
+                    }
+                }
+            });
+        } else {
+            // No warnings needed, hide any existing ones
+            document.querySelectorAll('.customDef-warning').forEach(warning => {
+                warning.style.display = 'none';
+            });
+        }
+        
+        // Force a JSON update to reflect warning changes immediately
+        updateJsonPreview();
+    };
+
     // --- JSON Handling ---
     const buildJsonObject = () => {
         const innerJsonObj = {};
@@ -1425,6 +1663,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const stateItems = dom.statesItemsContainer.querySelectorAll('.state-item');
             if (stateItems.length > 0) {
                 innerJsonObj.states = [];
+
+                // Check if any customDef fields have warnings across all states
+                const hasAnyCustomDefWarning = Array.from(stateItems).some(state => {
+                    const warningIcon = state.querySelector('.customDef-warning');
+                    return warningIcon && warningIcon.style.display !== 'none';
+                });
 
                 stateItems.forEach(stateElement => {
                     const stateObj = {};
@@ -1697,6 +1941,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
 
+                    // Handle customDef - only add if no warnings in ANY state
+                    if (getCheckbox('state-customDef-checkbox').checked && !hasAnyCustomDefWarning) {
+                        const customDef = getInputValue('state-customDef-container');
+                        if (customDef) {
+                            stateObj.customDef = customDef;
+                        }
+                    }
+
                     // Only add the state object if it contains any properties
                     if (Object.keys(stateObj).length > 0) {
                         innerJsonObj.states.push(stateObj);
@@ -1710,6 +1962,59 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // --- Optional: Troop Placement ---
+        if (dom.troopPlacementCheckbox.checked) {
+            const isBank = dom.isBankSelect.value === 'true';
+            
+            // Parse the arrays from inputs only if not using defaults
+            let attackers = [];
+            let defenders = [];
+            
+            try {
+                // Only attempt to parse if not using defaults and values look like arrays
+                if (!usingDefaultAttackers && dom.attackersInput.value && 
+                    dom.attackersInput.value !== (translations.default || "Default")) {
+                    const attackersValue = dom.attackersInput.value.trim();
+                    if (attackersValue.startsWith('[') && attackersValue.endsWith(']')) {
+                        const parsedAttackers = JSON.parse(attackersValue);
+                        // Ensure it's an array with valid content
+                        if (Array.isArray(parsedAttackers) && 
+                            parsedAttackers.every(item => typeof item === 'string' || typeof item === 'number')) {
+                            attackers = parsedAttackers;
+                        }
+                    }
+                }
+                
+                if (!usingDefaultDefenders && dom.defendersInput.value && 
+                    dom.defendersInput.value !== (translations.default || "Default")) {
+                    const defendersValue = dom.defendersInput.value.trim();
+                    if (defendersValue.startsWith('[') && defendersValue.endsWith(']')) {
+                        const parsedDefenders = JSON.parse(defendersValue);
+                        // Ensure it's an array with valid content
+                        if (Array.isArray(parsedDefenders) && 
+                            parsedDefenders.every(item => typeof item === 'string' || typeof item === 'number')) {
+                            defenders = parsedDefenders;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Error parsing troop placement data:', e);
+            }
+            
+            // Add troop placement data to JSON
+            innerJsonObj.troopPlacement = {
+                isBank: isBank
+            };
+            
+            // Only add custom selections to JSON, not defaults
+            if (!usingDefaultAttackers && Array.isArray(attackers) && attackers.length > 0) {
+                innerJsonObj.troopPlacement.attackers = attackers;
+            }
+            
+            if (!usingDefaultDefenders && Array.isArray(defenders) && defenders.length > 0) {
+                innerJsonObj.troopPlacement.defenders = defenders;
+            }
+        }
 
         // --- Wrap in Final Structure ---
         const subtype = dom.objectSubtypeInput.value || "13"; // Default subtype if empty
@@ -1766,15 +2071,12 @@ document.addEventListener('DOMContentLoaded', () => {
                      const writable = await fileHandle.createWritable();
                      await writable.write(blob);
                      await writable.close();
-                     console.log('File saved successfully using File System Access API.');
                  }).catch(err => {
                      // Handle errors, including user cancellation (AbortError)
                      if (err.name !== 'AbortError') {
                          console.error('Error saving file with File System Access API:', err);
                          // Fallback to legacy method if specific errors occur?
                          saveFileLegacy(blob, filename);
-                     } else {
-                         console.log('File save cancelled by user.');
                      }
                  });
              } else {
@@ -1790,7 +2092,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Legacy file saving method
     const saveFileLegacy = (blob, filename) => {
-         console.warn("Using legacy file save method.");
          const url = URL.createObjectURL(blob);
          const a = document.createElement('a');
          a.href = url;
@@ -1799,81 +2100,94 @@ document.addEventListener('DOMContentLoaded', () => {
          a.click();
          document.body.removeChild(a);
          URL.revokeObjectURL(url); // Clean up
-         console.log('File download initiated using legacy method.');
     };
 
-
     // --- PWA Functionality ---
-    const generateManifest = () => {
-        // Generate manifest dynamically to easily update theme colors
-        const manifestData = {
-            name: "Heroes 3: ERA Objects Editor",
-            short_name: "Creature Bank Editor",
-            description: "JSON editor for Heroes 3: ERA creature banks",
-            start_url: ".", // Relative to HTML file location
-            display: "standalone",
-            background_color: "#1f2937", // Default dark bg
-            theme_color: isDarkTheme ? "#1f2937" : "#f3f4f6", // Match current theme
-            icons: [
-                { src: "./icon-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
-                { src: "./icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
-                { src: "./icon-64.png", sizes: "64x64", type: "image/png", purpose: "any" } // Optional smaller icon
-            ]
-        };
-
-        const manifestString = JSON.stringify(manifestData);
-        const manifestBlob = new Blob([manifestString], { type: 'application/json' });
-        const manifestURL = URL.createObjectURL(manifestBlob);
-        document.getElementById('manifestPlaceholder').href = manifestURL;
-        // Note: Revoking this URL might cause issues if the browser needs it later. Monitor behavior.
-        // URL.revokeObjectURL(manifestURL); // Potentially problematic
+    const updateManifestThemeColor = async () => {
+        try {
+            // Try to fetch the manifest file
+            const manifestResponse = await fetch('./manifest.json');
+            if (!manifestResponse.ok) {
+                console.warn('Could not fetch manifest.json for theme update');
+                return;
+            }
+            
+            const manifest = await manifestResponse.json();
+            
+            // Update theme color in manifest (this won't actually modify the file,
+            // but it's good to have this function for when server-side updates are implemented)
+            manifest.theme_color = isDarkTheme ? "#1f2937" : "#f3f4f6";
+            
+            // Log that we would update the manifest (in a real implementation)
+            // console.log('Manifest theme color would be updated to:', manifest.theme_color);
+            
+        } catch (error) {
+            console.error('Error updating manifest theme color:', error);
+        }
     };
 
     const setupPWA = () => {
+        // Hide button initially (ensures it's hidden even if CSS doesn't load)
+        if (dom.installPwaButton) {
+            dom.installPwaButton.style.display = 'none';
+        }
+
+        // Register service worker if supported
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('./js/sw.js');
+                    console.log('ServiceWorker registration successful with scope:', registration.scope);
+                } catch (error) {
+                    console.error('ServiceWorker registration failed:', error);
+                }
+            });
+        }
+
         window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); // Prevent the default mini-infobar
+            // Store the event for later use
             deferredPrompt = e;
-            dom.installPwaButton.style.display = 'block'; // Show our custom button
-            console.log('`beforeinstallprompt` event was fired.');
+            // Make the install button visible
+            if (dom.installPwaButton) {
+                dom.installPwaButton.style.display = 'block';
+            }
         });
 
-        // Optional: Track installation outcome
+        // Track installation
         window.addEventListener('appinstalled', () => {
-            console.log('PWA was installed');
-            dom.installPwaButton.style.display = 'none'; // Hide button after install
+            // Hide the install button after successful installation
+            if (dom.installPwaButton) {
+                dom.installPwaButton.style.display = 'none';
+            }
+            // Clear the deferred prompt
             deferredPrompt = null;
         });
 
-        // Basic Service Worker Registration (if you create a sw.js file)
-        /*
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then((reg) => console.log('Service worker registered.', reg))
-                .catch((err) => console.error('Service worker registration failed:', err));
-        }
-        */
-       console.log('PWA setup complete. No service worker registered in this version.');
+        // Update manifest theme color
+        updateManifestThemeColor();
     };
 
     const handleInstallPrompt = async () => {
         if (!deferredPrompt) {
-            console.log('Install prompt not available.');
             return;
         }
-        dom.installPwaButton.disabled = true; // Prevent double clicks
+
+        // Disable the button during the prompt
+        dom.installPwaButton.disabled = true;
 
         try {
-            deferredPrompt.prompt(); // Show the browser's install dialog
+            // Show the prompt
+            deferredPrompt.prompt();
+            
+            // Wait for the user to respond to the prompt
             const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User response to the install prompt: ${outcome}`);
-            if (outcome === 'accepted') {
-                dom.installPwaButton.style.display = 'none'; // Hide button
-            }
-            deferredPrompt = null; // Prompt can only be used once
         } catch (error) {
             console.error('Error showing install prompt:', error);
         } finally {
-             dom.installPwaButton.disabled = false; // Re-enable button if prompt failed or was dismissed
+            // Clear the deferredPrompt variable since it can only be used once
+            deferredPrompt = null;
+            // Re-enable the button
+            dom.installPwaButton.disabled = false;
         }
     };
 
@@ -2199,6 +2513,479 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update JSON
             updateJsonPreview();
         }
+    };
+
+    // --- Hexagonal Grid Functions ---
+    
+    // Initialize grid popup
+    const initGridPopup = () => {
+        // Set translated text for the popup
+        updateGridTranslations();
+        
+        // Initialize the toggle state and preview
+        if (dom.disabledCellsToggle.checked) {
+            dom.blockedPreview.classList.add('styled');
+        } else {
+            dom.blockedPreview.classList.remove('styled');
+        }
+    };
+    
+    // Update grid popup translations
+    const updateGridTranslations = () => {
+        if (translations) {
+            dom.gridPopupTitle.textContent = translations.customizeGrid || 'Customize Troop Placement';
+            dom.applyGrid.textContent = translations.apply || 'Apply';
+            dom.cancelGrid.textContent = translations.cancel || 'Cancel';
+            dom.defendersButton.textContent = translations.defenders || 'Defenders';
+            dom.attackersButton.textContent = translations.attackers || 'Attackers';
+            dom.currentMode.textContent = currentGridMode === 'defenders' ? 
+                translations.defenders || 'Defenders' : 
+                translations.attackers || 'Attackers';
+            dom.disabledCellsLabel.textContent = translations.disabledCellsStyle || 'Disabled cells style';
+                
+            // Update "Default" text in grid info using translation
+            if (usingDefaultDefenders) {
+                dom.defendersCells.textContent = translations.default || "Default";
+            }
+            if (usingDefaultAttackers) {
+                dom.attackersCells.textContent = translations.default || "Default";
+            }
+        }
+    };
+    
+    // Create hexagonal grid
+    const createHexagonalGrid = () => {
+        dom.hexGrid.innerHTML = '';
+        
+        const rows = 11;
+        const cols = 17;
+        let cellCount = 0;
+
+        for (let row = 0; row < rows; row++) {
+            const rowDiv = document.createElement('div');
+            rowDiv.classList.add('grid-row');
+            
+            for (let col = 0; col < cols; col++) {
+                const cell = document.createElement('div');
+                const cellContent = document.createElement('div');
+                const cellNum = cellCount.toString().padStart(2, '0');
+                
+                cell.classList.add('hex-cell');
+                cellContent.classList.add('hex-content');
+                cell.dataset.id = cellNum;
+                cellContent.textContent = cellNum;
+                
+                // Mark border cells
+                if (borderCells.includes(cellNum)) {
+                    cell.classList.add('border-cell');
+                } else {
+                    cell.addEventListener('click', () => toggleCellSelection(cell));
+                }
+                
+                cell.appendChild(cellContent);
+                rowDiv.appendChild(cell);
+                cellCount++;
+            }
+            
+            dom.hexGrid.appendChild(rowDiv);
+        }
+        
+        // Apply initial cell highlights
+        refreshCellDisplay();
+    };
+    
+    // Function to get adjacent cell IDs in hexagonal grid
+    const getAdjacentCells = (cellId) => {
+        // Convert cell ID to row and column
+        const cellNum = parseInt(cellId);
+        const totalCols = 17; // Columns per row
+        const row = Math.floor(cellNum / totalCols);
+        const col = cellNum % totalCols;
+        
+        // Determine if this is an even or odd row (different offsets)
+        const isOddRow = row % 2 === 1;
+        
+        let rightCell = null;
+        let leftCell = null;
+        let farRightCell = null;  // Add cell that is two steps to the right
+        let farLeftCell = null;   // Add cell that is two steps to the left
+        
+        // Calculate right adjacent cell
+        if (col < totalCols - 1) {
+            rightCell = (row * totalCols + col + 1).toString().padStart(2, '0');
+            
+            // Calculate far right cell (two steps away)
+            if (col < totalCols - 2) {
+                farRightCell = (row * totalCols + col + 2).toString().padStart(2, '0');
+            }
+        }
+        
+        // Calculate left adjacent cell
+        if (col > 0) {
+            leftCell = (row * totalCols + col - 1).toString().padStart(2, '0');
+            
+            // Calculate far left cell (two steps away)
+            if (col > 1) {
+                farLeftCell = (row * totalCols + col - 2).toString().padStart(2, '0');
+            }
+        }
+        
+        return { leftCell, rightCell, farLeftCell, farRightCell };
+    };
+
+    // Function to update blocked cells based on current selections
+    const updateBlockedCells = () => {
+        // First, remove all blocked classes
+        document.querySelectorAll('.hex-cell.blocked').forEach(cell => {
+            cell.classList.remove('blocked');
+        });
+        
+        // Then block cells to the right of attackers
+        document.querySelectorAll('.hex-cell.attackers').forEach(cell => {
+            const cellId = cell.dataset.id;
+            const { rightCell, farRightCell } = getAdjacentCells(cellId);
+            
+            if (rightCell) {
+                const rightCellElement = document.querySelector(`.hex-cell[data-id="${rightCell}"]`);
+                if (rightCellElement && !rightCellElement.classList.contains('border-cell') && 
+                    !rightCellElement.classList.contains('attackers') && 
+                    !rightCellElement.classList.contains('defenders')) {
+                    rightCellElement.classList.add('blocked');
+                }
+            }
+            
+            // Block cell that is two steps to the right (for defenders)
+            if (farRightCell) {
+                const farRightCellElement = document.querySelector(`.hex-cell[data-id="${farRightCell}"]`);
+                if (farRightCellElement && !farRightCellElement.classList.contains('border-cell') && 
+                    !farRightCellElement.classList.contains('attackers') && 
+                    currentGridMode === 'defenders') { // Only block if trying to place defenders
+                    farRightCellElement.classList.add('blocked');
+                }
+            }
+        });
+        
+        // Block cells to the left of defenders
+        document.querySelectorAll('.hex-cell.defenders').forEach(cell => {
+            const cellId = cell.dataset.id;
+            const { leftCell, farLeftCell } = getAdjacentCells(cellId);
+            
+            if (leftCell) {
+                const leftCellElement = document.querySelector(`.hex-cell[data-id="${leftCell}"]`);
+                if (leftCellElement && !leftCellElement.classList.contains('border-cell') && 
+                    !leftCellElement.classList.contains('attackers') && 
+                    !leftCellElement.classList.contains('defenders')) {
+                    leftCellElement.classList.add('blocked');
+                }
+            }
+            
+            // Block cell that is two steps to the left (for attackers)
+            if (farLeftCell) {
+                const farLeftCellElement = document.querySelector(`.hex-cell[data-id="${farLeftCell}"]`);
+                if (farLeftCellElement && !farLeftCellElement.classList.contains('border-cell') && 
+                    !farLeftCellElement.classList.contains('defenders') && 
+                    currentGridMode === 'attackers') { // Only block if trying to place attackers
+                    farLeftCellElement.classList.add('blocked');
+                }
+            }
+        });
+        
+        // Apply styling based on toggle
+        toggleDisabledCellsStyle();
+    };
+
+    // Toggle cell selection with defaults handling
+    const toggleCellSelection = (cell) => {
+        const cellId = cell.dataset.id;
+        const currentArray = currentGridMode === 'defenders' ? defendersList : attackersList;
+        const index = currentArray.indexOf(cellId);
+        
+        // Check if the cell is already selected in the other array
+        const otherArray = currentGridMode === 'defenders' ? attackersList : defendersList;
+        if (otherArray.includes(cellId)) {
+            return; // Can't select a cell that's already in the other array
+        }
+        
+        // Check if the cell is blocked
+        if (cell.classList.contains('blocked')) {
+            return; // Can't select a blocked cell
+        }
+        
+        // If using defaults, clear them on first user selection
+        if ((currentGridMode === 'defenders' && usingDefaultDefenders) || 
+            (currentGridMode === 'attackers' && usingDefaultAttackers)) {
+            
+            // Clear the current array
+            currentArray.length = 0;
+            
+            // Update the flag
+            if (currentGridMode === 'defenders') {
+                usingDefaultDefenders = false;
+            } else {
+                usingDefaultAttackers = false;
+            }
+            
+            // Clear all highlighted cells of this type
+            document.querySelectorAll(`.hex-cell.${currentGridMode}`).forEach(cell => {
+                cell.classList.remove(currentGridMode);
+                cell.classList.remove('default');
+            });
+        }
+        
+        if (index === -1) {
+            // Cell is not selected, add it if we haven't reached the maximum
+            if (currentArray.length < MAX_GRID_SELECTIONS) {
+                currentArray.push(cellId);
+                cell.classList.add(currentGridMode);
+                
+                // Update blocked cells after selection
+                updateBlockedCells();
+            }
+        } else {
+            // Cell is already selected, remove it
+            currentArray.splice(index, 1);
+            cell.classList.remove(currentGridMode);
+            
+            // Update blocked cells after deselection
+            updateBlockedCells();
+            
+            // If this was the last custom cell, revert to defaults
+            if (currentArray.length === 0) {
+                if (currentGridMode === 'defenders') {
+                    usingDefaultDefenders = true;
+                    const isBank = dom.isBankSelect.value === 'true';
+                    defendersList.push(...getDefaultDefenders(isBank));
+                } else {
+                    usingDefaultAttackers = true;
+                    const isBank = dom.isBankSelect.value === 'true';
+                    attackersList.push(...getDefaultAttackers(isBank));
+                }
+                refreshCellDisplay();
+                updateBlockedCells(); // Update blocked cells after reverting to defaults
+            }
+        }
+        
+        // Update display
+        updateGridSelectionDisplay();
+    };
+
+    // Update the display of selected cells with translation
+    const updateGridSelectionDisplay = () => {
+        dom.defendersCells.textContent = usingDefaultDefenders ? 
+            (translations.default || "Default") : 
+            JSON.stringify(defendersList);
+        dom.defendersCount.textContent = `${defendersList.length}/${MAX_GRID_SELECTIONS}`;
+        
+        dom.attackersCells.textContent = usingDefaultAttackers ? 
+            (translations.default || "Default") : 
+            JSON.stringify(attackersList);
+        dom.attackersCount.textContent = `${attackersList.length}/${MAX_GRID_SELECTIONS}`;
+    };
+    
+    // Switch between defenders and attackers modes
+    const switchGridMode = (mode) => {
+        currentGridMode = mode;
+        dom.currentMode.textContent = mode === 'defenders' ? 
+            translations.defenders || 'Defenders' : 
+            translations.attackers || 'Attackers';
+        
+        // Update button styles
+        if (mode === 'defenders') {
+            dom.defendersButton.classList.add('active');
+            dom.attackersButton.classList.remove('active');
+        } else {
+            dom.defendersButton.classList.remove('active');
+            dom.attackersButton.classList.add('active');
+        }
+        
+        // Update blocked cells when switching modes
+        updateBlockedCells();
+    };
+    
+    // Apply grid selections to the form inputs
+    const applyGridSelections = () => {
+        dom.attackersInput.value = usingDefaultAttackers ? "Default" : JSON.stringify(attackersList);
+        dom.defendersInput.value = usingDefaultDefenders ? "Default" : JSON.stringify(defendersList);
+        closeGridPopup();
+        updateJsonPreview(); // Update the JSON preview with new values
+    };
+    
+    // Open the grid popup
+    const openGridPopup = () => {
+        dom.gridPopup.style.display = 'block';
+        
+        // Get current isBank value and update UI
+        const isBank = dom.isBankSelect.value === 'true';
+        updateGridUiBasedOnIsBank(isBank);
+        
+        // Initialize grid if it doesn't exist
+        if (dom.hexGrid.children.length === 0) {
+            createHexagonalGrid();
+        }
+        
+        // Load current values or defaults
+        try {
+            // Clear existing selections
+            attackersList.length = 0;
+            defendersList.length = 0;
+            
+            // Check if we're using defaults or custom values
+            if (dom.attackersInput.value === "Default" || 
+                dom.attackersInput.value === (translations.default || "Default") || 
+                dom.attackersInput.value === "") {
+                usingDefaultAttackers = true;
+                const isBank = dom.isBankSelect.value === 'true';
+                attackersList.push(...getDefaultAttackers(isBank));
+            } else {
+                usingDefaultAttackers = false;
+                try {
+                    const attackers = JSON.parse(dom.attackersInput.value);
+                    if (Array.isArray(attackers)) {
+                        attackersList.push(...attackers);
+                    }
+                } catch (e) {
+                    console.error('Error parsing attackers:', e);
+                }
+            }
+            
+            if (dom.defendersInput.value === "Default" || 
+                dom.defendersInput.value === (translations.default || "Default") || 
+                dom.defendersInput.value === "") {
+                usingDefaultDefenders = true;
+                const isBank = dom.isBankSelect.value === 'true';
+                defendersList.push(...getDefaultDefenders(isBank));
+            } else {
+                usingDefaultDefenders = false;
+                try {
+                    const defenders = JSON.parse(dom.defendersInput.value);
+                    if (Array.isArray(defenders)) {
+                        defendersList.push(...defenders);
+                    }
+                } catch (e) {
+                    console.error('Error parsing defenders:', e);
+                }
+            }
+            
+            // Refresh display
+            refreshCellDisplay();
+            updateGridSelectionDisplay();
+            updateBlockedCells(); // Add this line to initialize blocked cells
+        } catch (e) {
+            console.error('Error loading grid data:', e);
+        }
+    };
+    
+    // Close the grid popup
+    const closeGridPopup = () => {
+        dom.gridPopup.style.display = 'none';
+    };
+    
+    // Apply cell highlights for current selections
+    const refreshCellDisplay = () => {
+        document.querySelectorAll('.hex-cell:not(.border-cell)').forEach(cell => {
+            const cellId = cell.dataset.id;
+            cell.classList.remove('defenders', 'attackers', 'default', 'blocked');
+            
+            // Get default cell arrays based on current isBank value
+            const isBank = dom.isBankSelect.value === 'true';
+            const defaultDefenders = getDefaultDefenders(isBank);
+            const defaultAttackers = getDefaultAttackers(isBank);
+            
+            // Add appropriate class based on current arrays
+            if (defendersList.includes(cellId)) {
+                cell.classList.add('defenders');
+                // Add default class if this cell is part of default defenders and we're using defaults
+                if (usingDefaultDefenders && defaultDefenders.includes(cellId)) {
+                    cell.classList.add('default');
+                }
+            } else if (attackersList.includes(cellId)) {
+                cell.classList.add('attackers');
+                // Add default class if this cell is part of default attackers and we're using defaults
+                if (usingDefaultAttackers && defaultAttackers.includes(cellId)) {
+                    cell.classList.add('default');
+                }
+            }
+        });
+        
+        // Update blocked cells after refreshing display
+        updateBlockedCells();
+    };
+
+    // New function to initialize default troop placements
+    const initializeDefaultTroopPlacements = () => {
+        // Initialize with default values
+        updateTroopPlacementInputs();
+    };
+
+    // New function to get default attackers based on isBank value
+    const getDefaultAttackers = (isBank) => {
+        return isBank ? DEFAULT_BANK_TRUE_ATTACKERS : DEFAULT_BANK_FALSE_ATTACKERS;
+    };
+    
+    // New function to get default defenders based on isBank value
+    const getDefaultDefenders = (isBank) => {
+        return isBank ? DEFAULT_BANK_TRUE_DEFENDERS : DEFAULT_BANK_FALSE_DEFENDERS;
+    };
+    
+    // New function to update troop placement input fields with translation
+    const updateTroopPlacementInputs = () => {
+        const defaultText = translations.default || "Default";
+        dom.attackersInput.value = usingDefaultAttackers ? defaultText : JSON.stringify(attackersList);
+        dom.defendersInput.value = usingDefaultDefenders ? defaultText : JSON.stringify(defendersList);
+    };
+
+    // Add this new function after other grid-related functions
+    const updateGridUiBasedOnIsBank = (isBank) => {
+        if (!isBank) {
+            // Visually dim the grid but still allow scrolling
+            dom.hexGrid.style.opacity = '0.5';
+            
+            // Disable individual cell interactions instead
+            document.querySelectorAll('.hex-cell:not(.border-cell)').forEach(cell => {
+                cell.style.pointerEvents = 'none';
+            });
+            
+            // Hide the Apply button
+            dom.applyGrid.style.display = 'none';
+            
+            // Change Cancel button text to Ok
+            dom.cancelGrid.textContent = translations.ok || 'Ok';
+        } else {
+            // Enable the grid
+            dom.hexGrid.style.opacity = '1';
+            
+            // Re-enable individual cell interactions
+            document.querySelectorAll('.hex-cell:not(.border-cell)').forEach(cell => {
+                cell.style.pointerEvents = 'auto';
+            });
+            
+            // Show the Apply button
+            dom.applyGrid.style.display = 'block';
+            
+            // Restore Cancel button text
+            dom.cancelGrid.textContent = translations.cancel || 'Cancel';
+        }
+    };
+
+    // New function to toggle disabled cells styling
+    const toggleDisabledCellsStyle = () => {
+        const showStyle = dom.disabledCellsToggle.checked;
+        
+        // Update preview
+        if (showStyle) {
+            dom.blockedPreview.classList.add('styled');
+        } else {
+            dom.blockedPreview.classList.remove('styled');
+        }
+        
+        // Update all blocked cells
+        document.querySelectorAll('.hex-cell.blocked .hex-content').forEach(content => {
+            if (showStyle) {
+                content.classList.add('styled');
+            } else {
+                content.classList.remove('styled');
+            }
+        });
     };
 
     // --- Start the Application ---

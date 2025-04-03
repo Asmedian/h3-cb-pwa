@@ -7,8 +7,8 @@
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f3f4f6" media="(prefers-color-scheme: light)">
     <title>Heroes 3: ERA Objects Editor</title>
-    <!-- Dynamic Manifest -->
-    <link rel="manifest" href="#" id="manifestPlaceholder">
+    <!-- Static Manifest -->
+    <link rel="manifest" href="./manifest.json">
     <!-- Favicons -->
     <link rel="icon" href="./icon-64.png" type="image/png" sizes="64x64">
     <link rel="icon" href="./icon-192.png" type="image/png" sizes="192x192">
@@ -217,6 +217,56 @@
                                     <textarea id="text-visit" class="resizable-textarea" placeholder="Welcome message..."></textarea>
                                     <!-- Line break indicators added by JS -->
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- troopPlacement -->
+        <div class="field-group">
+            <div class="field-row">
+                <label class="field-label" for="troopPlacement-checkbox">
+                    <input type="checkbox" id="troopPlacement-checkbox" data-controls="troopPlacement-container">
+                    troopPlacement <span class="help-icon">?
+                        <span class="tooltip" id="help-troopPlacement">Loading help text...</span>
+                    </span>
+                </label>
+                <div class="field-input disabled" id="troopPlacement-container">
+                    <div class="field-group">
+                        <div class="field-row">
+                            <label class="field-label margin-left-10" for="isBank">
+                                isBank <span class="help-icon">?
+                                    <span class="tooltip" id="help-isBank">Loading help text...</span>
+                                </span>
+                            </label>
+                            <div class="field-input isBank-input-container">
+                                <select id="isBank">
+                                    <option value="true">true</option>
+                                    <option value="false">false</option>
+                                </select>
+                                <button id="customize-grid-btn" class="customize-btn">Customize</button>
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label margin-left-10" for="attackers">
+                                attackers <span class="help-icon">?
+                                    <span class="tooltip" id="help-attackers">Loading help text...</span>
+                                </span>
+                            </label>
+                            <div class="field-input">
+                                <input type="text" id="attackers" readonly placeholder="[]">
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label margin-left-10" for="defenders">
+                                defenders <span class="help-icon">?
+                                    <span class="tooltip" id="help-defenders">Loading help text...</span>
+                                </span>
+                            </label>
+                            <div class="field-input">
+                                <input type="text" id="defenders" readonly placeholder="[]">
                             </div>
                         </div>
                     </div>
@@ -499,6 +549,18 @@
                 </div>
             </div>
 
+            <!-- Custom DEF File -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-customDef-checkbox" data-controls="state-customDef-container">
+                    customDef <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="customDef">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-customDef-container">
+                    <input type="text" class="state-customDef-input" placeholder="filename.def">
+                </div>
+            </div>
+
             <!-- ArtifactIds (new section) -->
             <div class="field-row">
                 <label class="field-label margin-left-10">
@@ -694,6 +756,56 @@
         </div>
     </div>
 </template>
+
+<!-- Hexagonal Grid Popup -->
+<div id="grid-popup" class="grid-popup">
+    <div class="grid-popup-content">
+        <div class="grid-popup-header">
+            <h2 id="grid-popup-title">Customize Troop Placement</h2>
+            <button id="close-grid-popup" class="close-grid-popup">&times;</button>
+        </div>
+        <div class="grid-popup-body">
+            <div class="mode-switch">
+                <div class="mode-hex-preview attackers-preview"></div>
+                <button id="attackers-button" class="switch-button active">Attackers</button>
+                <div class="mode-hex-preview defenders-preview"></div>
+                <button id="defenders-button" class="switch-button">Defenders</button>
+                <div class="disabled-cell-toggle-container">
+                    <div class="mode-hex-preview blocked-preview"></div>
+                    <label class="toggle-switch-label">
+                        <input type="checkbox" id="disabled-cells-toggle" checked>
+                        <span class="toggle-switch"></span>
+                        <span class="disabled-cells-label" id="disabled-cells-label">Toggle Hex Hatching</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-title">Current Mode:</span>
+                <span id="current-mode" class="info-content">Attackers</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-title">Defenders:</span>
+                <span id="defenders-count" class="info-content">0/7</span>
+                <span id="defenders-cells" class="info-content">[]</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-title">Attackers:</span>
+                <span id="attackers-count" class="info-content">0/7</span>
+                <span id="attackers-cells" class="info-content">[]</span>
+            </div>
+            
+            <div class="grid-container" id="hex-grid"></div>
+            
+            <div class="grid-popup-footer">
+                <button id="apply-grid" class="apply-grid">Apply</button>
+                <button id="cancel-grid" class="cancel-grid">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Load JavaScript -->
 <script src="./js/script.js" defer></script>

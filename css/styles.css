@@ -300,14 +300,15 @@ input[type="checkbox"]:checked {
 }
 
 input[type="checkbox"]:checked::after {
-    content: "✓";
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 14px;
-    color: white;
-    font-weight: bold;
+    width: 10px;
+    height: 4px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: translate(-50%, -70%) rotate(-45deg);
 }
 
 /* Radio buttons styling */
@@ -411,6 +412,17 @@ input[type="radio"]:checked::after {
     flex-grow: 1;
 }
 
+/* Troop placement settings */
+.isBank-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#isBank {
+    width: 100px;
+}
+
 /* Unified remove buttons */
 .remove-property, .remove-spell, .remove-state {
     background-color: #ef4444;
@@ -479,7 +491,7 @@ input[type="radio"]:checked::after {
 
 /* --- PWA Install Button --- */
 .install-pwa {
-    display: none;
+    display: none; /* Hidden by default until prompt is available */
     background-color: #6366f1;
 }
 .install-pwa:hover {
@@ -823,4 +835,443 @@ textarea.resizable-textarea {
 
 #object-type {
     padding-left: 10px;
+}
+
+/* --- Hexagonal Grid Popup --- */
+.grid-popup {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.grid-popup-content {
+    background-color: var(--primary-bg);
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 850px; /* Set max-width to 850px */
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.grid-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.grid-popup-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-grid-popup {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.grid-popup-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.apply-grid, .cancel-grid {
+    padding: 8px 15px;
+}
+
+.customize-btn {
+    margin-left: 10px;
+}
+
+/* Hexagonal Grid */
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    position: relative;
+    max-width: 100%;
+    overflow-x: auto; /* Add horizontal scrolling */
+    padding-bottom: 10px; /* Add padding for scrollbar */
+}
+
+.grid-row {
+    display: flex;
+    height: 35px;
+    min-width: 750px; /* Ensure minimum width to show full grid */
+}
+
+.grid-row:nth-child(odd) {
+    margin-left: 22px;
+}
+
+.hex-cell {
+    width: 44px;
+    height: 44px;
+    position: relative;
+    margin: 0 1px;
+}
+
+.hex-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background-color: var(--indented-bg);
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.hex-content:hover {
+    background-color: var(--tertiary-bg);
+}
+
+.hex-cell.defenders .hex-content {
+    background-color: #a34c50;
+    color: white;
+    position: relative;
+}
+
+.hex-cell.attackers .hex-content {
+    background-color: #5b8c85;
+    color: white;
+    position: relative;
+}
+
+/* Add styles for default cells with darkened colors */
+.hex-cell.defenders.default .hex-content {
+    background-color: #4e2224; /* Darker red */
+    color: #ddd;
+}
+
+.hex-cell.attackers.default .hex-content {
+    background-color: #2c5336; /* Darker green */
+    color: #ddd;
+}
+
+/* Add arrow indicators for direction */
+.hex-cell.defenders .hex-content::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-bottom: 2px solid white;
+    border-left: 2px solid white;
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.hex-cell.attackers .hex-content::after {
+    content: "";
+    position: absolute;
+    right: 3px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-top: 2px solid white;
+    border-right: 2px solid white;
+    transform: translateY(-50%) rotate(45deg);
+}
+
+/* Also add arrows to default cells */
+.hex-cell.defenders.default .hex-content::before {
+    border-color: #ddd;
+}
+
+.hex-cell.attackers.default .hex-content::after {
+    border-color: #ddd;
+}
+
+/* Style for blocked cells */
+.hex-cell.blocked .hex-content {
+    opacity: 0.5;
+    cursor: not-allowed;
+    position: relative;
+    /* Add diagonal striped pattern */
+    background-image: repeating-linear-gradient(135deg,  
+        rgba(150, 150, 150, 0.5) 0 25%,  
+        transparent 25% 50%,  
+        rgba(150, 150, 150, 0.5) 50% 75%,  
+        transparent 75% 100%);
+    background-size: 10px 10px;
+}
+
+.hex-cell.blocked .hex-content::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+/* Style for border cells */
+.border-cell .hex-content {
+    background-color: transparent;
+    clip-path: none;
+    cursor: default;
+}
+
+.border-cell .hex-content:hover {
+    background-color: transparent;
+}
+
+.mode-switch {
+    display: flex;
+    margin-bottom: 15px;
+    overflow: hidden;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    align-items: center;
+    padding-right: 10px;
+}
+
+.mode-hex-preview {
+    width: 30px;
+    height: 30px;
+    position: relative;
+    margin-right: 5px;
+    margin-left: 10px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mode-hex-preview::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.attackers-preview::before {
+    background-color: #5b8c85; /* Green for attackers */
+}
+
+.defenders-preview::before {
+    background-color: #a34c50; /* Red for defenders */
+}
+
+.attackers-preview::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid white;
+    border-top: 2px solid white;
+    transform: rotate(45deg);
+}
+
+.defenders-preview::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(45deg);
+}
+
+.disabled-cell-toggle-container {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    gap: 5px;
+}
+
+.disabled-toggle-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+#disabled-cells-toggle {
+    margin-right: 5px;
+}
+
+.blocked-preview::before {
+    background-color: var(--indented-bg);
+    opacity: 0.5;
+}
+
+.blocked-preview.styled::before {
+    background-image: repeating-linear-gradient(135deg,  
+        rgba(150, 150, 150, 0.5) 0 25%,  
+        transparent 25% 50%,  
+        rgba(150, 150, 150, 0.5) 50% 75%,  
+        transparent 75% 100%);
+    background-size: 10px 10px;
+}
+
+/* Update for blocked cells to support toggling */
+.hex-cell.blocked .hex-content {
+    opacity: 0.5;
+    cursor: not-allowed;
+    position: relative;
+}
+
+/* Pattern styling that can be toggled */
+.hex-cell.blocked .hex-content.styled {
+    background-image: repeating-linear-gradient(135deg,  
+        rgba(150, 150, 150, 0.5) 0 25%,  
+        transparent 25% 50%,  
+        rgba(150, 150, 150, 0.5) 50% 75%,  
+        transparent 75% 100%);
+    background-size: 10px 10px;
+}
+
+/* Remove the background image from the original style */
+.hex-cell.blocked .hex-content {
+    background-image: none;
+}
+
+.switch-button {
+    padding: 10px 20px;
+    background-color: var(--indented-bg);
+    border: none;
+    cursor: pointer;
+    flex: 1;
+    transition: background-color 0.3s;
+    color: var(--text-color);
+}
+
+.switch-button.active {
+    background-color: var(--button-bg);
+    color: white;
+}
+
+/* --- Responsive adjustments for hexagonal grid --- */
+@media (max-width: 768px) {
+    .grid-popup-content {
+        width: 95%;
+        margin: 5% auto;
+        padding: 15px;
+        max-height: 80vh; /* Slightly smaller on mobile */
+    }
+    
+    .hex-cell {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .grid-row:nth-child(even) {
+        margin-left: 18px;
+    }
+    
+    .grid-popup-body {
+        overflow-x: hidden; /* Hide outer horizontal scrolling */
+    }
+    
+    .grid-container {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .grid-popup-footer {
+        margin-top: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid-popup-content {
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        max-height: 100vh;
+        height: 100vh;
+    }
+    
+    .hex-cell {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .mode-switch {
+        flex-direction: row;
+    }
+    
+    .info-row {
+        flex-wrap: wrap;
+    }
+    
+    .grid-popup-header h2 {
+        font-size: 1.2rem;
+    }
+}
+
+/* Toggle Switch Styles */
+.toggle-switch-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    background-color: var(--disabled-bg);
+    border-radius: 10px;
+    margin: 0 8px;
+    transition: all 0.3s;
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: white;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s;
+}
+
+input[type="checkbox"]:checked + .toggle-switch {
+    background-color: var(--button-bg);
+}
+
+input[type="checkbox"]:checked + .toggle-switch::after {
+    transform: translateX(16px);
+}
+
+input[type="checkbox"]:focus + .toggle-switch {
+    box-shadow: 0 0 1px var(--button-bg);
+}
+
+/* Hide the default checkbox visually but keep it accessible */
+.toggle-switch-label input[type="checkbox"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
 }
