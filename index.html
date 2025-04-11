@@ -6,16 +6,18 @@
     <!-- Theme color for PWA -->
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f3f4f6" media="(prefers-color-scheme: light)">
-    <title>Heroes 3: ERA Objects Editor</title>
+    <title>Creature Bank Editor for Heroes 3: ERA</title>
     <base href="/h3-cb-pwa/">
     <!-- Static Manifest -->
     <link rel="manifest" href="./manifest.json">
     <!-- Favicons -->
-    <link rel="icon" href="./icon-64.png" type="image/png" sizes="64x64">
-    <link rel="icon" href="./icon-192.png" type="image/png" sizes="192x192">
-    <link rel="apple-touch-icon" href="./icon-192.png"> <!-- iOS icon -->
+    <link rel="icon" href="./img/icon-64.png" type="image/png" sizes="64x64">
+    <link rel="icon" href="./img/icon-192.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="./img/icon-192.png"> <!-- iOS icon -->
     <!-- Stylesheet -->
     <link rel="stylesheet" href="./css/styles.css">
+    <!-- JavaScript -->
+    <script type="module" src="./js/main.js"></script>
 </head>
 
 <body>
@@ -25,7 +27,7 @@
     </div>
     <div>
         <div class="header-controls">
-            <button id="install-pwa" class="install-pwa">Install PWA App</button>
+            <button id="install-pwa" class="install-pwa">Install the App</button>
             <div class="theme-toggle">
                 <button id="theme-toggle-btn">Dark Theme</button>
             </div>
@@ -43,6 +45,20 @@
         </div>
     </div>
 </header>
+
+<div class="file-actions">
+    <button id="open-json-file" class="file-action-button">Open JSON File</button>
+    
+    <div class="object-selector-container">
+        <select id="object-selector" class="object-selector"></select>
+        <div id="duplicate-warning" class="duplicate-warning" style="display: none;">
+            <span class="warning-icon">⚠️</span>
+            <span class="warning-text">Duplicate subtype</span>
+        </div>
+        <button id="new-object-btn" class="new-object-btn file-action-button">New</button>
+        <button id="action-btn" class="file-action-button" disabled>Remove</button>
+    </div>
+</div>
 
 <main class="editor-container">
     <!-- Object Subtype -->
@@ -68,7 +84,7 @@
                 </span>
             </label>
             <div class="field-input">
-                <input type="number" id="object-subtype" min="0" value="13">
+                <input type="number" id="object-subtype" min="0" value="0">
             </div>
         </div>
     </div>
@@ -96,7 +112,7 @@
                 <pre class="property-hint" id="property-hint-text">
                     <!-- Hint text populated by JS -->
                 </pre>
-                <button class="add-item" id="add-property">Add Property</button>
+                <button class="add-item" id="add-property"></button>
             </div>
         </div>
     </div>
@@ -306,8 +322,26 @@
 </main>
 
 <footer class="bottom-controls">
-    <button class="save-button" id="save-file" disabled>Save File</button>
-    <button class="json-preview-toggle" id="toggle-json">Show JSON Code</button>
+    <button class="save-button" id="save-file" disabled></button>
+    <button class="json-preview-toggle" id="toggle-json"></button>
+    <div class="settings-container">
+        <button class="settings-button" id="settings-button">
+            <img src="./img/gear.svg" alt="Settings" class="settings-icon">
+        </button>
+        <div class="settings-dropdown" id="settings-dropdown">
+            <div class="settings-group">
+                <h4></h4>
+                <div class="radio-option">
+                    <input type="radio" id="indent-2" name="indent-size" value="2" checked>
+                    <label for="indent-2"></label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="indent-4" name="indent-size" value="4">
+                    <label for="indent-4"></label>
+                </div>
+            </div>
+        </div>
+    </div>
     <pre class="json-preview" id="json-preview"></pre> <!-- Use <pre> for formatted code -->
 </footer>
 
@@ -326,8 +360,8 @@
                             <span class="tooltip" data-translate-id="spells">Loading help text...</span></span>
                     </label>
                     <div class="spells-buttons">
-                        <button class="add-spell-btn" id="add-spell-btn">Add Spell</button>
-                        <button class="remove-spell-btn" id="remove-spell-btn" disabled>Remove Spell</button>
+                        <button class="add-spell-btn" id="add-spell-btn"></button>
+                        <button class="remove-spell-btn" id="remove-spell-btn" disabled></button>
                     </div>
                 </div>
                 <div class="field-input disabled state-spells-container">
@@ -348,7 +382,7 @@
                     <label class="field-label">
                         <input type="checkbox" class="state-skills-checkbox" data-controls="state-skills-container state-skills-primary-container">
                         skills <span class="help-icon">?
-                            <span class="tooltip" data-translate-id="skills">Loading help text...</span></span>
+                            <span class="tooltip" data-translate-id="skills"></span></span>
                     </label>
                     <div class="field-input disabled state-skills-container">
                         <!-- Inner row for primary skills -->
@@ -360,19 +394,19 @@
                             <div class="field-input disabled state-skills-primary-container">
                                 <div class="skills-primary-fields">
                                     <div class="skill-field">
-                                        <label id="primary-attack-label">Attack</label>
+                                        <label class="primary-attack-label"></label>
                                         <input type="number" class="state-skills-primary-attack" min="0" max="127">
                                     </div>
                                     <div class="skill-field">
-                                        <label id="primary-defense-label">Defense</label>
+                                        <label class="primary-defense-label"></label>
                                         <input type="number" class="state-skills-primary-defense" min="0" max="127">
                                     </div>
                                     <div class="skill-field">
-                                        <label id="primary-power-label">Power</label>
+                                        <label class="primary-power-label"></label>
                                         <input type="number" class="state-skills-primary-power" min="0" max="127">
                                     </div>
                                     <div class="skill-field">
-                                        <label id="primary-knowledge-label">Knowledge</label>
+                                        <label class="primary-knowledge-label"></label>
                                         <input type="number" class="state-skills-primary-knowledge" min="0" max="127">
                                     </div>
                                 </div>
@@ -550,18 +584,6 @@
                 </div>
             </div>
 
-            <!-- Custom DEF File -->
-            <div class="field-row">
-                <label class="field-label margin-left-10">
-                    <input type="checkbox" class="state-customDef-checkbox" data-controls="state-customDef-container">
-                    customDef <span class="help-icon">?
-                        <span class="tooltip" data-translate-id="customDef">Loading help text...</span></span>
-                </label>
-                <div class="field-input disabled state-customDef-container">
-                    <input type="text" class="state-customDef-input" placeholder="filename.def">
-                </div>
-            </div>
-
             <!-- ArtifactIds (new section) -->
             <div class="field-row">
                 <label class="field-label margin-left-10">
@@ -601,19 +623,19 @@
                 <div class="field-input disabled state-artifactTypeCounts-container">
                     <div class="artifact-type-fields">
                         <div class="artifact-field">
-                            <label id="artifact-treasure-label">Treasure</label>
+                            <label class="artifact-treasure-label"></label>
                             <input type="number" class="state-artifactTypeCounts-treasure" min="0" max="127">
                         </div>
                         <div class="artifact-field">
-                            <label id="artifact-minor-label">Minor</label>
+                            <label class="artifact-minor-label"></label>
                             <input type="number" class="state-artifactTypeCounts-minor" min="0" max="127">
                         </div>
                         <div class="artifact-field">
-                            <label id="artifact-major-label">Major</label>
+                            <label class="artifact-major-label"></label>
                             <input type="number" class="state-artifactTypeCounts-major" min="0" max="127">
                         </div>
                         <div class="artifact-field">
-                            <label id="artifact-relic-label">Relic</label>
+                            <label class="artifact-relic-label"></label>
                             <input type="number" class="state-artifactTypeCounts-relic" min="0" max="127">
                         </div>
                     </div>
@@ -630,38 +652,50 @@
                 <div class="field-input disabled state-resources-container">
                     <div class="resources-fields">
                         <div class="resource-field">
-                            <label id="resource-wood-label">Wood</label>
+                            <label class="resource-wood-label"></label>
                             <input type="number" class="state-resources-wood" min="0" max="2147483647" value="0">
                         </div>
                         <div class="resource-field">
-                            <label id="resource-ore-label">Ore</label>
+                            <label class="resource-ore-label"></label>
                             <input type="number" class="state-resources-ore" min="0" max="2147483647" value="0">
                         </div>
                         <div class="resource-field">
-                            <label id="resource-mercury-label">Mercury</label>
+                            <label class="resource-mercury-label"></label>
                             <input type="number" class="state-resources-mercury" min="0" max="2147483647" value="0">
                         </div>
                         <div class="resource-field">
-                            <label id="resource-sulfur-label">Sulfur</label>
+                            <label class="resource-sulfur-label"></label>
                             <input type="number" class="state-resources-sulfur" min="0" max="2147483647" value="0">
                         </div>
                         <div class="resource-field">
-                            <label id="resource-crystal-label">Crystal</label>
+                            <label class="resource-crystal-label"></label>
                             <input type="number" class="state-resources-crystal" min="0" max="2147483647" value="0">
                         </div>
                         <div class="resource-field">
-                            <label id="resource-gems-label">Gems</label>
+                            <label class="resource-gems-label"></label>
                             <input type="number" class="state-resources-gems" min="0" max="2147483647" value="0">
                         </div>
                         <div class="resource-field">
-                            <label id="resource-gold-label">Gold</label>
+                            <label class="resource-gold-label"></label>
                             <input type="number" class="state-resources-gold" min="0" max="2147483647" value="0">
                         </div>
                         <div class="resource-field">
-                            <label id="resource-mithril-label">Mithril</label>
+                            <label class="resource-mithril-label"></label>
                             <input type="number" class="state-resources-mithril" min="0" max="2147483647" value="0">
                         </div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Custom DEF File -->
+            <div class="field-row">
+                <label class="field-label margin-left-10">
+                    <input type="checkbox" class="state-customDef-checkbox" data-controls="state-customDef-container">
+                    customDef <span class="help-icon">?
+                        <span class="tooltip" data-translate-id="customDef">Loading help text...</span></span>
+                </label>
+                <div class="field-input disabled state-customDef-container">
+                    <input type="text" class="state-customDef-input" placeholder="filename.def">
                 </div>
             </div>
 
@@ -727,11 +761,11 @@
                             </label>
                             <div class="field-input spell-bits-levels-container">
                                 <div class="checkbox-group">
-                                    <label><input type="checkbox" class="spell-level-checkbox" value="2"> 1 lvl</label>
-                                    <label><input type="checkbox" class="spell-level-checkbox" value="4"> 2 lvl</label>
-                                    <label><input type="checkbox" class="spell-level-checkbox" value="8"> 3 lvl</label>
-                                    <label><input type="checkbox" class="spell-level-checkbox" value="16"> 4 lvl</label>
-                                    <label><input type="checkbox" class="spell-level-checkbox" value="32"> 5 lvl</label>
+                                    <label><input type="checkbox" class="spell-level-checkbox" value="2"> <span data-spell-level="1">1 lvl</span></label>
+                                    <label><input type="checkbox" class="spell-level-checkbox" value="4"> <span data-spell-level="2">2 lvl</span></label>
+                                    <label><input type="checkbox" class="spell-level-checkbox" value="8"> <span data-spell-level="3">3 lvl</span></label>
+                                    <label><input type="checkbox" class="spell-level-checkbox" value="16"> <span data-spell-level="4">4 lvl</span></label>
+                                    <label><input type="checkbox" class="spell-level-checkbox" value="32"> <span data-spell-level="5">5 lvl</span></label>
                                 </div>
                                 <input type="hidden" class="spell-bits-levels-value">
                             </div>
@@ -743,10 +777,10 @@
                             </label>
                             <div class="field-input spell-bits-schools-container">
                                 <div class="checkbox-group">
-                                    <label><input type="checkbox" class="spell-school-checkbox" value="1"> Air</label>
-                                    <label><input type="checkbox" class="spell-school-checkbox" value="2"> Fire</label>
-                                    <label><input type="checkbox" class="spell-school-checkbox" value="4"> Water</label>
-                                    <label><input type="checkbox" class="spell-school-checkbox" value="8"> Earth</label>
+                                    <label><input type="checkbox" class="spell-school-checkbox" value="1"> <span data-spell-school="air">Air</span></label>
+                                    <label><input type="checkbox" class="spell-school-checkbox" value="2"> <span data-spell-school="fire">Fire</span></label>
+                                    <label><input type="checkbox" class="spell-school-checkbox" value="4"> <span data-spell-school="water">Water</span></label>
+                                    <label><input type="checkbox" class="spell-school-checkbox" value="8"> <span data-spell-school="earth">Earth</span></label>
                                 </div>
                                 <input type="hidden" class="spell-bits-schools-value">
                             </div>
@@ -807,9 +841,6 @@
         </div>
     </div>
 </div>
-
-<!-- Load JavaScript -->
-<script src="./js/script.js" defer></script>
 
 </body>
 </html>

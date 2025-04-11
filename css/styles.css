@@ -19,6 +19,13 @@
     --error-border: #ff5252;
     --error-bg: rgba(255, 82, 82, 0.1);
     --warning-color: #f59e0b; /* Use a consistent warning color */
+    
+    /* Scrollbar Variables */
+    --scrollbar-width: 12px;
+    --scrollbar-track: var(--secondary-bg);
+    --scrollbar-thumb: var(--tertiary-bg);
+    --scrollbar-thumb-hover: var(--button-bg);
+    --scrollbar-border: var(--border-color);
 }
 
 [data-theme="light"] {
@@ -37,6 +44,49 @@
     --checkbox-unchecked: #9ca3af;
     /* checkbox-checked remains blue */
     /* checkbox-hover remains gray */
+    
+    /* Light Theme Scrollbar Variables */
+    --scrollbar-track: #f0f0f0;
+    --scrollbar-thumb: #c1c1c1;
+    --scrollbar-thumb-hover: var(--button-bg);
+    --scrollbar-border: #e0e0e0;
+}
+
+/* --- Scrollbar Customization --- */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+    height: var(--scrollbar-width);
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 6px;
+    border: 3px solid var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Scrollbar hover behavior for flags-checkbox-container */
+.flags-checkbox-container:hover::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-hover);
+}
+
+.flags-checkbox-container:hover {
+    scrollbar-color: var(--scrollbar-thumb-hover) var(--scrollbar-track);
 }
 
 /* --- Global Styles --- */
@@ -44,6 +94,44 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+/* --- File Actions --- */
+.file-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 0 20px;
+}
+
+.file-action-button {
+    align-self: flex-start;
+    padding: 8px 15px;
+    font-size: 15px;
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.file-action-button:hover:not(:disabled) {
+    background-color: var(--button-hover);
+}
+
+.file-action-button:disabled {
+    background-color: var(--disabled-bg);
+    color: var(--disabled-text);
+    cursor: not-allowed;
+}
+
+/* Remove the old class as it's replaced with file-action-button */
+.open-json-button {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    display: block;
 }
 
 html {
@@ -200,6 +288,7 @@ button:disabled {
 
 .field-label .help-icon, .field-label-small .help-icon {
     margin-left: 8px;
+    cursor: help;
 }
 
 .help-icon {
@@ -253,6 +342,55 @@ button:disabled {
     min-width: 150px;
 }
 
+select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='gray'><path d='M3 4h6L6 8z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 18px;
+    padding-right: 32px !important; /* Add more right padding to make room for the arrow */
+    transition: background-image 0.2s ease;
+}
+
+/* Hover state for select dropdown arrow - light theme */
+select:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%233b82f6'><path d='M3 4h6L6 8z'/></svg>");
+}
+
+/* Focus state for select dropdown arrow when open - light theme */
+select:focus {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232563eb'><path d='M3 4h6L6 8z'/></svg>");
+}
+
+/* Dark theme arrow adjustment */
+[data-theme="dark"] select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='lightgray'><path d='M3 4h6L6 8z'/></svg>");
+}
+
+/* Hover state for select dropdown arrow - dark theme */
+[data-theme="dark"] select:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%233b82f6'><path d='M3 4h6L6 8z'/></svg>");
+}
+
+/* Focus state for select dropdown arrow when open - dark theme */
+[data-theme="dark"] select:focus {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232563eb'><path d='M3 4h6L6 8z'/></svg>");
+}
+
+/* Firefox specific - remove dotted focus outline */
+select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 var(--text-color);
+}
+
+/* Remove dropdown arrow in IE10+ */
+select::-ms-expand {
+    display: none;
+}
+
 input[type="text"],
 input[type="number"],
 select,
@@ -264,12 +402,21 @@ textarea {
     background-color: var(--input-bg);
     color: var(--text-color);
     font-size: 14px;
-    transition: border-color 0.2s, background-color 0.2s;
+    transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:hover,
+input[type="number"]:hover,
+select:hover,
+textarea:hover {
+    border-color: var(--button-bg);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
 }
 
 input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--button-bg);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
 }
 
 /* --- Checkboxes and Radio Buttons --- */
@@ -287,6 +434,7 @@ input[type="checkbox"] {
     vertical-align: middle;
     transition: all 0.2s ease;
     flex-shrink: 0;
+    cursor: pointer;
 }
 
 input[type="checkbox"]:hover {
@@ -326,6 +474,7 @@ input[type="radio"] {
     transition: all 0.2s ease;
     flex-shrink: 0;
     margin-right: 5px;
+    cursor: pointer;
 }
 
 input[type="radio"]::after {
@@ -365,7 +514,6 @@ input[type="radio"]:checked::after {
 .radio-label {
     display: flex;
     align-items: center;
-    cursor: pointer;
 }
 
 .spell-type-selection {
@@ -467,6 +615,75 @@ input[type="radio"]:checked::after {
     font-size: 16px;
     min-width: 150px;
     text-align: center;
+}
+
+/* Settings Button and Dropdown */
+.settings-container {
+    position: relative;
+}
+
+.settings-button {
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-button:hover {
+    background-color: var(--button-hover);
+}
+
+.settings-icon {
+    width: 18px;
+    height: 18px;
+    filter: invert(1);
+}
+
+.settings-dropdown {
+    position: absolute;
+    bottom: 100%;
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 12px;
+    z-index: 100;
+    min-width: 180px;
+    display: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.settings-dropdown.show {
+    display: block;
+}
+
+.settings-group h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.radio-option:last-child {
+    margin-bottom: 0;
+}
+
+.radio-option input[type="radio"] {
+    margin-right: 8px;
+}
+
+.radio-option label {
+    cursor: pointer;
 }
 
 .json-preview {
@@ -639,7 +856,6 @@ textarea.resizable-textarea {
 .states-header-row,
 .spells-header-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
 }
 
@@ -647,7 +863,6 @@ textarea.resizable-textarea {
 .spells-buttons {
     display: flex;
     gap: 10px;
-    margin-left: auto;
 }
 
 .states-tabs-container,
@@ -765,6 +980,14 @@ textarea.resizable-textarea {
         align-items: stretch;
     }
     .save-button, .json-preview-toggle {
+        width: 100%;
+    }
+    
+    .save-button, .json-preview-toggle, .settings-button {
+        width: 100%;
+    }
+    
+    .settings-dropdown {
         width: 100%;
     }
     
@@ -1274,4 +1497,91 @@ input[type="checkbox"]:focus + .toggle-switch {
     width: 0;
     height: 0;
     position: absolute;
+}
+
+/* Object Selector Styles */
+.object-selector-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.object-selector {
+    min-width: 250px;
+    padding: 8px 30px 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 14px;
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.object-selector:hover {
+    border-color: var(--button-bg);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+}
+
+.object-selector:focus {
+    outline: none;
+    border-color: var(--button-bg);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+}
+
+/* Style for object number in selector */
+.object-selector option {
+    padding: 8px;
+}
+
+.new-object-btn {
+    background-color: #22c55e;
+}
+
+.new-object-btn:hover {
+    background-color: #16a34a;
+}
+
+.remove-object-btn {
+    background-color: #ef4444;
+}
+
+.remove-object-btn:hover:not(:disabled) {
+    background-color: #dc2626;
+}
+
+.duplicate-warning {
+    display: flex;
+    align-items: center;
+    color: var(--warning-color);
+    font-size: 14px;
+}
+
+.warning-icon {
+    margin-right: 5px;
+}
+
+/* Make the file actions more responsive */
+@media (max-width: 768px) {
+    .file-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .object-selector-container {
+        margin: 10px 0;
+        width: 100%;
+    }
+    
+    .object-selector {
+        flex-grow: 1;
+    }
+    
+    #reset-form {
+        align-self: flex-end;
+    }
 }
