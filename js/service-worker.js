@@ -1,16 +1,16 @@
 // Service Worker for Heroes 3: ERA Creature Bank Editor
 const CACHE_NAME = 'heroes3-cb-editor-v1.1';
 const filesToCache = [
-    '/',
-    '/index.html',
-    '/css/styles.css',
-    '/js/main.js',
-    '/manifest.json',
-    '/lang/en.json',
-    '/lang/ru.json',
-    '/icon-64.png',
-    '/icon-192.png',
-    '/icon-512.png'
+    './',
+    './index.html',
+    './css/styles.css',
+    './js/main.js',
+    './manifest.json',
+    './lang/en.json',
+    './lang/ru.json',
+    './img/icon-64.png',
+    './img/icon-192.png',
+    './img/icon-512.png'
 ];
 
 // Install event
