@@ -1,7 +1,7 @@
 {
     "name": "Heroes 3: ERA Objects Editor",
     "short_name": "Heroes 3: ERA Objects Editor",
-    "description": "JSON editor for Heroes 3: ERA objects",
+    "description": "Heroes 3: ERA Objects Editor is a tool for editing objects using JSON files via the RMG plugin.",
     "start_url": "index.html",
     "display": "standalone",
     "background_color": "#1f2937",
