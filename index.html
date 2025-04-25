@@ -24,6 +24,8 @@
 <header>
     <div class="title-container">
         <h1 id="app-title">Heroes 3: ERA Objects Editor</h1>
+        <h4>Web tool made by Elmore</h4>
+        <h4>In-game tool made by Daemon_n</h4>
     </div>
     <div>
         <div class="header-controls">
@@ -188,7 +190,7 @@
                  <div class="field-input disabled" id="sound-container">
                     <div class="field-group"> <!-- Inner group for sound properties -->
                         <div class="field-row">
-                            <label class="field-label margin-left-10" for="sound-enter"> <!-- margin-left-10 kept for visual indent -->
+                            <label class="field-label-small" for="sound-enter">
                                 enter <span class="help-icon">?
                                     <span class="tooltip" id="help-soundEnter">Loading help text...</span>
                                 </span>
@@ -198,7 +200,7 @@
                             </div>
                         </div>
                         <div class="field-row">
-                            <label class="field-label margin-left-10" for="sound-loop">
+                            <label class="field-label-small" for="sound-loop">
                                 loop <span class="help-icon">?
                                     <span class="tooltip" id="help-soundLoop">Loading help text...</span>
                                 </span>
@@ -224,7 +226,7 @@
                 <div class="field-input disabled" id="text-container">
                      <div class="field-group">
                         <div class="field-row">
-                            <label class="field-label margin-left-10" for="text-visit">
+                            <label class="field-label-small" for="text-visit">
                                 visit <span class="help-icon">?
                                     <span class="tooltip" id="help-textVisit">Loading help text...</span>
                                 </span>
@@ -253,7 +255,7 @@
                 <div class="field-input disabled" id="troopPlacement-container">
                     <div class="field-group">
                         <div class="field-row">
-                            <label class="field-label margin-left-10" for="isBank">
+                            <label class="field-label-small" for="isBank">
                                 isBank <span class="help-icon">?
                                     <span class="tooltip" id="help-isBank">Loading help text...</span>
                                 </span>
@@ -267,7 +269,7 @@
                             </div>
                         </div>
                         <div class="field-row">
-                            <label class="field-label margin-left-10" for="attackers">
+                            <label class="field-label-small" for="attackers">
                                 attackers <span class="help-icon">?
                                     <span class="tooltip" id="help-attackers">Loading help text...</span>
                                 </span>
@@ -277,7 +279,7 @@
                             </div>
                         </div>
                         <div class="field-row">
-                            <label class="field-label margin-left-10" for="defenders">
+                            <label class="field-label-small" for="defenders">
                                 defenders <span class="help-icon">?
                                     <span class="tooltip" id="help-defenders">Loading help text...</span>
                                 </span>
@@ -387,7 +389,7 @@
                     <div class="field-input disabled state-skills-container">
                         <!-- Inner row for primary skills -->
                         <div class="field-row">
-                             <label class="field-label">
+                             <label class="field-label-small">
                                 primary <span class="help-icon">?
                                     <span class="tooltip" data-translate-id="skillsPrimary">Loading help text...</span></span>
                             </label>
@@ -419,7 +421,7 @@
             <!-- Creature Reward -->
             <div class="field-group">
                 <div class="field-row">
-                    <label class="field-label margin-left-10">
+                    <label class="field-label">
                         <input type="checkbox" class="state-creatureReward-checkbox" data-controls="state-creatureReward-container">
                         creatureReward <span class="help-icon">?
                             <span class="tooltip" data-translate-id="creatureReward">Loading help text...</span></span>
@@ -456,67 +458,79 @@
                     </label>
                      <div class="field-input disabled state-guardians-container">
                          <div class="disabled state-guardians-fields-container">
-                            <!-- Guardians Type Fields Row -->
-                            <div class="guardians-fields">
-                                <div class="guardian-field">
-                                    <label>Type</label>
-                                    <input type="number" class="state-guardians-type-1" min="-1" max="999" value="-1">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Type</label>
-                                    <input type="number" class="state-guardians-type-2" min="-1" max="999" value="-1">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Type</label>
-                                    <input type="number" class="state-guardians-type-3" min="-1" max="999" value="-1">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Type</label>
-                                    <input type="number" class="state-guardians-type-4" min="-1" max="999" value="-1">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Type</label>
-                                    <input type="number" class="state-guardians-type-5" min="-1" max="999" value="-1">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Type</label>
-                                    <input type="number" class="state-guardians-type-6" min="-1" max="999" value="-1">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Type</label>
-                                    <input type="number" class="state-guardians-type-7" min="-1" max="999" value="-1">
+                            <!-- Guardians Type Group -->
+                            <div class="guardians-group">
+                                <label class="field-label-small">
+                                    Type <span class="help-icon">?
+                                        <span class="tooltip" data-translate-id="guardians-type">Loading help text...</span></span>
+                                </label>
+                                <div class="guardians-fields">
+                                    <div class="guardian-field">
+                                        <label>Slot #1</label>
+                                        <input type="number" class="state-guardians-type-1" min="-1" max="999">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #2</label>
+                                        <input type="number" class="state-guardians-type-2" min="-1" max="999">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #3</label>
+                                        <input type="number" class="state-guardians-type-3" min="-1" max="999">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #4</label>
+                                        <input type="number" class="state-guardians-type-4" min="-1" max="999">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #5</label>
+                                        <input type="number" class="state-guardians-type-5" min="-1" max="999">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #6</label>
+                                        <input type="number" class="state-guardians-type-6" min="-1" max="999">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #7</label>
+                                        <input type="number" class="state-guardians-type-7" min="-1" max="999">
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Guardians Count Fields Row -->
-                            <div class="guardians-fields">
-                                <div class="guardian-field">
-                                    <label>Slot 1</label>
-                                    <input type="number" class="state-guardians-count-1" min="0" max="2147483647" value="0">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Slot 2</label>
-                                    <input type="number" class="state-guardians-count-2" min="0" max="2147483647" value="0">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Slot 3</label>
-                                    <input type="number" class="state-guardians-count-3" min="0" max="2147483647" value="0">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Slot 4</label>
-                                    <input type="number" class="state-guardians-count-4" min="0" max="2147483647" value="0">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Slot 5</label>
-                                    <input type="number" class="state-guardians-count-5" min="0" max="2147483647" value="0">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Slot 6</label>
-                                    <input type="number" class="state-guardians-count-6" min="0" max="2147483647" value="0">
-                                </div>
-                                <div class="guardian-field">
-                                    <label>Slot 7</label>
-                                    <input type="number" class="state-guardians-count-7" min="0" max="2147483647" value="0">
+                            <!-- Guardians Count Group -->
+                            <div class="guardians-group">
+                                <label class="field-label-small">
+                                    Count <span class="help-icon">?
+                                        <span class="tooltip" data-translate-id="guardians-count">Loading help text...</span></span>
+                                </label>
+                                <div class="guardians-fields">
+                                    <div class="guardian-field">
+                                        <label>Slot #1</label>
+                                        <input type="number" class="state-guardians-count-1" min="0" max="2147483647">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #2</label>
+                                        <input type="number" class="state-guardians-count-2" min="0" max="2147483647">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #3</label>
+                                        <input type="number" class="state-guardians-count-3" min="0" max="2147483647">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #4</label>
+                                        <input type="number" class="state-guardians-count-4" min="0" max="2147483647">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #5</label>
+                                        <input type="number" class="state-guardians-count-5" min="0" max="2147483647">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #6</label>
+                                        <input type="number" class="state-guardians-count-6" min="0" max="2147483647">
+                                    </div>
+                                    <div class="guardian-field">
+                                        <label>Slot #7</label>
+                                        <input type="number" class="state-guardians-count-7" min="0" max="2147483647">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -526,22 +540,22 @@
 
             <!-- Upgrade -->
             <div class="field-row">
-                <label class="field-label margin-left-10">
+                <label class="field-label">
                     <input type="checkbox" class="state-upgrade-checkbox" data-controls="state-upgrade-container">
                     upgrade <span class="help-icon">?
                         <span class="tooltip" data-translate-id="upgrade">Loading help text...</span></span>
                 </label>
                 <div class="field-input disabled state-upgrade-container">
-                    <input type="number" class="state-upgrade-input" min="0" max="100" value="0">
+                    <input type="number" class="state-upgrade-input" min="0" max="100">
                 </div>
             </div>
             
             <!-- Morale -->
             <div class="field-row">
-                <label class="field-label margin-left-10">
+                <label class="field-label">
                     <input type="checkbox" class="state-morale-checkbox" data-controls="state-morale-container">
                     morale <span class="help-icon">?
-                        <span class="tooltip" data-translate-id="statesMorale">Loading help text...</span></span>
+                        <span class="tooltip" data-translate-id="morale">Loading help text...</span></span>
                 </label>
                 <div class="field-input disabled state-morale-container">
                     <input type="number" class="state-morale-input" min="-3" max="3">
@@ -550,10 +564,10 @@
 
             <!-- Luck -->
             <div class="field-row">
-                <label class="field-label margin-left-10">
+                <label class="field-label">
                     <input type="checkbox" class="state-luck-checkbox" data-controls="state-luck-container">
                     luck <span class="help-icon">?
-                        <span class="tooltip" data-translate-id="statesLuck">Loading help text...</span></span>
+                        <span class="tooltip" data-translate-id="luck">Loading help text...</span></span>
                 </label>
                 <div class="field-input disabled state-luck-container">
                     <input type="number" class="state-luck-input" min="-3" max="3">
@@ -562,7 +576,7 @@
 
             <!-- Spell Points -->
             <div class="field-row">
-                 <label class="field-label margin-left-10">
+                 <label class="field-label">
                     <input type="checkbox" class="state-spellPoints-checkbox" data-controls="state-spellPoints-container">
                     spellPoints <span class="help-icon">?
                         <span class="tooltip" data-translate-id="spellPoints">Loading help text...</span></span>
@@ -574,7 +588,7 @@
 
             <!-- Experience -->
             <div class="field-row">
-                <label class="field-label margin-left-10">
+                <label class="field-label">
                     <input type="checkbox" class="state-experience-checkbox" data-controls="state-experience-container">
                     experience <span class="help-icon">?
                         <span class="tooltip" data-translate-id="experience">Loading help text...</span></span>
@@ -586,7 +600,7 @@
 
             <!-- ArtifactIds (new section) -->
             <div class="field-row">
-                <label class="field-label margin-left-10">
+                <label class="field-label">
                     <input type="checkbox" class="state-artifactIds-checkbox" data-controls="state-artifactIds-container">
                     artifactIds <span class="help-icon">?
                         <span class="tooltip" data-translate-id="artifactIds">Loading help text...</span></span>
@@ -595,19 +609,19 @@
                     <div class="artifact-type-fields">
                         <div class="artifact-field">
                             <label>#1</label>
-                            <input type="number" class="state-artifactIds-1" min="-1" max="1023" value="-1">
+                            <input type="number" class="state-artifactIds-1" min="-1" max="1023">
                         </div>
                         <div class="artifact-field">
                             <label>#2</label>
-                            <input type="number" class="state-artifactIds-2" min="-1" max="1023" value="-1">
+                            <input type="number" class="state-artifactIds-2" min="-1" max="1023">
                         </div>
                         <div class="artifact-field">
                             <label>#3</label>
-                            <input type="number" class="state-artifactIds-3" min="-1" max="1023" value="-1">
+                            <input type="number" class="state-artifactIds-3" min="-1" max="1023">
                         </div>
                         <div class="artifact-field">
                             <label>#4</label>
-                            <input type="number" class="state-artifactIds-4" min="-1" max="1023" value="-1">
+                            <input type="number" class="state-artifactIds-4" min="-1" max="1023">
                         </div>
                     </div>
                 </div>
@@ -615,7 +629,7 @@
 
             <!-- Artifact Type Counts -->
             <div class="field-row">
-                <label class="field-label margin-left-10">
+                <label class="field-label">
                     <input type="checkbox" class="state-artifactTypeCounts-checkbox" data-controls="state-artifactTypeCounts-container">
                     artifactTypeCounts <span class="help-icon">?
                         <span class="tooltip" data-translate-id="artifactTypeCounts">Loading help text...</span></span>
@@ -644,7 +658,7 @@
 
             <!-- Resources -->
             <div class="field-row">
-                <label class="field-label margin-left-10">
+                <label class="field-label">
                     <input type="checkbox" class="state-resources-checkbox" data-controls="state-resources-container">
                     resources <span class="help-icon">?
                         <span class="tooltip" data-translate-id="resources">Loading help text...</span></span>
@@ -653,35 +667,35 @@
                     <div class="resources-fields">
                         <div class="resource-field">
                             <label class="resource-wood-label"></label>
-                            <input type="number" class="state-resources-wood" min="0" max="2147483647" value="0">
+                            <input type="number" class="state-resources-wood" min="0" max="2147483647">
                         </div>
                         <div class="resource-field">
                             <label class="resource-ore-label"></label>
-                            <input type="number" class="state-resources-ore" min="0" max="2147483647" value="0">
+                            <input type="number" class="state-resources-ore" min="0" max="2147483647">
                         </div>
                         <div class="resource-field">
                             <label class="resource-mercury-label"></label>
-                            <input type="number" class="state-resources-mercury" min="0" max="2147483647" value="0">
+                            <input type="number" class="state-resources-mercury" min="0" max="2147483647">
                         </div>
                         <div class="resource-field">
                             <label class="resource-sulfur-label"></label>
-                            <input type="number" class="state-resources-sulfur" min="0" max="2147483647" value="0">
+                            <input type="number" class="state-resources-sulfur" min="0" max="2147483647">
                         </div>
                         <div class="resource-field">
                             <label class="resource-crystal-label"></label>
-                            <input type="number" class="state-resources-crystal" min="0" max="2147483647" value="0">
+                            <input type="number" class="state-resources-crystal" min="0" max="2147483647">
                         </div>
                         <div class="resource-field">
                             <label class="resource-gems-label"></label>
-                            <input type="number" class="state-resources-gems" min="0" max="2147483647" value="0">
+                            <input type="number" class="state-resources-gems" min="0" max="2147483647">
                         </div>
                         <div class="resource-field">
                             <label class="resource-gold-label"></label>
-                            <input type="number" class="state-resources-gold" min="0" max="2147483647" value="0">
+                            <input type="number" class="state-resources-gold" min="0" max="2147483647">
                         </div>
                         <div class="resource-field">
                             <label class="resource-mithril-label"></label>
-                            <input type="number" class="state-resources-mithril" min="0" max="2147483647" value="0">
+                            <input type="number" class="state-resources-mithril" min="0" max="2147483647">
                         </div>
                     </div>
                 </div>
@@ -689,7 +703,7 @@
             
             <!-- Custom DEF File -->
             <div class="field-row">
-                <label class="field-label margin-left-10">
+                <label class="field-label">
                     <input type="checkbox" class="state-customDef-checkbox" data-controls="state-customDef-container">
                     customDef <span class="help-icon">?
                         <span class="tooltip" data-translate-id="customDef">Loading help text...</span></span>
@@ -701,7 +715,7 @@
 
             <!-- Chance -->
             <div class="field-row">
-                <label class="field-label margin-left-10">
+                <label class="field-label">
                     <input type="checkbox" class="state-chance-checkbox" data-controls="state-chance-container">
                     chance <span class="help-icon">?
                         <span class="tooltip" data-translate-id="stateChance">Loading help text...</span></span>
@@ -719,7 +733,7 @@
         <div class="field-group">
             <!-- Spell ID - Replace field label with radio -->
             <div class="field-row">
-                <label class="field-label radio-label">
+                <label class="field-label-small radio-label">
                     <input type="radio" name="spell-type" class="spell-type-radio" value="id" data-controls="spell-id-container" checked>
                     By ID <span class="help-icon">?
                         <span class="tooltip" data-translate-id="spellsId">Loading help text...</span></span>
@@ -731,7 +745,7 @@
 
             <!-- Spell Bits - Replace field label with radio -->
             <div class="field-row">
-                <label class="field-label radio-label">
+                <label class="field-label-small radio-label">
                     <input type="radio" name="spell-type" class="spell-type-radio" value="bits" data-controls="spell-bits-container spell-bits-flags-container spell-bits-levels-container spell-bits-schools-container">
                     By Bits <span class="help-icon">?
                         <span class="tooltip" data-translate-id="spellsBits">Loading help text...</span></span>
@@ -739,7 +753,7 @@
                 <div class="field-input disabled spell-bits-container">
                     <div class="field-group"> <!-- Inner group for bits -->
                         <div class="field-row">
-                            <label class="field-label">
+                            <label class="field-label-small">
                                 flags <span class="help-icon">?
                                     <span class="tooltip" data-translate-id="bitsFlags">Loading help text...</span></span>
                             </label>
@@ -755,7 +769,7 @@
                             </div>
                         </div>
                         <div class="field-row">
-                            <label class="field-label">
+                            <label class="field-label-small">
                                 levels <span class="help-icon">?
                                     <span class="tooltip" data-translate-id="bitsLevels">Loading help text...</span></span>
                             </label>
@@ -771,7 +785,7 @@
                             </div>
                         </div>
                         <div class="field-row">
-                            <label class="field-label">
+                            <label class="field-label-small">
                                 schools <span class="help-icon">?
                                     <span class="tooltip" data-translate-id="bitsSchools">Loading help text...</span></span>
                             </label>
@@ -821,20 +835,21 @@
             </div>
             
             <div class="info-row">
-                <span class="info-title">Defenders:</span>
-                <span id="defenders-count" class="info-content">0/7</span>
-                <span id="defenders-cells" class="info-content">[]</span>
-            </div>
-            
-            <div class="info-row">
                 <span class="info-title">Attackers:</span>
                 <span id="attackers-count" class="info-content">0/7</span>
                 <span id="attackers-cells" class="info-content">[]</span>
             </div>
             
+            <div class="info-row">
+                <span class="info-title">Defenders:</span>
+                <span id="defenders-count" class="info-content">0/7</span>
+                <span id="defenders-cells" class="info-content">[]</span>
+            </div>
+            
             <div class="grid-container" id="hex-grid"></div>
             
             <div class="grid-popup-footer">
+                <span id="grid-selection-help" class="grid-selection-help"></span>
                 <button id="apply-grid" class="apply-grid">Apply</button>
                 <button id="cancel-grid" class="cancel-grid">Cancel</button>
             </div>

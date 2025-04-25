@@ -161,20 +161,21 @@ const updateUILanguage = (dom, updateActions) => {
     });
 
     // Update guardian labels directly by position rather than text content
-    document.querySelectorAll('.guardians-fields').forEach((fieldsContainer, containerIndex) => {
-        const isTypeContainer = containerIndex === 0; // First guardians-fields container is for types
-        const isSlotContainer = containerIndex === 1; // Second guardians-fields container is for slots
-        
-        fieldsContainer.querySelectorAll('.guardian-field label').forEach(label => {
-            if (isTypeContainer) {
-                setText(label, translations.fieldLabels?.guardianType || 'Type');
-            } else if (isSlotContainer) {
-                // Extract the slot number from the parent's class name
-                const slotMatch = label.closest('.guardian-field').querySelector('input')?.className.match(/\d+/);
-                const slotNum = slotMatch ? slotMatch[0] : '';
-                setText(label, `${translations.fieldLabels?.guardianSlot || 'Slot'} ${slotNum}`);
+    document.querySelectorAll('.guardians-group').forEach((groupContainer, containerIndex) => {
+        const isTypeGroup = containerIndex === 0; // First guardians-group is for types
+        const isSlotGroup = containerIndex === 1; // Second guardians-group is for slots
+
+        // Update the group heading
+        const heading = groupContainer.querySelector('h4');
+        if (heading) {
+            if (isTypeGroup) {
+                setText(heading, translations.fieldLabels?.guardianType || 'Type');
+            } else if (isSlotGroup) {
+                setText(heading, translations.fieldLabels?.guardianSlot || 'Slot');
             }
-        });
+        }
+        
+        // Keep the numbered labels as they are - they don't need translation
     });
 
     // Update grid popup title texts
@@ -254,6 +255,12 @@ const updateUILanguage = (dom, updateActions) => {
         const key = el.getAttribute('data-translate-id');
         if (translations.helpTexts?.[key]) {
             el.textContent = translations.helpTexts[key];
+        } else {
+            // Try converting hyphenated ID to camelCase for guardians tooltips
+            const camelCaseKey = key.replace(/-(\w)/g, (_, c) => c.toUpperCase());
+            if (translations.helpTexts?.[camelCaseKey]) {
+                el.textContent = translations.helpTexts[camelCaseKey];
+            }
         }
     });
 
@@ -774,6 +781,44 @@ const updateFieldLabels = () => {
             if (textNode) {
                 textNode.textContent = translations.fieldLabels[mapping.key] + ' ';
             }
+        }
+    });
+
+    // Update guardian labels directly by position rather than text content
+    document.querySelectorAll('.guardians-fields').forEach((groupContainer, containerIndex) => {
+        const isTypeGroup = containerIndex === 0; // First guardians-group is for types
+        const isCountGroup = containerIndex === 1; // Second guardians-group is for counts
+
+        // Update the group heading
+        const heading = groupContainer.previousElementSibling;
+        if (heading) {
+            const textNode = Array.from(heading.childNodes).find(node => 
+                node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+            
+            if (textNode) {
+                if (isTypeGroup) {
+                    setText(textNode, translations.fieldLabels?.type || 'Type');
+                } else if (isCountGroup) {
+                    setText(textNode, translations.fieldLabels?.count || 'Count');
+                }
+            }
+        }
+        
+        // Keep the numbered labels as they are - they don't need translation
+    });
+
+    // Special handling for guardian type/count field labels
+    document.querySelectorAll('.state-guardians-fields-container .field-group > .field-label').forEach(label => {
+        const textNode = Array.from(label.childNodes).find(node => 
+            node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+        
+        if (!textNode) return;
+        
+        const labelText = textNode.textContent.trim();
+        if (labelText === 'Type' && translations.fieldLabels?.type) {
+            textNode.textContent = translations.fieldLabels.type + ' ';
+        } else if (labelText === 'Count' && translations.fieldLabels?.count) {
+            textNode.textContent = translations.fieldLabels.count + ' ';
         }
     });
 };

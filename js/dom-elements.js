@@ -73,6 +73,7 @@ export const dom = {
     disabledCellsToggle: document.getElementById('disabled-cells-toggle'),
     blockedPreview: document.querySelector('.blocked-preview'),
     disabledCellsLabel: document.getElementById('disabled-cells-label'),
+    gridSelectionHelp: document.getElementById('grid-selection-help'),
     
     // Object Selector UI
     objectTypeInput: document.getElementById('object-type'),

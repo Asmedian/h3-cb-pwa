@@ -288,13 +288,15 @@ const buildInnerJsonObject = (dom, usingDefaultAttackers, usingDefaultDefenders)
                     const major = majorInput && majorInput.value !== '' ? parseInt(majorInput.value) : 0;
                     const relic = relicInput && relicInput.value !== '' ? parseInt(relicInput.value) : 0;
                     
-                    // Create artifact type counts array
-                    stateObj.artifactTypeCounts = [
-                        isNaN(treasure) ? 0 : treasure,
-                        isNaN(minor) ? 0 : minor,
-                        isNaN(major) ? 0 : major,
-                        isNaN(relic) ? 0 : relic
-                    ];
+                    // Only add to state object if at least one value is positive
+                    if (treasure > 0 || minor > 0 || major > 0 || relic > 0) {
+                        stateObj.artifactTypeCounts = [
+                            isNaN(treasure) ? 0 : treasure,
+                            isNaN(minor) ? 0 : minor,
+                            isNaN(major) ? 0 : major,
+                            isNaN(relic) ? 0 : relic
+                        ];
+                    }
                 }
                 if (getCheckbox('state-resources-checkbox').checked) {
                     // Get values from individual resource fields
@@ -316,17 +318,21 @@ const buildInnerJsonObject = (dom, usingDefaultAttackers, usingDefaultDefenders)
                     const gold = goldInput && goldInput.value !== '' ? parseInt(goldInput.value) : 0;
                     const mithril = mithrilInput && mithrilInput.value !== '' ? parseInt(mithrilInput.value) : 0;
                     
-                    // Create resources array
-                    stateObj.resources = [
-                        isNaN(wood) ? 0 : wood,
-                        isNaN(ore) ? 0 : ore,
-                        isNaN(mercury) ? 0 : mercury,
-                        isNaN(sulfur) ? 0 : sulfur,
-                        isNaN(crystal) ? 0 : crystal,
-                        isNaN(gems) ? 0 : gems,
-                        isNaN(gold) ? 0 : gold,
-                        isNaN(mithril) ? 0 : mithril
-                    ];
+                    // Only add resources if at least one value is greater than 0
+                    if (wood > 0 || ore > 0 || mercury > 0 || sulfur > 0 || 
+                        crystal > 0 || gems > 0 || gold > 0 || mithril > 0) {
+                        // Create resources array
+                        stateObj.resources = [
+                            isNaN(wood) ? 0 : wood,
+                            isNaN(ore) ? 0 : ore,
+                            isNaN(mercury) ? 0 : mercury,
+                            isNaN(sulfur) ? 0 : sulfur,
+                            isNaN(crystal) ? 0 : crystal,
+                            isNaN(gems) ? 0 : gems,
+                            isNaN(gold) ? 0 : gold,
+                            isNaN(mithril) ? 0 : mithril
+                        ];
+                    }
                 }
                 if (getCheckbox('state-upgrade-checkbox').checked) {
                      const upg = getParsedInt('state-upgrade-container');
@@ -375,8 +381,12 @@ const buildInnerJsonObject = (dom, usingDefaultAttackers, usingDefaultDefenders)
                         const typeInput = stateElement.querySelector(`.state-guardians-type-${i}`);
                         
                         if (countInput && typeInput) {
-                            const count = parseInt(countInput.value) || 0;
-                            const type = parseInt(typeInput.value) || -1;
+                            // If type input is empty or -1, set type to -1
+                            const typeValue = typeInput.value.trim();
+                            const type = typeValue === '' ? -1 : (isNaN(parseInt(typeValue)) ? -1 : parseInt(typeValue));
+                            
+                            // If type is -1, count should be 0 regardless of the input's visual state
+                            const count = type === -1 ? 0 : (parseInt(countInput.value) || 0);
                             
                             guardianCounts.push(count);
                             guardianTypes.push(type);

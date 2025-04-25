@@ -716,14 +716,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (value < -1) target.value = -1;
                         if (value > 999) target.value = 999;
                         
-                        // If type is -1, count must be 0
+                        // If type is -1 or empty, count should be empty and disabled
                         if (value === -1) {
-                            countInput.value = '0';
+                            countInput.value = ''; // Empty, not 0
                             countInput.disabled = true;
                         } else {
                             countInput.disabled = false;
                         }
                     }
+                } else {
+                    // If type input is empty, treat as -1
+                    countInput.value = '';
+                    countInput.disabled = true;
                 }
             }
             
@@ -753,9 +757,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (value < 0) target.value = 0;
                         if (value > 2147483647) target.value = 2147483647;
                         
-                        // If type is -1, force count to be 0
+                        // If type is -1, force count to be empty
                         if (typeInput.value === '-1') {
-                            target.value = '0';
+                            target.value = '';
                         }
                     }
                 }
@@ -973,6 +977,9 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 1; i < propertyItems.length; i++) {
                 propertyItems[i].remove();
             }
+            
+            // Update remove propertie buttons visibility after reset
+            updatePropertyRemoveButtons();
         }
         
         // Reset enabled checkbox
@@ -1011,7 +1018,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         formModified = false;
-        updatePropertyWarnings();
+        updatePropertyWarnings(); // Call after resetting to highlight empty fields
     };
     
     // Update reset button state based on form changes

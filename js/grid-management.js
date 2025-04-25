@@ -28,6 +28,9 @@ const initGridPopup = (translations) => {
     } else {
         dom.blockedPreview.classList.remove('styled');
     }
+    
+    // Set the gridSelectionHelp element reference
+    dom.gridSelectionHelp = document.getElementById('grid-selection-help');
 };
 
 // Update grid popup translations
@@ -42,6 +45,11 @@ const updateGridTranslations = (translations) => {
             translations.defenders || 'Defenders' : 
             translations.attackers || 'Attackers';
         dom.disabledCellsLabel.textContent = translations.disabledCellsStyle || 'Disabled cells style';
+        
+        // Update help text with translation
+        if (dom.gridSelectionHelp) {
+            dom.gridSelectionHelp.textContent = translations.clickHexToSelect || 'Click on a hex to select';
+        }
             
         // Update "Default" text in grid info using translation
         if (usingDefaultDefenders) {
@@ -50,6 +58,9 @@ const updateGridTranslations = (translations) => {
         if (usingDefaultAttackers) {
             dom.attackersCells.textContent = translations.default || "Default";
         }
+        
+        // Update selection help visibility
+        updateSelectionHelpVisibility();
     }
 };
 
@@ -247,6 +258,9 @@ const toggleCellSelection = (cell) => {
             cell.classList.remove(currentGridMode);
             cell.classList.remove('default');
         });
+        
+        // Update selection help visibility after changing defaults
+        updateSelectionHelpVisibility();
     }
     
     if (index === -1) {
@@ -388,6 +402,7 @@ const openGridPopup = (translations) => {
         refreshCellDisplay();
         updateGridSelectionDisplay(translations);
         updateBlockedCells(); // Add this line to initialize blocked cells
+        updateSelectionHelpVisibility(); // Update help text visibility
     } catch (e) {
         console.error('Error loading grid data:', e);
     }
@@ -468,6 +483,11 @@ const updateGridUiBasedOnIsBank = (isBank, translations) => {
         
         // Change Cancel button text to Ok
         dom.cancelGrid.textContent = translations?.ok || 'Ok';
+        
+        // Hide the selection help text when isBank is false
+        if (dom.gridSelectionHelp) {
+            dom.gridSelectionHelp.style.display = 'none';
+        }
     } else {
         // Enable the grid
         dom.hexGrid.style.opacity = '1';
@@ -482,6 +502,23 @@ const updateGridUiBasedOnIsBank = (isBank, translations) => {
         
         // Restore Cancel button text
         dom.cancelGrid.textContent = translations?.cancel || 'Cancel';
+        
+        // Update selection help visibility based on defaults
+        updateSelectionHelpVisibility();
+    }
+};
+
+// Add a new function to update selection help visibility
+const updateSelectionHelpVisibility = () => {
+    if (dom.gridSelectionHelp) {
+        const isBank = dom.isBankSelect?.value === 'true';
+        
+        // Only show help text when isBank is true and both attackers and defenders are using defaults
+        if (isBank && usingDefaultAttackers && usingDefaultDefenders) {
+            dom.gridSelectionHelp.style.display = 'block';
+        } else {
+            dom.gridSelectionHelp.style.display = 'none';
+        }
     }
 };
 
@@ -536,6 +573,9 @@ const resetToDefaults = (isBank, translations) => {
     
     // Update input fields
     updateTroopPlacementInputs(translations);
+    
+    // Update selection help visibility when resetting to defaults
+    updateSelectionHelpVisibility();
 };
 
 // Export all grid-related functions and variables
@@ -566,5 +606,6 @@ export {
     setUsingDefaultAttackers,
     setUsingDefaultDefenders,
     clearTroopLists,
-    resetToDefaults
+    resetToDefaults,
+    updateSelectionHelpVisibility
 };

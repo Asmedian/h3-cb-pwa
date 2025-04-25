@@ -1,5 +1,5 @@
 // Service Worker for Heroes 3: ERA Creature Bank Editor
-const CACHE_NAME = 'heroes3-cb-editor-v1.1';
+const CACHE_NAME = 'heroes3-cb-editor-v1.2';
 const filesToCache = [
     './',
     './index.html',

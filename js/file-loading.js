@@ -407,6 +407,22 @@ const resetState = (stateItem) => {
             spellItems[i].remove();
         }
     }
+    
+    // Reset guardian fields properly
+    const guardianTypeInputs = stateItem.querySelectorAll('[class^="state-guardians-type-"]');
+    guardianTypeInputs.forEach(typeInput => {
+        typeInput.value = ''; // Empty string by default, not -1
+        
+        // Find and disable the corresponding count input
+        const match = typeInput.className.match(/state-guardians-type-(\d+)/);
+        if (match) {
+            const countInput = stateItem.querySelector(`.state-guardians-count-${match[1]}`);
+            if (countInput) {
+                countInput.value = '';
+                countInput.disabled = true;
+            }
+        }
+    });
 };
 
 /**
@@ -623,8 +639,8 @@ const populateOptionalFields = (data, dom, errors) => {
             const enterInput = document.getElementById('sound-enter');
             if (enterInput) {
                 enterInput.value = data.sound.enter;
-                // Validate WAV extension
-                if (!data.sound.enter.toLowerCase().endsWith('.wav')) {
+                // Validate WAV extension - but skip for "null" values
+                if (data.sound.enter !== 'null' && !data.sound.enter.toLowerCase().endsWith('.wav')) {
                     errors.push(`Sound Enter: Invalid format - ${data.sound.enter}`);
                 }
             }
@@ -634,8 +650,8 @@ const populateOptionalFields = (data, dom, errors) => {
             const loopInput = document.getElementById('sound-loop');
             if (loopInput) {
                 loopInput.value = data.sound.loop;
-                // Validate WAV extension
-                if (!data.sound.loop.toLowerCase().endsWith('.wav')) {
+                // Validate WAV extension - but skip for "null" values
+                if (data.sound.loop !== 'null' && !data.sound.loop.toLowerCase().endsWith('.wav')) {
                     errors.push(`Sound Loop: Invalid format - ${data.sound.loop}`);
                 }
             }
@@ -860,19 +876,22 @@ const populateStateFields = (stateData, stateIndex, errors) => {
                 if (index >= 7) return; // Only 7 guardian slots
                 const typeInput = stateItem.querySelector(`.state-guardians-type-${index + 1}`);
                 if (typeInput) {
-                    typeInput.value = type;
+                    // Display empty input for -1 value
+                    typeInput.value = type === -1 ? '' : type;
                     // Trigger input event to update related count field
                     typeInput.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             });
         }
 
-        // Set guardian counts
+        // Set guardian counts - only for types that aren't -1
         if (stateData.guardians.count && Array.isArray(stateData.guardians.count)) {
             stateData.guardians.count.forEach((count, index) => {
                 if (index >= 7) return; // Only 7 guardian slots
                 const countInput = stateItem.querySelector(`.state-guardians-count-${index + 1}`);
-                if (countInput) {
+                const typeInput = stateItem.querySelector(`.state-guardians-type-${index + 1}`);
+                
+                if (countInput && typeInput && typeInput.value !== '-1') {
                     countInput.value = count;
                 }
             });

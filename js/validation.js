@@ -84,6 +84,20 @@ export const validatePropertyInput = (inputElement, checkContent = false) => {
  */
 export const updatePropertyWarnings = () => {
     const translations = getTranslations();
+    
+    // Check if all properties are empty
+    const propertyInputs = dom.propertiesContainer.querySelectorAll('.property-input');
+    const allEmpty = Array.from(propertyInputs).every(input => input.value.trim() === '');
+    
+    // Apply animation class to empty inputs if all are empty
+    propertyInputs.forEach(input => {
+        if (allEmpty) {
+            input.classList.add('empty-required-input');
+        } else {
+            input.classList.remove('empty-required-input');
+        }
+    });
+    
     dom.propertiesContainer.querySelectorAll('.property-item').forEach(item => {
         const input = item.querySelector('.property-input');
         let warningIcon = item.querySelector('.property-warning');
@@ -158,8 +172,8 @@ export const updatePropertyWarnings = () => {
  */
 export const validateWavFile = (inputElement) => {
     const value = inputElement.value.trim();
-    if (value && !value.toLowerCase().endsWith('.wav')) {
-        // Append .wav if missing, but allow empty input
+    if (value && value.toLowerCase() !== 'null' && !value.toLowerCase().endsWith('.wav')) {
+        // Append .wav if missing and not "null", but allow empty input
         inputElement.value = value + '.wav';
         // Note: updateJsonPreview needs to be called from the caller
     }

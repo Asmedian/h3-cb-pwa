@@ -457,7 +457,13 @@ export const captureFormState = (dom) => {
                     const major = parseInt(getInputValue('.state-artifactTypeCounts-major'));
                     const relic = parseInt(getInputValue('.state-artifactTypeCounts-relic'));
                     
-                    if (!isNaN(treasure) || !isNaN(minor) || !isNaN(major) || !isNaN(relic)) {
+                    // Only add if at least one value is positive
+                    if (
+                        (!isNaN(treasure) && treasure > 0) || 
+                        (!isNaN(minor) && minor > 0) || 
+                        (!isNaN(major) && major > 0) || 
+                        (!isNaN(relic) && relic > 0)
+                    ) {
                         stateObj.artifactTypeCounts = [
                             !isNaN(treasure) ? treasure : 0,
                             !isNaN(minor) ? minor : 0,
@@ -478,16 +484,27 @@ export const captureFormState = (dom) => {
                     const gold = parseInt(getInputValue('.state-resources-gold'));
                     const mithril = parseInt(getInputValue('.state-resources-mithril'));
                     
-                    stateObj.resources = [
-                        !isNaN(wood) ? wood : 0,
-                        !isNaN(ore) ? ore : 0,
-                        !isNaN(mercury) ? mercury : 0,
-                        !isNaN(sulfur) ? sulfur : 0,
-                        !isNaN(crystal) ? crystal : 0,
-                        !isNaN(gems) ? gems : 0,
-                        !isNaN(gold) ? gold : 0,
-                        !isNaN(mithril) ? mithril : 0
-                    ];
+                    // Only include resources if at least one value is positive
+                    if ((!isNaN(wood) && wood > 0) || 
+                        (!isNaN(ore) && ore > 0) || 
+                        (!isNaN(mercury) && mercury > 0) || 
+                        (!isNaN(sulfur) && sulfur > 0) || 
+                        (!isNaN(crystal) && crystal > 0) || 
+                        (!isNaN(gems) && gems > 0) || 
+                        (!isNaN(gold) && gold > 0) || 
+                        (!isNaN(mithril) && mithril > 0)) {
+                        
+                        stateObj.resources = [
+                            !isNaN(wood) ? wood : 0,
+                            !isNaN(ore) ? ore : 0,
+                            !isNaN(mercury) ? mercury : 0,
+                            !isNaN(sulfur) ? sulfur : 0,
+                            !isNaN(crystal) ? crystal : 0,
+                            !isNaN(gems) ? gems : 0,
+                            !isNaN(gold) ? gold : 0,
+                            !isNaN(mithril) ? mithril : 0
+                        ];
+                    }
                 }
                 
                 // Guardians
@@ -837,7 +854,7 @@ export const populateSpellItem = (spellItem, spellData) => {
                     levelsInput.value = spellData.bits.levels;
                     
                     // Update level checkboxes
-                    const levelsValue = parseInt(spellData.bits.levels);
+                    const levelsValue = parseInt(levelsInput.value);
                     if (!isNaN(levelsValue)) {
                         spellItem.querySelectorAll('.spell-level-checkbox').forEach(checkbox => {
                             const levelBit = parseInt(checkbox.value);
@@ -854,7 +871,7 @@ export const populateSpellItem = (spellItem, spellData) => {
                     schoolsInput.value = spellData.bits.schools;
                     
                     // Update school checkboxes
-                    const schoolsValue = parseInt(spellData.bits.schools);
+                    const schoolsValue = parseInt(schoolsInput.value);
                     if (!isNaN(schoolsValue)) {
                         spellItem.querySelectorAll('.spell-school-checkbox').forEach(checkbox => {
                             const schoolBit = parseInt(checkbox.value);
@@ -929,6 +946,22 @@ export const resetStateItem = (stateItem) => {
         });
         document.dispatchEvent(updateSpellTabsEvent);
     }
+    
+    // Reset guardians - special handling for type/count relationship
+    const guardianTypeInputs = stateItem.querySelectorAll('[class^="state-guardians-type-"]');
+    guardianTypeInputs.forEach(typeInput => {
+        typeInput.value = ''; // Empty string by default, not -1
+        
+        // Find and disable the corresponding count input
+        const match = typeInput.className.match(/state-guardians-type-(\d+)/);
+        if (match) {
+            const countInput = stateItem.querySelector(`.state-guardians-count-${match[1]}`);
+            if (countInput) {
+                countInput.value = '';
+                countInput.disabled = true;
+            }
+        }
+    });
 };
 
 /**

@@ -939,9 +939,11 @@ const initGuardianFieldDependencies = (stateItem) => {
         
         if (typeInput && countInput) {
             // Set initial state based on type value
-            if (typeInput.value === '-1') {
-                countInput.value = '0';
+            if (typeInput.value === '-1' || typeInput.value === '') {
+                countInput.value = ''; // Empty by default, not 0
                 countInput.disabled = true;
+            } else {
+                countInput.disabled = false;
             }
         }
     }

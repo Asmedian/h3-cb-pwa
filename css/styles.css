@@ -19,6 +19,7 @@
     --error-border: #ff5252;
     --error-bg: rgba(255, 82, 82, 0.1);
     --warning-color: #f59e0b; /* Use a consistent warning color */
+    --empty-required-border: #ff5252; /* Border color for empty required fields */
     
     /* Scrollbar Variables */
     --scrollbar-width: 12px;
@@ -536,12 +537,14 @@ input[type="radio"]:checked::after {
 /* Allow help icons within disabled sections to remain interactive */
 .disabled .help-icon {
     opacity: 1;
-    pointer-events: auto;
     position: relative;
     z-index: 101;
+    pointer-events: auto;
 }
-.disabled .help-icon .tooltip {
-     pointer-events: auto;
+
+.disabled .help-icon:active,
+.disabled .help-icon:focus {
+    pointer-events: none;
 }
 
 /* --- Dynamic Lists (Properties, Spells, States) --- */
@@ -721,6 +724,27 @@ input[type="radio"]:checked::after {
     background-color: var(--error-bg);
 }
 
+/* Add keyframes animation for the pulsing outline */
+@keyframes pulseOutline {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.8);
+        border-color: var(--empty-required-border);
+    }
+    50% {
+        box-shadow: 0 0 0 3px rgba(100, 82, 82, 0.2);
+        border-color: var(--empty-required-border);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.8);
+        border-color: var(--empty-required-border);
+    }
+}
+
+/* Style for empty required property inputs */
+.empty-required-input {
+    animation: pulseOutline 2s infinite ease-in-out;
+}
+
 .property-warning {
     color: var(--warning-color);
     margin-right: 8px;
@@ -813,6 +837,41 @@ textarea.resizable-textarea {
 .checkbox-group label input[type="checkbox"] {
     align-self: center;
     margin: 0;
+}
+
+/* --- Guardians --- */
+.state-guardians-fields-container {
+    margin-bottom: -30px;
+}
+
+.guardians-group {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 6px;
+    background-color: var(--indented-bg);
+    border: 1px solid var(--indented-border);
+}
+
+.guardians-group .field-label {
+    flex-basis: 100px;
+}
+
+.guardians-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.guardians-fields input[type="number"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dark-theme .guardians-group h4 {
+    color: #e2e8f0;
 }
 
 /* --- Primary Skills & Artifact Type Fields --- */
@@ -991,6 +1050,10 @@ textarea.resizable-textarea {
         width: 100%;
     }
     
+    .guardians-group {
+        flex-direction: column;
+    }
+    
     .skills-primary-fields,
     .artifact-type-fields,
     .resources-fields,
@@ -1112,12 +1175,16 @@ textarea.resizable-textarea {
     margin-top: 20px;
 }
 
-.apply-grid, .cancel-grid {
-    padding: 8px 15px;
+.grid-selection-help {
+    margin-right: auto;
+    color: var(--text-color);
+    font-size: 14px;
+    align-self: center;
+    display: none;
 }
 
-.customize-btn {
-    margin-left: 10px;
+.apply-grid, .cancel-grid {
+    padding: 8px 15px;
 }
 
 /* Hexagonal Grid */
@@ -1174,11 +1241,17 @@ textarea.resizable-textarea {
     color: white;
     position: relative;
 }
+.hex-cell.defenders .hex-content:hover {
+    background-color: #4e2224;
+}
 
 .hex-cell.attackers .hex-content {
     background-color: #5b8c85;
     color: white;
     position: relative;
+}
+.hex-cell.attackers .hex-content:hover {
+    background-color: #2c5336;
 }
 
 /* Add styles for default cells with darkened colors */
@@ -1387,6 +1460,20 @@ textarea.resizable-textarea {
 .switch-button.active {
     background-color: var(--button-bg);
     color: white;
+}
+
+/* Add a class to visually disable the grid and block interaction */
+.grid-disabled {
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+/* When grid is disabled, remove blocked/hatching styles */
+.grid-disabled .hex-cell.blocked .hex-content,
+.grid-disabled .hex-cell.blocked .hex-content.styled {
+    opacity: 1 !important;
+    background-image: none !important;
+    cursor: default !important;
 }
 
 /* --- Responsive adjustments for hexagonal grid --- */
